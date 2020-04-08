@@ -31,9 +31,16 @@ public class JacksonConfig {
         gen.writeStartArray();
         value.results().forEach(r -> {
           try {
+            serializers.getLocale().getDisplayLanguage();
+            StringBuilder sb = new StringBuilder();
+            r.getMessages().forEach(n -> {
+              if (serializers.getLocale().toLanguageTag().startsWith(n.asLiteral().getLanguage())) {
+                sb.append(n);
+              }
+            });
             gen.writeStartObject();
             gen.writeStringField("severity", r.getSeverity().getURI());
-            gen.writeStringField("message", r.getMessage());
+            gen.writeStringField("message", sb.toString());
             gen.writeStringField("focusNode", r.getFocusNode().toString());
             //                        gen.writeStringField("value", r.getValue()
             //                        .toString());
