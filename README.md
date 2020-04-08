@@ -1,6 +1,9 @@
 # SGoV
-This repository contains a web service for validating SGoV. This includes checking consistency and compliance of
-glossaries and models according to predefined rules.
+This repository contains a web service for validating Semantic Government Vocabulary (SGoV). This includes checking consistency and compliance of
+glossaries and models according to predefined rules. These rules check:
+- glossaries - e.g. "each glossary concept at least one skos:prefLabel"
+- models - e.g. OntoUML relationships like "each Role concept must (transitively) inherit from a Kind concept"
+- interplay between glossaries and models - e.g. "each glossary concept should be used in the model"
 
 The project consists of the following modules:
 - validator - the actual validation logic. It consists of SHACL rules and a simple wrapper to evaluate them over a Jena model.
