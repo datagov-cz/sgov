@@ -17,8 +17,9 @@ public class SpringFoxConfig {
   @Bean
   public Docket api() {
     return new Docket(DocumentationType.SWAGGER_2)
+        .pathMapping("/")
         .select()
-        .apis( RequestHandlerSelectors.basePackage( "cz.github.sgov" ))
+        .apis(RequestHandlerSelectors.basePackage("cz.github.sgov"))
         .paths(PathSelectors.any())
         .build()
         .apiInfo(apiInfo());

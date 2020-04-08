@@ -1,10 +1,10 @@
 spring:
 management.endpoint.shutdown.enabled: true
+server.port: 49080
 backend:
   repositoryUrl: http://onto.fel.cvut.cz:7200/repositories/kodi-pracovni-prostor-sample
 logging:
   level:
     root: INFO
     org.springframework.web: INFO
-    cz.cvut.kbss: TRACE
-
+    cz.cvut.kbss: INFO

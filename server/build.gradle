@@ -32,3 +32,11 @@ dependencies {
     }
     testImplementation 'org.apache.jena:jena-core:3.14.0'
 }
+
+bootJar {
+    archiveFileName = 'sgov-server.jar'
+}
+
+bootRun {
+    systemProperties = System.properties
+}
