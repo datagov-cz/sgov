@@ -1,4 +1,4 @@
-package cz.github.sgov.server.config;
+package com.github.sgov.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

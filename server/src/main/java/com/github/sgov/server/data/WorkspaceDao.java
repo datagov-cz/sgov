@@ -1,8 +1,8 @@
-package cz.github.sgov.server.data;
+package com.github.sgov.server.data;
 
 import com.google.gson.JsonObject;
-import cz.github.sgov.server.Validator;
-import cz.github.sgov.server.config.BackendProperties;
+import com.github.sgov.server.Validator;
+import com.github.sgov.server.config.BackendProperties;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;

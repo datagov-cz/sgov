@@ -1,4 +1,4 @@
-package cz.github.sgov.server.data;
+package com.github.sgov.server.data;
 
 public class Vocabulary {
   public static final String NS = "http://example.org/kodi/";

@@ -1,4 +1,4 @@
-package cz.github.sgov.server;
+package com.github.sgov.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

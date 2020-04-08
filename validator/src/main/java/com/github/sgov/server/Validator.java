@@ -1,4 +1,4 @@
-package cz.github.sgov.server;
+package com.github.sgov.server;
 
 import java.util.Collection;
 import java.util.HashSet;

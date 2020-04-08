@@ -1,6 +1,6 @@
-package cz.github.sgov.server.controller;
+package com.github.sgov.server.controller;
 
-import cz.github.sgov.server.data.WorkspaceDao;
+import com.github.sgov.server.data.WorkspaceDao;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
