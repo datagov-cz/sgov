@@ -1,4 +1,4 @@
-package cz.github.sgov.server;
+package com.github.sgov.server;
 
 import java.text.MessageFormat;
 import java.util.Collections;

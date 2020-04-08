@@ -1,4 +1,4 @@
-package cz.github.sgov.server.config;
+package com.github.sgov.server.config;
 
 import lombok.Getter;
 import lombok.Setter;

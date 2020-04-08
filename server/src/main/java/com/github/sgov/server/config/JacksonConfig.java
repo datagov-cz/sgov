@@ -1,4 +1,4 @@
-package cz.github.sgov.server.config;
+package com.github.sgov.server.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
