@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.topbraid.shacl.validation.ValidationReport;
 
 @RestController
-@RequestMapping("/workspace")
+@RequestMapping("workspace")
 @Api(tags = "Workspace")
 public class WorkspaceController {
 

@@ -5,7 +5,9 @@ import cz.github.sgov.server.Validator;
 import cz.github.sgov.server.config.BackendProperties;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -84,27 +86,31 @@ public class WorkspaceDao {
     final String endpointUlozistePracovnichProstoru = properties.getRepositoryUrl();
     final List<String> vocabulariesForWorkspace =
         getVocabularySnapshotContextsForWorkspace(workspaceIri);
-    log.info("- found vocabularies {}", vocabulariesForWorkspace);
+    log.debug("- found vocabularies {}", vocabulariesForWorkspace);
     final String bindings = vocabulariesForWorkspace.stream().map(v -> "<" + v + ">")
         .collect(Collectors.joining(" "));
     final ParameterizedSparqlString query = new ParameterizedSparqlString(
         "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
-    log.info("- getting all statements for the vocabularies using query {}", query.toString());
+    log.debug("- getting all statements for the vocabularies using query {}", query.toString());
     final QueryExecution e = QueryExecutionFactory
         .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery());
     final Model m = e.execConstruct();
     log.info("- found {} statements. Now validating", m.listStatements().toSet().size());
     final Validator validator = new Validator();
-    final Model shapesModel = validator.getRulesModel(Validator.getGlossaryRules());
     OntDocumentManager.getInstance().setProcessImports(false);
     final Model dataModel =
         ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF, m);
-    final ValidationReport r = validator.validate(dataModel, shapesModel);
-    log.info("- validated, with the following results:");
-    r.results().forEach(result -> log.info(MessageFormat
+    final Set<String> rules = new HashSet<>();
+    rules.addAll(Validator.getGlossaryRules());
+    rules.addAll(Validator.getModelRules());
+    rules.addAll(Validator.getVocabularyRules());
+    final ValidationReport r = validator.validate(dataModel, rules);
+    log.info("- done.");
+    log.debug("- validation results:");
+    r.results().forEach(result -> {if (log.isDebugEnabled()) {log.debug(MessageFormat
         .format("    - [{0}] Node {1} failing for value {2} with message: {3} ",
             result.getSeverity().getLocalName(), result.getFocusNode(), result.getValue(),
-            result.getMessage())));
+            result.getMessage()));}});
     return r;
   }
 }
