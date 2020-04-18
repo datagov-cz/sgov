@@ -1,58 +1,28 @@
 package com.github.sgov.server.config;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import java.io.IOException;
+import com.github.sgov.server.controller.ValidationReportSerializer;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.annotation.RequestScope;
 import org.topbraid.shacl.validation.ValidationReport;
 
 @Configuration
 public class JacksonConfig {
 
   @Bean
-  public ObjectMapper objectMapper() {
+  @RequestScope
+  public ObjectMapper objectMapper(@Autowired HttpServletRequest request) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
     SimpleModule module = new SimpleModule();
-    module.addSerializer(ValidationReport.class, new JsonSerializer<ValidationReport>() {
-      @Override
-      public void serialize(ValidationReport value, JsonGenerator gen,
-                            SerializerProvider serializers) throws IOException {
-        gen.writeStartObject();
-        gen.writeBooleanField("conforms", value.conforms());
-        gen.writeFieldName("results");
-        gen.writeStartArray();
-        value.results().forEach(r -> {
-          try {
-            serializers.getLocale().getDisplayLanguage();
-            StringBuilder sb = new StringBuilder();
-            r.getMessages().forEach(n -> {
-              if (serializers.getLocale().toLanguageTag().startsWith(n.asLiteral().getLanguage())) {
-                sb.append(n);
-              }
-            });
-            gen.writeStartObject();
-            gen.writeStringField("severity", r.getSeverity().getURI());
-            gen.writeStringField("message", sb.toString());
-            gen.writeStringField("focusNode", r.getFocusNode().toString());
-            //                        gen.writeStringField("value", r.getValue()
-            //                        .toString());
-            gen.writeEndObject();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        });
-        gen.writeEndArray();
-        gen.writeEndObject();
-      }
-    });
+    module.addSerializer(ValidationReport.class, new ValidationReportSerializer(request.getLocale().toLanguageTag()));
     mapper.registerModule(module);
     return mapper;
   }
