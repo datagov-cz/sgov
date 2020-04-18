@@ -1,8 +1,8 @@
 package com.github.sgov.server.data;
 
-import com.google.gson.JsonObject;
 import com.github.sgov.server.Validator;
 import com.github.sgov.server.config.BackendProperties;
+import com.google.gson.JsonObject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,9 +34,9 @@ public class WorkspaceDao {
   BackendProperties properties;
 
   /**
-   * Return all
+   * Returns all workspace IRIs.
    *
-   * @return
+   * @return list of workspace IRIs.
    */
   @Autowired
   public List<String> getAllWorkspaceIris() {
@@ -107,10 +107,14 @@ public class WorkspaceDao {
     final ValidationReport r = validator.validate(dataModel, rules);
     log.info("- done.");
     log.debug("- validation results:");
-    r.results().forEach(result -> {if (log.isDebugEnabled()) {log.debug(MessageFormat
-        .format("    - [{0}] Node {1} failing for value {2} with message: {3} ",
-            result.getSeverity().getLocalName(), result.getFocusNode(), result.getValue(),
-            result.getMessage()));}});
+    r.results().forEach(result -> {
+      if (log.isDebugEnabled()) {
+        log.debug(MessageFormat
+            .format("    - [{0}] Node {1} failing for value {2} with message: {3} ",
+                result.getSeverity().getLocalName(), result.getFocusNode(), result.getValue(),
+                result.getMessage()));
+      }
+    });
     return r;
   }
 }

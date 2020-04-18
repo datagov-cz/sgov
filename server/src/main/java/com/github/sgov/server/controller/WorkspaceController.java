@@ -2,6 +2,7 @@ package com.github.sgov.server.controller;
 
 import com.github.sgov.server.data.WorkspaceDao;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
@@ -34,12 +35,22 @@ public class WorkspaceController {
   }
 
   @GetMapping(value = "/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-  @ApiOperation(value = "Validates workspace using predefined rules. This involves " +
-      "e.g. checking that each term has a skos:prefLabel, or that each Role-typed " +
-      "term has a super term typed as Kind.")
+  @ApiOperation(value = "Validates workspace using predefined rules. This involves "
+      + "e.g. checking that each term has a skos:prefLabel, or that each Role-typed "
+      + "term has a super term typed as Kind.")
   @ResponseBody
+  @ApiImplicitParam(name = "Accept-language",
+      value = "cs",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "cs"
+  )
   public ValidationReport validate(
-      @ApiParam(value = "http://example.org/mc", required = true) @RequestParam String iri
+      @ApiParam(value = "http://example.org/mc",
+          required = true,
+          example = "http://example.org/mc"
+      ) @RequestParam String iri
   ) {
     return workspaceDao.validateWorkspace(iri);
   }
