@@ -17,5 +17,5 @@ dependencies {
 }
 
 jar {
-    archiveFileName = 'sgov-validator-'+new Date().format('yyyyMMddHHmmss')+'.jar'
+    archiveFileName = 'sgov-validator-' + new Date().format('yyyyMMddHHmmss') + '.jar'
 }

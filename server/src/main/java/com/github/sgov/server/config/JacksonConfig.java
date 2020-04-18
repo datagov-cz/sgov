@@ -15,6 +15,13 @@ import org.topbraid.shacl.validation.ValidationReport;
 @Configuration
 public class JacksonConfig {
 
+  /**
+   * Generates an object mapper. It is made RequestScope in order to use Accept-language inside
+   * the serializer.
+   *
+   * @param request injected request to get Accept-language header.
+   * @return Object mapper for serializing ValidationReport
+   */
   @Bean
   @RequestScope
   public ObjectMapper objectMapper(@Autowired HttpServletRequest request) {
@@ -22,7 +29,8 @@ public class JacksonConfig {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
     SimpleModule module = new SimpleModule();
-    module.addSerializer(ValidationReport.class, new ValidationReportSerializer(request.getLocale().toLanguageTag()));
+    module.addSerializer(ValidationReport.class, new ValidationReportSerializer(
+        request.getLocale().toLanguageTag()));
     mapper.registerModule(module);
     return mapper;
   }

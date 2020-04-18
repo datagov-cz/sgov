@@ -35,9 +35,9 @@ public class WorkspaceController {
   }
 
   @GetMapping(value = "/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-  @ApiOperation(value = "Validates workspace using predefined rules. This involves " +
-      "e.g. checking that each term has a skos:prefLabel, or that each Role-typed " +
-      "term has a super term typed as Kind.")
+  @ApiOperation(value = "Validates workspace using predefined rules. This involves "
+      + "e.g. checking that each term has a skos:prefLabel, or that each Role-typed "
+      + "term has a super term typed as Kind.")
   @ResponseBody
   @ApiImplicitParam(name = "Accept-language",
       value = "cs",
