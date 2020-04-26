@@ -1,6 +1,7 @@
 package com.github.sgov.server.controller;
 
-import com.github.sgov.server.data.WorkspaceDao;
+import com.github.sgov.server.dao.WorkspaceDao;
+import com.github.sgov.server.service.IdentifierResolver;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -16,14 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.topbraid.shacl.validation.ValidationReport;
 
 @RestController
-@RequestMapping("workspace")
+@RequestMapping("/workspace")
 @Api(tags = "Workspace")
-public class WorkspaceController {
+public class WorkspaceController extends BaseController {
 
-  private WorkspaceDao workspaceDao;
+  private final WorkspaceDao workspaceDao;
 
   @Autowired
-  public WorkspaceController(WorkspaceDao workspaceDao) {
+  public WorkspaceController(WorkspaceDao workspaceDao, IdentifierResolver idResolver) {
+    super(idResolver);
     this.workspaceDao = workspaceDao;
   }
 

@@ -1,7 +1,8 @@
-package com.github.sgov.server.data;
+package com.github.sgov.server.dao;
 
 import com.github.sgov.server.Validator;
-import com.github.sgov.server.config.BackendProperties;
+import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.model.util.WorkspaceVocabulary;
 import com.google.gson.JsonObject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import org.topbraid.shacl.validation.ValidationReport;
 public class WorkspaceDao {
 
   @Autowired
-  BackendProperties properties;
+  RepositoryConf properties;
 
   /**
    * Returns all workspace IRIs.
@@ -40,11 +41,11 @@ public class WorkspaceDao {
    */
   @Autowired
   public List<String> getAllWorkspaceIris() {
-    final String uri = properties.getRepositoryUrl();
+    final String uri = properties.getUrl();
     final HttpResponse<JsonObject> response =
         Unirest.post(uri).header("Content-type", "application/sparql-query")
             .header("Accept", "application/sparql-results+json")
-            .body("SELECT ?iri WHERE { ?iri  a <" + Vocabulary.pracovniProstor + "> }")
+            .body("SELECT ?iri WHERE { ?iri  a <" + WorkspaceVocabulary.pracovniProstor + "> }")
             .asObject(JsonObject.class);
 
     final List<String> list = new ArrayList<>();
@@ -56,11 +57,13 @@ public class WorkspaceDao {
   }
 
   private List<String> getVocabularySnapshotContextsForWorkspace(final String workspace) {
-    final String endpointUlozistePracovnichProstoru = properties.getRepositoryUrl();
+    final String endpointUlozistePracovnichProstoru = properties.getUrl();
     final QuerySolutionMap map = new QuerySolutionMap();
     map.add("workspace", ResourceFactory.createResource(workspace));
-    map.add("odkazujeNaKontext", ResourceFactory.createResource(Vocabulary.odkazujeNaKontext));
-    map.add("slovnikovyKontext", ResourceFactory.createResource(Vocabulary.slovnikovyKontext));
+    map.add("odkazujeNaKontext",
+        ResourceFactory.createResource(WorkspaceVocabulary.odkazujeNaKontext));
+    map.add("slovnikovyKontext",
+        ResourceFactory.createResource(WorkspaceVocabulary.slovnikovyKontext));
     final ParameterizedSparqlString query = new ParameterizedSparqlString(
         "SELECT ?kontext WHERE { ?workspace ?odkazujeNaKontext ?kontext . ?kontext a "
             + "?slovnikovyKontext }", map);
@@ -83,7 +86,7 @@ public class WorkspaceDao {
    */
   public ValidationReport validateWorkspace(final String workspaceIri) {
     log.info("Validating workspace {}", workspaceIri);
-    final String endpointUlozistePracovnichProstoru = properties.getRepositoryUrl();
+    final String endpointUlozistePracovnichProstoru = properties.getUrl();
     final List<String> vocabulariesForWorkspace =
         getVocabularySnapshotContextsForWorkspace(workspaceIri);
     log.debug("- found vocabularies {}", vocabulariesForWorkspace);

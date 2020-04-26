@@ -1,4 +1,4 @@
-package com.github.sgov.server.controller;
+package com.github.sgov.server.controller.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -8,7 +8,7 @@ import org.topbraid.shacl.validation.ValidationReport;
 
 public class ValidationReportSerializer extends JsonSerializer<ValidationReport> {
 
-  private String lang;
+  private final String lang;
 
   public ValidationReportSerializer(String lang) {
     this.lang = lang;

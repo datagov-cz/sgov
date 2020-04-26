@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.github.sgov.server.controller.ValidationReportSerializer;
+import com.github.sgov.server.controller.util.ValidationReportSerializer;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,8 @@ import org.topbraid.shacl.validation.ValidationReport;
 public class JacksonConfig {
 
   /**
-   * Generates an object mapper. It is made RequestScope in order to use Accept-language inside
-   * the serializer.
+   * Generates an object mapper. It is made RequestScope in order to use Accept-language inside the
+   * serializer.
    *
    * @param request injected request to get Accept-language header.
    * @return Object mapper for serializing ValidationReport
