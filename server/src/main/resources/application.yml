@@ -13,6 +13,6 @@ persistence:
 
 logging:
   level:
-    root: DEBUG
-    org.springframework.web: DEBUG
+    root: INFO
+    org.springframework.web: INFO
     cz.cvut.kbss: INFO
