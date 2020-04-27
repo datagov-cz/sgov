@@ -2,7 +2,7 @@ package com.github.sgov.server.dao;
 
 import com.github.sgov.server.Validator;
 import com.github.sgov.server.config.conf.RepositoryConf;
-import com.github.sgov.server.model.util.WorkspaceVocabulary;
+import com.github.sgov.server.util.Vocabulary;
 import com.google.gson.JsonObject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class WorkspaceDao {
     final HttpResponse<JsonObject> response =
         Unirest.post(uri).header("Content-type", "application/sparql-query")
             .header("Accept", "application/sparql-results+json")
-            .body("SELECT ?iri WHERE { ?iri  a <" + WorkspaceVocabulary.C_PRACOVNI_PROSTOR
+            .body("SELECT ?iri WHERE { ?iri  a <" + Vocabulary.s_c_metadatový_kontextn
                 + "> }")
             .asObject(JsonObject.class);
 
@@ -65,9 +65,9 @@ public class WorkspaceDao {
     final QuerySolutionMap map = new QuerySolutionMap();
     map.add("workspace", ResourceFactory.createResource(workspace));
     map.add("odkazujeNaKontext",
-        ResourceFactory.createResource(WorkspaceVocabulary.C_ODKAZUJE_NA_KONTEXT));
+        ResourceFactory.createResource(Vocabulary.s_c_odkazuje_na_kontext));
     map.add("slovnikovyKontext",
-        ResourceFactory.createResource(WorkspaceVocabulary.C_SLOVNIKOVY_KONTEXT));
+        ResourceFactory.createResource(Vocabulary.s_c_slovnikovy_kontext));
     final ParameterizedSparqlString query = new ParameterizedSparqlString(
         "SELECT ?kontext WHERE { ?workspace ?odkazujeNaKontext ?kontext . ?kontext a "
             + "?slovnikovyKontext }", map);

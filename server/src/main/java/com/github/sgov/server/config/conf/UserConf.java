@@ -1,6 +1,5 @@
 package com.github.sgov.server.config.conf;
 
-import com.github.sgov.server.util.Vocabulary;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,5 +33,6 @@ public class UserConf {
   /**
    * Namespace for users.
    */
-  private String namespace = Vocabulary.VOCABULARY_ID + "/uživatel";
+  private String namespace =
+      "http://onto.fel.cvut.cz/ontologies/slovnik/agendovy/popis-dat" + "/uživatel";
 }
