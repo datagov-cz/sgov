@@ -68,7 +68,8 @@ class UserAccountDaoTest extends BaseDaoTestRunner {
 
     final List<UserAccount> result = sut.findAll();
     accounts.sort(
-        Comparator.comparing(UserAccount::getLastName).thenComparing(UserAccount::getFirstName));
+        Comparator.comparing(UserAccount::getLastName)
+            .thenComparing(UserAccount::getFirstName));
     assertEquals(result, accounts);
   }
 }

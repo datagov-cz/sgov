@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +61,7 @@ class SystemInitializerTest extends BaseServiceTestRunner {
   void tearDown() throws Exception {
     final File dir = new File(adminCredentialsDir);
     if (dir.listFiles() != null) {
-      for (File child : dir.listFiles()) {
+      for (File child : Objects.requireNonNull(dir.listFiles())) {
         Files.deleteIfExists(child.toPath());
       }
     }
@@ -79,7 +80,8 @@ class SystemInitializerTest extends BaseServiceTestRunner {
     final UserAccount admin = em.find(UserAccount.class, ADMIN_URI);
     sut.initSystemAdmin();
     final UserAccount result = em.find(UserAccount.class, ADMIN_URI);
-    // We know that password is generated, so the same password means no new instance was created
+    // We know that password is generated, so the same password means no new instance was
+    // created
     Assert.assertEquals(admin.getPassword(), result.getPassword());
   }
 

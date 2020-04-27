@@ -53,7 +53,7 @@ public class UserUpdateDto extends UserAccount {
     if (!super.equals(o)) {
       return false;
     }
-    UserUpdateDto that = (UserUpdateDto) o;
+    final UserUpdateDto that = (UserUpdateDto) o;
     return Objects.equals(originalPassword, that.originalPassword);
   }
 

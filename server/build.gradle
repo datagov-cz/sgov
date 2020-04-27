@@ -11,11 +11,8 @@ plugins {
     id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id "io.freefair.aspectj.post-compile-weaving" version "4.1.4"
-    id 'ru.vyarus.quality' version '4.2.2'
     id 'java'
 }
-
-group 'com.github.sgov'
 
 test {
     useJUnitPlatform()

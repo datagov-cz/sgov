@@ -23,9 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
  * of the correct type, which is used by the CRUD methods implemented by this base class.
  *
  * <p>In order to minimize chances of messing up the transactional behavior, subclasses *should
- * not*
- * override the main CRUD methods and instead should provide custom business logic by overriding the
- * helper hooks such as {@link #prePersist(HasIdentifier)}.
+ * not* override the main CRUD methods and instead should provide custom business logic by
+ * overriding the helper hooks such as {@link #prePersist(HasIdentifier)}.
  *
  * @param <T> Domain object type managed by this service
  */
@@ -88,8 +87,8 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
   /**
    * Finds an object with the specified id and returns it.
    *
-   * <p>In comparison to {@link #find(URI)}, this method guarantees to return a matching instance.
-   * If no such object isfound, a {@link NotFoundException} is thrown.
+   * <p>In comparison to {@link #find(URI)}, this method guarantees to return a matching
+   * instance. If no such object isfound, a {@link NotFoundException} is thrown.
    *
    * @param id Identifier of the object to load
    * @return The matching object
@@ -97,8 +96,9 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
    * @see #find(URI)
    */
   public T findRequired(URI id) {
-    return find(id).orElseThrow(() -> NotFoundException.create(resolveGenericType().getSimpleName(),
-        id));
+    return find(id)
+        .orElseThrow(() -> NotFoundException.create(resolveGenericType().getSimpleName(),
+            id));
   }
 
   /**
@@ -126,10 +126,12 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
    *
    * @return Actual generic type class
    */
+  @SuppressWarnings("unchecked")
   private Class<T> resolveGenericType() {
     // Adapted from https://gist.github.com/yunspace/930d4d40a787a1f6a7d1
     final List<ResolvedType> typeParameters =
-        new TypeResolver().resolve(this.getClass()).typeParametersFor(BaseRepositoryService.class);
+        new TypeResolver().resolve(this.getClass())
+            .typeParametersFor(BaseRepositoryService.class);
     assert typeParameters.size() == 1;
     return (Class<T>) typeParameters.get(0).getErasedType();
   }
@@ -188,8 +190,8 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
    * Override this method to plug custom behavior into the transactional cycle of {@link
    * #update(HasIdentifier)} )}.
    *
-   * <p>The default behavior is to validate the specified instance and ensure its existence in the
-   * repository.
+   * <p>The default behavior is to validate the specified instance and ensure its existence in
+   * the repository.
    *
    * @param instance The instance to be updated, not {@code null}
    */
@@ -277,7 +279,8 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
    * @throws ValidationException In case the instance is not valid
    */
   protected void validate(T instance) {
-    final ValidationResult<T> validationResult = ValidationResult.of(validator.validate(instance));
+    final ValidationResult<T> validationResult =
+        ValidationResult.of(validator.validate(instance));
     if (!validationResult.isValid()) {
       throw new ValidationException(validationResult);
     }

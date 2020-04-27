@@ -17,12 +17,12 @@ public class Transaction {
   /**
    * Helper method for executing the specified portion of code in a transaction.
    *
-   * <p>Since JOPA does not understand SPARQL queries, any method using a query will not be able to
-   * see uncommitted transactional changes. So the whole test cannot run in a single transaction, as
-   * is common in regular Spring testing.
+   * <p>Since JOPA does not understand SPARQL queries, any method using a query will not be able
+   * to see uncommitted transactional changes. So the whole test cannot run in a single transaction,
+   * as is common in regular Spring testing.
    *
-   * <p>Instead, we need to perform methods which change the state of the storage in transactions,
-   * so that the changes are really committed into the storage.
+   * <p>Instead, we need to perform methods which change the state of the storage in
+   * transactions, so that the changes are really committed into the storage.
    *
    * @param txManager Transaction manager to use to run the transactional code
    * @param procedure Code to execute

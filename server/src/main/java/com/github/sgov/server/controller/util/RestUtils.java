@@ -14,7 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 /**
  * Utility functions for request processing.
  */
-public class RestUtils {
+public final class RestUtils {
 
   public static final String MEDIA_TYPE_JSONLD = "application/ld+json";
 
@@ -34,7 +34,8 @@ public class RestUtils {
    * @return location {@code URI}
    * @see #createLocationFromCurrentUriWithQueryParam(String, Object...)
    */
-  public static URI createLocationFromCurrentUriWithPath(String path, Object... uriVariableValues) {
+  public static URI createLocationFromCurrentUriWithPath(String path,
+                                                         Object... uriVariableValues) {
     Objects.requireNonNull(path);
     return ServletUriComponentsBuilder.fromCurrentRequestUri().path(path).buildAndExpand(
         uriVariableValues).toUri();
@@ -60,8 +61,8 @@ public class RestUtils {
    * Creates location URI with the specified path and query parameter appended to the current
    * request URI.
    *
-   * <p>The {@code paramValue} is specified for the query parameter and {@code pathValues} are used
-   * to replace path variables.
+   * <p>The {@code paramValue} is specified for the query parameter and {@code pathValues} are
+   * used to replace path variables.
    *
    * @param path       Path string, may contain path variables
    * @param param      Query parameter to add to current request URI

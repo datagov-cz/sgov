@@ -11,6 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * User details with authorities.
+ */
 public class SGoVUserDetails implements UserDetails {
 
   /**
@@ -99,7 +102,7 @@ public class SGoVUserDetails implements UserDetails {
     if (!(o instanceof SGoVUserDetails)) {
       return false;
     }
-    SGoVUserDetails that = (SGoVUserDetails) o;
+    final SGoVUserDetails that = (SGoVUserDetails) o;
     return Objects.equals(user, that.user) && Objects.equals(authorities, that.authorities);
   }
 

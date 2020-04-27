@@ -49,7 +49,8 @@ public class RuntimeBasedLoginTracker implements LoginTracker, ApplicationEventP
       // Do not emit multiple times
       return;
     }
-    LOG.warn("Unsuccessful login attempts limit exceeded by user {}. Locking the account.", user);
+    LOG.warn("Unsuccessful login attempts limit exceeded by user {}. Locking the account.",
+        user);
     eventPublisher.publishEvent(new LoginAttemptsThresholdExceeded(user));
   }
 

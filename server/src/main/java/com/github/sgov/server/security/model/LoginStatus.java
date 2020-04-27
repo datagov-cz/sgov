@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+/**
+ * Status of the login attempt.
+ */
 @Setter
 @Getter
 @Accessors(chain = true)

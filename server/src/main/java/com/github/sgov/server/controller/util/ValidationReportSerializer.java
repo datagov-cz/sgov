@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 import org.topbraid.shacl.validation.ValidationReport;
 
+/**
+ * Serializes the SHACL validation report to JSON.
+ */
 public class ValidationReportSerializer extends JsonSerializer<ValidationReport> {
 
   private final String lang;
@@ -23,7 +26,7 @@ public class ValidationReportSerializer extends JsonSerializer<ValidationReport>
     gen.writeStartArray();
     value.results().forEach(r -> {
       try {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         r.getMessages().forEach(n -> {
           if (lang.startsWith(n.asLiteral().getLanguage())) {
             sb.append(n);

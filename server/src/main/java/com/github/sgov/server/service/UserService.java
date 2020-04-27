@@ -10,6 +10,7 @@ import com.github.sgov.server.service.repository.UserRepositoryService;
 import com.github.sgov.server.service.security.SecurityUtils;
 import com.github.sgov.server.util.Vocabulary;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -98,8 +99,8 @@ public class UserService {
   /**
    * Updates current user's account with the specified update data.
    *
-   * <p>If the update contains also password update, the original password specified in the update
-   * object has to match current user's password.
+   * <p>If the update contains also password update, the original password specified in the
+   * update object has to match current user's password.
    *
    * @param update Account update data
    * @throws AuthorizationException If the update data concern other than the current user
@@ -108,16 +109,17 @@ public class UserService {
   public void updateCurrent(UserUpdateDto update) {
     LOG.trace("Updating current user account.");
     Objects.requireNonNull(update);
-    UserAccount currentUser = securityUtils.getCurrentUser();
+    final UserAccount currentUser = securityUtils.getCurrentUser();
 
     if (!currentUser.getUri().equals(update.getUri())) {
       throw new AuthorizationException(
-          "User " + securityUtils.getCurrentUser()
-              + " attempted to update a different user's account.");
+          MessageFormat.format("User {0} attempted to update a different user''s account.",
+              securityUtils.getCurrentUser()));
     }
     if (!currentUser.getUsername().equals(update.getUsername())) {
       throw new ValidationException(
-          "User " + securityUtils.getCurrentUser() + " attempted to update his username.");
+          MessageFormat.format("User {0} attempted to update his username.",
+              securityUtils.getCurrentUser()));
     }
     if (update.getPassword() != null) {
       securityUtils.verifyCurrentUserPassword(update.getOriginalPassword());

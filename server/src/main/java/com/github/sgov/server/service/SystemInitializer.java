@@ -19,11 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+/**
+ * Initializer of the server app. It creates an admin with random password, if it does not exist
+ * yet.
+ */
 public class SystemInitializer {
 
   public static final String SYSTEM_ADMIN_USER_URI =
       "https://slovník.gov.cz/aplikační/výrobní-linka/slovník/system-admin-user";
 
+  private static final String SEPARATOR = "----------------------------------------------";
   private static final Logger LOG = LoggerFactory.getLogger(SystemInitializer.class);
 
   private static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
@@ -61,7 +66,7 @@ public class SystemInitializer {
       if (random.nextBoolean()) {
         sb.append(random.nextInt(10));
       } else {
-        char c = LETTERS.charAt(random.nextInt(LETTERS.length()));
+        final char c = LETTERS.charAt(random.nextInt(LETTERS.length()));
         sb.append(random.nextBoolean() ? c : Character.toUpperCase(c));
       }
     }
@@ -75,44 +80,44 @@ public class SystemInitializer {
     admin.setPassword(passwordPlain);
     if (userService.exists(admin.getUri())) {
       LOG.info("Admin already exists.");
-      return;
-    }
-    LOG.info("Creating application admin account.");
-    final TransactionTemplate tx = new TransactionTemplate(txManager);
-    tx.execute(status -> {
-      userService.persist(admin);
-      return null;
-    });
-    LOG.info("----------------------------------------------");
-    LOG.info("Admin credentials are: {}/{}", admin.getUsername(), passwordPlain);
-    LOG.info("----------------------------------------------");
-    final File directory = new File(config.getAdminCredentialsLocation());
-    try {
-      if (!directory.exists()) {
-        Files.createDirectories(directory.toPath());
+    } else {
+      LOG.info("Creating application admin account.");
+      final TransactionTemplate tx = new TransactionTemplate(txManager);
+      tx.execute(status -> {
+        userService.persist(admin);
+        return null;
+      });
+      LOG.info(SEPARATOR);
+      LOG.info("Admin credentials are: {}/{}", admin.getUsername(), passwordPlain);
+      LOG.info(SEPARATOR);
+      final File directory = new File(config.getAdminCredentialsLocation());
+      try {
+        if (!directory.exists()) {
+          Files.createDirectories(directory.toPath());
+        }
+        final File credentialsFile = createHiddenFile();
+        if (credentialsFile == null) {
+          return;
+        }
+        LOG.debug("Writing admin credentials into file: {}", credentialsFile);
+        Files.write(credentialsFile.toPath(),
+            Collections.singletonList(admin.getUsername() + "/" + passwordPlain),
+            StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+            StandardOpenOption.TRUNCATE_EXISTING);
+      } catch (IOException e) {
+        LOG.error("Unable to create admin credentials file.", e);
       }
-      final File credentialsFile = createHiddenFile();
-      if (credentialsFile == null) {
-        return;
-      }
-      LOG.debug("Writing admin credentials into file: {}", credentialsFile);
-      Files.write(credentialsFile.toPath(),
-          Collections.singletonList(admin.getUsername() + "/" + passwordPlain),
-          StandardOpenOption.CREATE, StandardOpenOption.WRITE,
-          StandardOpenOption.TRUNCATE_EXISTING);
-    } catch (IOException e) {
-      LOG.error("Unable to create admin credentials file.", e);
     }
   }
 
   private File createHiddenFile() throws IOException {
-    final File credentialsFile = new File(config.getAdminCredentialsLocation() + File.separator
-        + config.getAdminCredentialsFile());
+    final File credentialsFile = new File(config.getAdminCredentialsLocation()
+        + File.separator + config.getAdminCredentialsFile());
     final boolean result = credentialsFile.createNewFile();
     if (!result) {
       LOG.error(
-          "Unable to create admin credentials file {}. Admin credentials won't be saved in any "
-              + "file!",
+          "Unable to create admin credentials file {}. Admin credentials won't be saved in"
+              + " any file!",
           config.getAdminCredentialsFile());
       return null;
     }

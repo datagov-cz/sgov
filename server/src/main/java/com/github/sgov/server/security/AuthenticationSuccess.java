@@ -32,7 +32,8 @@ public class AuthenticationSuccess implements AuthenticationSuccessHandler, Logo
   }
 
   private static String getUsername(Authentication authentication) {
-    return authentication != null ? ((UserDetails) authentication.getDetails()).getUsername() : "";
+    return authentication != null ? ((UserDetails) authentication.getDetails()).getUsername()
+        : "";
   }
 
   @Override
@@ -61,6 +62,6 @@ public class AuthenticationSuccess implements AuthenticationSuccessHandler, Logo
         .setSuccess(true)
         .setUsername(null)
         .setErrorMessage(null);
-        mapper.writeValue(httpServletResponse.getOutputStream(), loginStatus);
+    mapper.writeValue(httpServletResponse.getOutputStream(), loginStatus);
   }
 }

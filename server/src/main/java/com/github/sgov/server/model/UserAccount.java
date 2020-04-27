@@ -11,6 +11,7 @@ import java.util.HashSet;
 import javax.validation.constraints.NotBlank;
 
 @OWLClass(iri = Vocabulary.s_c_uzivatel)
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class UserAccount extends AbstractUser {
 
   @NotBlank

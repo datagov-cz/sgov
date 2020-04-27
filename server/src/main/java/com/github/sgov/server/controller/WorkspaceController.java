@@ -19,6 +19,7 @@ import org.topbraid.shacl.validation.ValidationReport;
 @RestController
 @RequestMapping("/workspace")
 @Api(tags = "Workspace")
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class WorkspaceController extends BaseController {
 
   private final WorkspaceDao workspaceDao;

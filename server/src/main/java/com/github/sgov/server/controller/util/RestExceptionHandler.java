@@ -41,45 +41,64 @@ public class RestExceptionHandler {
     return ErrorInfo.createWithMessage(e.getMessage(), request.getRequestURI());
   }
 
+  /**
+   * Persistence Exception.
+   */
   @ExceptionHandler(PersistenceException.class)
   public ResponseEntity<ErrorInfo> persistenceException(HttpServletRequest request,
                                                         PersistenceException e) {
     logException(e);
-    return new ResponseEntity<>(errorInfo(request, e.getCause()), HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(errorInfo(request, e.getCause()),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  /**
+   * JOPA Exception.
+   */
   @ExceptionHandler(OWLPersistenceException.class)
   public ResponseEntity<ErrorInfo> jopaException(HttpServletRequest request,
                                                  OWLPersistenceException e) {
     logException("Persistence exception caught.", e);
-    return new ResponseEntity<>(errorInfo(request, e), HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(errorInfo(request, e),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   /**
-   * notFound.
+   * Not Found Exception.
    */
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<ErrorInfo> notFound(HttpServletRequest request,
                                             NotFoundException e) {
-    // Not necessary to log NotFoundException, they may be quite frequent and do not represent an
+    // Not necessary to log NotFoundException, they may be quite frequent and do not
+    // represent an
     // issue with the application
     return new ResponseEntity<>(errorInfo(request, e), HttpStatus.NOT_FOUND);
   }
 
+  /**
+   * Username not found.
+   */
   @ExceptionHandler(UsernameNotFoundException.class)
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public ResponseEntity<ErrorInfo> usernameNotFound(HttpServletRequest request,
                                                     UsernameNotFoundException e) {
     return new ResponseEntity<>(errorInfo(request, e), HttpStatus.NOT_FOUND);
   }
 
-
+  /**
+   * Authorization exception.
+   */
   @ExceptionHandler(AuthorizationException.class)
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public ResponseEntity<ErrorInfo> authorizationException(HttpServletRequest request,
                                                           AuthorizationException e) {
     logException(e);
     return new ResponseEntity<>(errorInfo(request, e), HttpStatus.FORBIDDEN);
   }
 
+  /**
+   * Validation Exception.
+   */
   @ExceptionHandler(ValidationException.class)
   public ResponseEntity<ErrorInfo> validationException(HttpServletRequest request,
                                                        ValidationException e) {
@@ -87,6 +106,9 @@ public class RestExceptionHandler {
     return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
   }
 
+  /**
+   * SGoVException.
+   */
   @ExceptionHandler(SGoVException.class)
   public ResponseEntity<ErrorInfo> termItException(HttpServletRequest request,
                                                    SGoVException e) {
@@ -95,10 +117,11 @@ public class RestExceptionHandler {
   }
 
   /**
-   * jsonLdException.
+   * JSON-LD Exception.
    */
   @ExceptionHandler(JsonLdException.class)
-  public ResponseEntity<ErrorInfo> jsonLdException(HttpServletRequest request, JsonLdException e) {
+  public ResponseEntity<ErrorInfo> jsonLdException(HttpServletRequest request,
+                                                   JsonLdException e) {
     logException(e);
     return new ResponseEntity<>(
         ErrorInfo.createWithMessage("Error when processing JSON-LD.",
@@ -106,6 +129,9 @@ public class RestExceptionHandler {
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  /**
+   * Unsupported Asset Operation Exception.
+   */
   @ExceptionHandler(UnsupportedOperationException.class)
   public ResponseEntity<ErrorInfo> unsupportedAssetOperationException(
       HttpServletRequest request,

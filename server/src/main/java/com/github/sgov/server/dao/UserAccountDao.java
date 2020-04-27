@@ -14,7 +14,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+/**
+ * DAO for managing user accounts.
+ */
 @Repository
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class UserAccountDao extends BaseDao<UserAccount> {
 
   private final PersistenceConf config;
@@ -46,7 +50,8 @@ public class UserAccountDao extends BaseDao<UserAccount> {
     try {
       return Optional
           .of(em
-              .createNativeQuery("SELECT ?x WHERE { ?x a ?type ; ?hasUsername ?username . }", type)
+              .createNativeQuery("SELECT ?x WHERE { ?x a ?type ; ?hasUsername ?username . }",
+                  type)
               .setParameter("type", typeUri)
               .setParameter("hasUsername", URI.create(Vocabulary.s_p_ma_uzivatelske_jmeno))
               .setParameter("username", username, config.getLanguage()).getSingleResult());

@@ -12,7 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @PreAuthorize("hasRole('" + SecurityConstants.ROLE_USER + "')")
 public class BaseController {
 
-  final IdentifierResolver idResolver;
+  protected final IdentifierResolver idResolver;
 
   protected BaseController(IdentifierResolver idResolver) {
     this.idResolver = idResolver;

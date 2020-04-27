@@ -18,25 +18,25 @@ import javax.validation.constraints.NotBlank;
 abstract class AbstractUser implements HasIdentifier, HasTypes, Serializable {
 
   @Id
-  URI uri;
+  protected URI uri;
 
   @NotBlank
   @ParticipationConstraints(nonEmpty = true)
   @OWLDataProperty(iri = Vocabulary.s_p_ma_krestni_jmeno)
-  String firstName;
+  protected String firstName;
 
   @NotBlank
   @ParticipationConstraints(nonEmpty = true)
   @OWLDataProperty(iri = Vocabulary.s_p_ma_prijmeni)
-  String lastName;
+  protected String lastName;
 
   @NotBlank
   @ParticipationConstraints(nonEmpty = true)
   @OWLDataProperty(iri = Vocabulary.s_p_ma_uzivatelske_jmeno)
-  String username;
+  protected String username;
 
   @Types
-  Set<String> types;
+  protected Set<String> types;
 
   @Override
   public URI getUri() {
@@ -90,7 +90,7 @@ abstract class AbstractUser implements HasIdentifier, HasTypes, Serializable {
     if (!(o instanceof AbstractUser)) {
       return false;
     }
-    AbstractUser that = (AbstractUser) o;
+    final AbstractUser that = (AbstractUser) o;
     return Objects.equals(uri, that.uri) && Objects.equals(username, that.username);
   }
 

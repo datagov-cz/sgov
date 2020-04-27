@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/users")
 @Api(tags = "Users")
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class UserController extends BaseController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
@@ -54,7 +55,8 @@ public class UserController extends BaseController {
   }
 
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PutMapping(value = "/current", consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
+  @PutMapping(value = "/current",
+      consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
   public void updateCurrent(@RequestBody UserUpdateDto update) {
     userService.updateCurrent(update);
     LOG.debug("User {} successfully updated.", update);

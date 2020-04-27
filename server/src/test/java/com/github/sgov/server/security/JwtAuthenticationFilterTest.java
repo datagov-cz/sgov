@@ -58,7 +58,8 @@ class JwtAuthenticationFilterTest {
     this.user = Generator.generateUserAccount();
     this.mockRequest = new MockHttpServletRequest();
     this.mockResponse = new MockHttpServletResponse();
-    this.sut = new JwtAuthenticationFilter(mock(AuthenticationManager.class), new JwtUtils(config));
+    this.sut =
+        new JwtAuthenticationFilter(mock(AuthenticationManager.class), new JwtUtils(config));
   }
 
   @Test

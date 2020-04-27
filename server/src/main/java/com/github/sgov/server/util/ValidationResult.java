@@ -12,7 +12,7 @@ import javax.validation.ConstraintViolation;
  *
  * @param <T> The validated type
  */
-public class ValidationResult<T> implements Serializable {
+public final class ValidationResult<T> implements Serializable {
 
   private final Collection<ConstraintViolation<T>> violations;
 
@@ -28,6 +28,7 @@ public class ValidationResult<T> implements Serializable {
     return violations;
   }
 
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
   public boolean isValid() {
     return violations.isEmpty();
   }

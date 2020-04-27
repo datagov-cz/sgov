@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties("repository")
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class RepositoryConf {
 
   /**

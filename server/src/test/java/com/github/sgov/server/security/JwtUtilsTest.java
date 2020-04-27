@@ -67,8 +67,9 @@ class JwtUtilsTest {
   }
 
   private void verifyJwtToken(String token, SGoVUserDetails userDetails) {
-    final Claims claims = Jwts.parser().setSigningKey(config.getSecretKey()).parseClaimsJws(token)
-        .getBody();
+    final Claims claims =
+        Jwts.parser().setSigningKey(config.getSecretKey()).parseClaimsJws(token)
+            .getBody();
     assertEquals(user.getUsername(), claims.getSubject());
     assertEquals(user.getUri().toString(), claims.getId());
     assertThat(claims.getExpiration(), greaterThan(claims.getIssuedAt()));
@@ -118,7 +119,8 @@ class JwtUtilsTest {
         .signWith(SignatureAlgorithm.HS512, config.getSecretKey()).compact();
 
     final SGoVUserDetails result = sut.extractUserInfo(token);
-    ROLES.forEach(r -> assertTrue(result.getAuthorities().contains(new SimpleGrantedAuthority(r))));
+    ROLES.forEach(
+        r -> assertTrue(result.getAuthorities().contains(new SimpleGrantedAuthority(r))));
   }
 
   @Test
@@ -192,8 +194,9 @@ class JwtUtilsTest {
         .signWith(SignatureAlgorithm.HS512, config.getSecretKey()).compact();
 
     final String result = sut.refreshToken(token);
-    final Claims claims = Jwts.parser().setSigningKey(config.getSecretKey()).parseClaimsJws(result)
-        .getBody();
+    final Claims claims =
+        Jwts.parser().setSigningKey(config.getSecretKey()).parseClaimsJws(result)
+            .getBody();
     assertTrue(claims.getIssuedAt().after(oldIssueDate));
   }
 
@@ -208,8 +211,9 @@ class JwtUtilsTest {
         .signWith(SignatureAlgorithm.HS512, config.getSecretKey()).compact();
 
     final String result = sut.refreshToken(token);
-    final Claims claims = Jwts.parser().setSigningKey(config.getSecretKey()).parseClaimsJws(result)
-        .getBody();
+    final Claims claims =
+        Jwts.parser().setSigningKey(config.getSecretKey()).parseClaimsJws(result)
+            .getBody();
     assertTrue(claims.getExpiration().after(oldExpiration));
   }
 

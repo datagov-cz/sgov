@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties("jwt")
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class JwtConf {
 
   /**

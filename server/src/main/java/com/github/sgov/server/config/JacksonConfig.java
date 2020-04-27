@@ -13,6 +13,7 @@ import org.springframework.web.context.annotation.RequestScope;
 import org.topbraid.shacl.validation.ValidationReport;
 
 @Configuration
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class JacksonConfig {
 
   /**
@@ -25,10 +26,10 @@ public class JacksonConfig {
   @Bean
   @RequestScope
   public ObjectMapper objectMapper(@Autowired HttpServletRequest request) {
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
-    SimpleModule module = new SimpleModule();
+    final SimpleModule module = new SimpleModule();
     module.addSerializer(ValidationReport.class, new ValidationReportSerializer(
         request.getLocale().toLanguageTag()));
     mapper.registerModule(module);

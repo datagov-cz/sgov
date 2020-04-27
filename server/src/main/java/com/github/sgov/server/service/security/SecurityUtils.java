@@ -4,6 +4,7 @@ import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.security.model.AuthenticationToken;
 import com.github.sgov.server.security.model.SGoVUserDetails;
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,8 @@ public class SecurityUtils {
   public static UserAccount currentUser() {
     final SecurityContext context = SecurityContextHolder.getContext();
     assert context != null;
-    final SGoVUserDetails userDetails = (SGoVUserDetails) context.getAuthentication().getDetails();
+    final SGoVUserDetails userDetails =
+        (SGoVUserDetails) context.getAuthentication().getDetails();
     return userDetails.getUser();
   }
 
@@ -73,10 +75,12 @@ public class SecurityUtils {
   public static void verifyAccountStatus(UserAccount user) {
     Objects.requireNonNull(user);
     if (user.isLocked()) {
-      throw new LockedException("Account of user " + user + " is locked.");
+      throw new LockedException(
+          MessageFormat.format("Account of user {0} is locked.", user));
     }
     if (!user.isEnabled()) {
-      throw new DisabledException("Account of user " + user + " is disabled.");
+      throw new DisabledException(
+          MessageFormat.format("Account of user {0} is disabled.", user));
     }
   }
 
@@ -151,7 +155,8 @@ public class SecurityUtils {
   public void verifyCurrentUserPassword(String password) {
     final UserAccount currentUser = getCurrentUser();
     if (!passwordEncoder.matches(password, currentUser.getPassword())) {
-      throw new ValidationException("The specified password does not match the original one.");
+      throw new ValidationException(
+          "The specified password does not match the original one.");
     }
   }
 }

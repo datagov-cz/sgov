@@ -25,7 +25,7 @@ public interface GenericDao<T extends HasIdentifier> {
    *
    * @param id Identifier
    * @return {@code Optional} containing the matching entity instance or an empty {@code Optional}
-   *         if no such instance exists
+   *     if no such instance exists
    */
   Optional<T> find(URI id);
 
@@ -38,7 +38,7 @@ public interface GenericDao<T extends HasIdentifier> {
    *
    * @param id Identifier
    * @return {@code Optional} containing a reference to a matching instance or an empty {@code
-   *         Optional }if no such instance exists
+   *     Optional }if no such instance exists
    */
   Optional<T> getReference(URI id);
 
@@ -61,7 +61,7 @@ public interface GenericDao<T extends HasIdentifier> {
    *
    * @param entity Entity to update
    * @return The updated entity. Use it for further processing, as it could be a completely
-   *         different instance
+   *     different instance
    */
   T update(T entity);
 

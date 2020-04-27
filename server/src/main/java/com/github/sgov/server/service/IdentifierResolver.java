@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
  * Service for generating and resolving identifiers.
  */
 @Service
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class IdentifierResolver {
 
   private static final char REPLACEMENT_CHARACTER = '-';
@@ -55,27 +56,28 @@ public class IdentifierResolver {
   public static String extractIdentifierFragment(URI uri) {
     Objects.requireNonNull(uri);
     final String strUri = uri.toString();
-    final int slashIndex = strUri.lastIndexOf('/');
-    final int hashIndex = strUri.lastIndexOf('#');
+    final int slashIndex = strUri.lastIndexOf("/");
+    final int hashIndex = strUri.lastIndexOf("#");
     return strUri.substring((Math.max(slashIndex, hashIndex)) + 1);
   }
 
   /**
    * Extracts namespace from the specified URI.
    *
-   * <p>Namespace in this case means the part of the URI up to the last forward slash or hash tag,
-   * whichever comes later.
+   * <p>Namespace in this case means the part of the URI up to the last forward slash or hash
+   * tag, whichever comes later.
    *
    * @param uri URI to extract namespace from
    * @return Identifier namespace
    */
   public static String extractIdentifierNamespace(URI uri) {
     final String strUri = uri.toString();
-    final int slashIndex = strUri.lastIndexOf('/');
-    final int hashIndex = strUri.lastIndexOf('#');
+    final int slashIndex = strUri.lastIndexOf("/");
+    final int hashIndex = strUri.lastIndexOf("#");
     return strUri.substring(0, (Math.max(slashIndex, hashIndex)) + 1);
   }
 
+  @SuppressWarnings("checkstyle:ReturnCount")
   private static boolean isUri(String value) {
     try {
       if (!value.matches("^(https?|ftp|file)://.+")) {
@@ -99,8 +101,9 @@ public class IdentifierResolver {
     return generateIdentifier(config.getNamespace(), components);
   }
 
-  private URI generateIdentifier(String namespace, String... components) {
-    Objects.requireNonNull(namespace);
+  private URI generateIdentifier(String ns, String... components) {
+    Objects.requireNonNull(ns);
+    String namespace = ns;
     if (components.length == 0) {
       throw new IllegalArgumentException("Must provide at least one component for identifier "
           + "generation.");
@@ -130,10 +133,11 @@ public class IdentifierResolver {
    */
   URI resolveIdentifier(String namespace, String fragment) {
     Objects.requireNonNull(namespace);
-    if (!namespace.endsWith("/") && !namespace.endsWith("#")) {
-      namespace += "/";
+    String ns = namespace;
+    if (!ns.endsWith("/") && !ns.endsWith("#")) {
+      ns += "/";
     }
-    return URI.create(namespace + fragment);
+    return URI.create(ns + fragment);
   }
 
   /**
@@ -145,7 +149,7 @@ public class IdentifierResolver {
    * @see #resolveIdentifier(String, String)
    */
   public URI resolveUserIdentifier(String fragment) {
-    String namespace = config.getNamespace();
+    final String namespace = config.getNamespace();
     Objects.requireNonNull(namespace);
     return resolveIdentifier(namespace, fragment);
   }

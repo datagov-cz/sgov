@@ -3,7 +3,7 @@ package com.github.sgov.server.security;
 /**
  * Security-related constants.
  */
-public class SecurityConstants {
+public final class SecurityConstants {
 
   /**
    * Cookie used for the remember-me function.

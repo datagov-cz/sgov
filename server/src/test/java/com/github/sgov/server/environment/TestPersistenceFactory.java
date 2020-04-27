@@ -50,7 +50,8 @@ public class TestPersistenceFactory {
   private void init() {
     final Map<String, String> properties = MainPersistenceFactory.defaultParams();
     properties.put(ONTOLOGY_PHYSICAL_URI_KEY, confRepository.getUrl());
-    properties.put(SesameOntoDriverProperties.SESAME_USE_VOLATILE_STORAGE, Boolean.TRUE.toString());
+    properties
+        .put(SesameOntoDriverProperties.SESAME_USE_VOLATILE_STORAGE, Boolean.TRUE.toString());
     properties.put(SesameOntoDriverProperties.SESAME_USE_INFERENCE, Boolean.TRUE.toString());
     properties.put(DATA_SOURCE_CLASS, confPersistence.getDriver());
     properties.put(LANG, confPersistence.getLanguage());

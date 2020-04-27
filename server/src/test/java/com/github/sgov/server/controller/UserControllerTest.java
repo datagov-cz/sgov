@@ -62,8 +62,9 @@ class UserControllerTest extends BaseControllerTestRunner {
     final MvcResult mvcResult =
         mockMvc.perform(get(BASE_URL).accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk()).andReturn();
-    final List<UserAccount> result = readValue(mvcResult, new TypeReference<List<UserAccount>>() {
-    });
+    final List<UserAccount> result =
+        readValue(mvcResult, new TypeReference<List<UserAccount>>() {
+        });
     assertEquals(users, result);
   }
 
@@ -114,7 +115,8 @@ class UserControllerTest extends BaseControllerTestRunner {
   void disableDisablesUser() throws Exception {
     when(idResolverMock.resolveUserIdentifier(any())).thenReturn(user.getUri());
     when(userService.findRequired(user.getUri())).thenReturn(user);
-    mockMvc.perform(delete(BASE_URL + "/" + extractIdentifierFragment(user.getUri()) + "/status"))
+    mockMvc
+        .perform(delete(BASE_URL + "/" + extractIdentifierFragment(user.getUri()) + "/status"))
         .andExpect(status().isNoContent());
     verify(userService).disable(user);
   }

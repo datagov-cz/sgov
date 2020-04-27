@@ -5,7 +5,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 /**
  * Utility class for getting information about the entity - OWL class mapping.
  */
-public class EntityToOwlClassMapper {
+public final class EntityToOwlClassMapper {
 
   private EntityToOwlClassMapper() {
     throw new AssertionError();

@@ -19,6 +19,9 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+/**
+ * Filter authorizing based on JWT token.
+ */
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   private final JwtUtils jwtUtils;
@@ -45,6 +48,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   }
 
   @Override
+  @SuppressWarnings("checkstyle:ReturnCount")
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                   FilterChain chain)
       throws IOException, ServletException {
@@ -72,6 +76,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   private void refreshToken(String authToken, HttpServletResponse response) {
     final String newToken = jwtUtils.refreshToken(authToken);
-    response.setHeader(HttpHeaders.AUTHORIZATION, SecurityConstants.JWT_TOKEN_PREFIX + newToken);
+    response
+        .setHeader(HttpHeaders.AUTHORIZATION, SecurityConstants.JWT_TOKEN_PREFIX + newToken);
   }
 }

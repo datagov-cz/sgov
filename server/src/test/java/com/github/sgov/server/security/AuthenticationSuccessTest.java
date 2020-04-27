@@ -49,7 +49,8 @@ class AuthenticationSuccessTest extends BaseServiceTestRunner {
   }
 
   private void verifyLoginStatus(MockHttpServletResponse response) throws java.io.IOException {
-    final LoginStatus status = mapper.readValue(response.getContentAsString(), LoginStatus.class);
+    final LoginStatus status =
+        mapper.readValue(response.getContentAsString(), LoginStatus.class);
     assertTrue(status.isSuccess());
     assertTrue(status.isLoggedIn());
     assertEquals(person.getUsername(), status.getUsername());
@@ -65,7 +66,8 @@ class AuthenticationSuccessTest extends BaseServiceTestRunner {
   void logoutSuccessReturnsResponseContainingLoginStatus() throws Exception {
     final MockHttpServletResponse response = response();
     success.onLogoutSuccess(request(), response, generateAuthenticationToken());
-    final LoginStatus status = mapper.readValue(response.getContentAsString(), LoginStatus.class);
+    final LoginStatus status =
+        mapper.readValue(response.getContentAsString(), LoginStatus.class);
     assertTrue(status.isSuccess());
     assertFalse(status.isLoggedIn());
     assertNull(status.getUsername());

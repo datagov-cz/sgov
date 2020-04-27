@@ -67,7 +67,8 @@ class UserRepositoryServiceTest extends BaseServiceTestRunner {
   void persistThrowsValidationExceptionWhenPasswordIsNull() {
     final UserAccount user = Generator.generateUserAccount();
     user.setPassword(null);
-    final ValidationException ex = assertThrows(ValidationException.class, () -> sut.persist(user));
+    final ValidationException ex =
+        assertThrows(ValidationException.class, () -> sut.persist(user));
     assertThat(ex.getMessage(), containsString("password must not be blank"));
   }
 
@@ -75,7 +76,8 @@ class UserRepositoryServiceTest extends BaseServiceTestRunner {
   void persistThrowsValidationExceptionWhenPasswordIsEmpty() {
     final UserAccount user = Generator.generateUserAccount();
     user.setPassword("");
-    final ValidationException ex = assertThrows(ValidationException.class, () -> sut.persist(user));
+    final ValidationException ex =
+        assertThrows(ValidationException.class, () -> sut.persist(user));
     assertThat(ex.getMessage(), containsString("password must not be blank"));
   }
 
@@ -131,7 +133,8 @@ class UserRepositoryServiceTest extends BaseServiceTestRunner {
 
     user.setUsername(null);
     user.setPassword(null); // Simulate instance being loaded from repo
-    final ValidationException ex = assertThrows(ValidationException.class, () -> sut.update(user));
+    final ValidationException ex =
+        assertThrows(ValidationException.class, () -> sut.update(user));
     assertThat(ex.getMessage(), containsString("username must not be blank"));
   }
 

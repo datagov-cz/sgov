@@ -13,12 +13,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class SpringFoxConfig {
 
   /**
    * Returns Swagger_2 Docket.
-   *
-   * @return
    */
   @Bean
   public Docket api() {

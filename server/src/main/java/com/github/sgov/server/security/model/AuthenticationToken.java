@@ -6,6 +6,9 @@ import java.util.Objects;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+/**
+ * Authentication token for given authorities and user.
+ */
 public class AuthenticationToken extends AbstractAuthenticationToken implements Principal {
 
   private final SGoVUserDetails userDetails;
@@ -47,7 +50,7 @@ public class AuthenticationToken extends AbstractAuthenticationToken implements 
     if (!super.equals(o)) {
       return false;
     }
-    AuthenticationToken that = (AuthenticationToken) o;
+    final AuthenticationToken that = (AuthenticationToken) o;
     return Objects.equals(userDetails, that.userDetails);
   }
 

@@ -27,12 +27,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.topbraid.shacl.validation.ValidationReport;
 
+/**
+ * DAO for accessing workspace.
+ */
 @Slf4j
 @Repository
 public class WorkspaceDao {
 
   @Autowired
-  RepositoryConf properties;
+  private RepositoryConf properties;
 
   /**
    * Returns all workspace IRIs.
@@ -45,7 +48,8 @@ public class WorkspaceDao {
     final HttpResponse<JsonObject> response =
         Unirest.post(uri).header("Content-type", "application/sparql-query")
             .header("Accept", "application/sparql-results+json")
-            .body("SELECT ?iri WHERE { ?iri  a <" + WorkspaceVocabulary.pracovniProstor + "> }")
+            .body("SELECT ?iri WHERE { ?iri  a <" + WorkspaceVocabulary.C_PRACOVNI_PROSTOR
+                + "> }")
             .asObject(JsonObject.class);
 
     final List<String> list = new ArrayList<>();
@@ -61,9 +65,9 @@ public class WorkspaceDao {
     final QuerySolutionMap map = new QuerySolutionMap();
     map.add("workspace", ResourceFactory.createResource(workspace));
     map.add("odkazujeNaKontext",
-        ResourceFactory.createResource(WorkspaceVocabulary.odkazujeNaKontext));
+        ResourceFactory.createResource(WorkspaceVocabulary.C_ODKAZUJE_NA_KONTEXT));
     map.add("slovnikovyKontext",
-        ResourceFactory.createResource(WorkspaceVocabulary.slovnikovyKontext));
+        ResourceFactory.createResource(WorkspaceVocabulary.C_SLOVNIKOVY_KONTEXT));
     final ParameterizedSparqlString query = new ParameterizedSparqlString(
         "SELECT ?kontext WHERE { ?workspace ?odkazujeNaKontext ?kontext . ?kontext a "
             + "?slovnikovyKontext }", map);
@@ -114,7 +118,8 @@ public class WorkspaceDao {
       if (log.isDebugEnabled()) {
         log.debug(MessageFormat
             .format("    - [{0}] Node {1} failing for value {2} with message: {3} ",
-                result.getSeverity().getLocalName(), result.getFocusNode(), result.getValue(),
+                result.getSeverity().getLocalName(), result.getFocusNode(),
+                result.getValue(),
                 result.getMessage()));
       }
     });

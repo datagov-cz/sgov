@@ -36,7 +36,8 @@ class AuthenticationFailureTest extends BaseServiceTestRunner {
     final String msg = "Username not found";
     final AuthenticationException e = new UsernameNotFoundException(msg);
     failure.onAuthenticationFailure(request, response, e);
-    final LoginStatus status = mapper.readValue(response.getContentAsString(), LoginStatus.class);
+    final LoginStatus status =
+        mapper.readValue(response.getContentAsString(), LoginStatus.class);
     assertFalse(status.isSuccess());
     assertFalse(status.isLoggedIn());
     assertNull(status.getUsername());
@@ -50,7 +51,8 @@ class AuthenticationFailureTest extends BaseServiceTestRunner {
     final MockHttpServletResponse response = AuthenticationSuccessTest.response();
     final String msg = "Account is locked.";
     failure.onAuthenticationFailure(request, response, new LockedException(msg));
-    final LoginStatus status = mapper.readValue(response.getContentAsString(), LoginStatus.class);
+    final LoginStatus status =
+        mapper.readValue(response.getContentAsString(), LoginStatus.class);
     assertFalse(status.isSuccess());
     assertFalse(status.isLoggedIn());
     assertNull(status.getUsername());
@@ -64,7 +66,8 @@ class AuthenticationFailureTest extends BaseServiceTestRunner {
     final MockHttpServletResponse response = AuthenticationSuccessTest.response();
     final String msg = "Account is disabled.";
     failure.onAuthenticationFailure(request, response, new DisabledException(msg));
-    final LoginStatus status = mapper.readValue(response.getContentAsString(), LoginStatus.class);
+    final LoginStatus status =
+        mapper.readValue(response.getContentAsString(), LoginStatus.class);
     assertFalse(status.isSuccess());
     assertFalse(status.isLoggedIn());
     assertNull(status.getUsername());

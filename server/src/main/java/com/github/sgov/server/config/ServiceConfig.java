@@ -13,7 +13,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
-@ComponentScan(basePackageClasses = {Services.class})
+@ComponentScan(basePackageClasses = Services.class)
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class ServiceConfig {
 
   @Bean
@@ -36,3 +37,4 @@ public class ServiceConfig {
     return new SystemInitializer(config, userService, txManager);
   }
 }
+

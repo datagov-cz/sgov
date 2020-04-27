@@ -34,7 +34,8 @@ public class BaseControllerTestRunner {
   public void setUp(Object controller) {
     setupObjectMappers();
     this.mockMvc =
-        MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(new RestExceptionHandler())
+        MockMvcBuilders.standaloneSetup(controller)
+            .setControllerAdvice(new RestExceptionHandler())
             .setMessageConverters(createJsonLdMessageConverter(),
                 createDefaultMessageConverter(), createStringEncodingMessageConverter(),
                 createResourceMessageConverter())
@@ -68,7 +69,8 @@ public class BaseControllerTestRunner {
     final String locationHeader = result.getResponse().getHeader(HttpHeaders.LOCATION);
     assertNotNull(locationHeader);
     final String path = locationHeader.substring(0,
-        locationHeader.indexOf('?') != -1 ? locationHeader.indexOf('?') : locationHeader.length());
+        locationHeader.indexOf('?') != -1 ? locationHeader.indexOf('?') :
+            locationHeader.length());
     assertEquals("http://localhost" + expectedPath, path);
   }
 }

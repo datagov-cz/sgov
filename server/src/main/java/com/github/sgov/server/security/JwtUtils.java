@@ -25,6 +25,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+/**
+ * Utils for manipulating JWT tokens.
+ */
 @Component
 public class JwtUtils {
 
@@ -35,7 +38,8 @@ public class JwtUtils {
     this.config = config;
   }
 
-  private static String mapAuthoritiesToClaim(Collection<? extends GrantedAuthority> authorities) {
+  private static String mapAuthoritiesToClaim(
+      Collection<? extends GrantedAuthority> authorities) {
     return authorities.stream().map(GrantedAuthority::getAuthority)
         .collect(Collectors.joining(SecurityConstants.JWT_ROLE_DELIMITER));
   }

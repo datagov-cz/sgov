@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties("user")
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class UserConf {
 
   /**

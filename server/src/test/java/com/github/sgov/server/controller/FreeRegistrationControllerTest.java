@@ -32,7 +32,8 @@ class FreeRegistrationControllerTest extends BaseControllerTestRunner {
   void createUserPersistsUser() throws Exception {
     final UserAccount user = Generator.generateUserAccount();
     mockMvc
-        .perform(post("/users").content(toJson(user)).contentType(MediaType.APPLICATION_JSON_VALUE))
+        .perform(
+            post("/users").content(toJson(user)).contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
     verify(userService).persist(user);
   }

@@ -64,10 +64,12 @@ class AdminBasedRegistrationControllerTest extends BaseControllerTestRunner {
   void setUp() {
     MockitoAnnotations.initMocks(this);
     super.setupObjectMappers();
-    // WebApplicationContext is required for proper security. Otherwise, standaloneSetup could be
+    // WebApplicationContext is required for proper security. Otherwise, standaloneSetup
+    // could be
     // used
     this.mockMvc =
-        MockMvcBuilders.webAppContextSetup(context).apply(springSecurity(springSecurityFilterChain))
+        MockMvcBuilders.webAppContextSetup(context)
+            .apply(springSecurity(springSecurityFilterChain))
             .build();
   }
 
@@ -78,7 +80,8 @@ class AdminBasedRegistrationControllerTest extends BaseControllerTestRunner {
     Environment.setCurrentUser(admin);
     final UserAccount user = Generator.generateUserAccount();
     mockMvc
-        .perform(post("/users").content(toJson(user)).contentType(MediaType.APPLICATION_JSON_VALUE))
+        .perform(
+            post("/users").content(toJson(user)).contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isCreated());
     verify(userService).persist(user);
   }
@@ -89,7 +92,8 @@ class AdminBasedRegistrationControllerTest extends BaseControllerTestRunner {
     Environment.setCurrentUser(admin);
     final UserAccount user = Generator.generateUserAccount();
     mockMvc
-        .perform(post("/users").content(toJson(user)).contentType(MediaType.APPLICATION_JSON_VALUE))
+        .perform(
+            post("/users").content(toJson(user)).contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isForbidden());
     verify(userService, never()).persist(any());
   }

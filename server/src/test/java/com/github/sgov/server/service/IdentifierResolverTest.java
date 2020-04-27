@@ -92,7 +92,8 @@ class IdentifierResolverTest extends BaseServiceTestRunner {
   void resolveIdentifierAppendsSlashAndFragmentIfNamespaceDoesNotEndWithOne() {
     final String namespace = "http://onto.fel.cvut.cz/ontologies/termit/vocabulary";
     final String fragment = "metropolitan-plan";
-    assertEquals(namespace + "/" + fragment, sut.resolveIdentifier(namespace, fragment).toString());
+    assertEquals(namespace + "/" + fragment,
+        sut.resolveIdentifier(namespace, fragment).toString());
   }
 
   @Test

@@ -59,7 +59,8 @@ public class Environment {
     currentUser = user;
     final SGoVUserDetails userDetails = new SGoVUserDetails(user, new HashSet<>());
     SecurityContext context = new SecurityContextImpl();
-    context.setAuthentication(new AuthenticationToken(userDetails.getAuthorities(), userDetails));
+    context
+        .setAuthentication(new AuthenticationToken(userDetails.getAuthorities(), userDetails));
     SecurityContextHolder.setContext(context);
   }
 
@@ -104,10 +105,12 @@ public class Environment {
    * @return JSON-LD message converter
    */
   public static HttpMessageConverter<?> createJsonLdMessageConverter() {
-    final MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(
-        getJsonLdObjectMapper());
+    final MappingJackson2HttpMessageConverter converter =
+        new MappingJackson2HttpMessageConverter(
+            getJsonLdObjectMapper());
     converter
-        .setSupportedMediaTypes(Collections.singletonList(MediaType.valueOf(JsonLd.MEDIA_TYPE)));
+        .setSupportedMediaTypes(
+            Collections.singletonList(MediaType.valueOf(JsonLd.MEDIA_TYPE)));
     return converter;
   }
 

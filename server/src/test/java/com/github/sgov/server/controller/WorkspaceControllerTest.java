@@ -38,7 +38,8 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
 
   @Test
   void getAllRetrievesAllWorkspaces() throws Exception {
-    List<String> workspaces = Arrays.asList("http://example.org/test1", "http://example.org/test2");
+    List<String> workspaces =
+        Arrays.asList("http://example.org/test1", "http://example.org/test2");
 
     BDDMockito.given(workspaceDao.getAllWorkspaceIris())
         .willReturn(workspaces);

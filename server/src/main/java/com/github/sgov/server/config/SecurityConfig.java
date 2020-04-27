@@ -32,6 +32,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @ComponentScan(basePackageClasses = Security.class)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@SuppressWarnings({
+    "checkstyle:MultipleStringLiterals",
+    "checkstyle:ClassFanOutComplexity",
+    "checkstyle:MissingJavadocType"
+})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final AuthenticationProvider authenticationProvider;
@@ -54,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    * SecurityConfig.
    */
   @Autowired
+  @SuppressWarnings("checkstyle:ParameterNumber")
   public SecurityConfig(AuthenticationProvider authenticationProvider,
                         AuthenticationEntryPoint authenticationEntryPoint,
                         AuthenticationSuccess authenticationSuccessHandler,
@@ -111,7 +117,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // other clients
     // than just the UI.
     // This behavior can be restricted later.
-    final CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+    final CorsConfiguration corsConfiguration =
+        new CorsConfiguration().applyPermitDefaultValues();
     corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
     corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
     corsConfiguration.addExposedHeader(HttpHeaders.AUTHORIZATION);

@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * Provides descriptors for working with repository contexts.
  */
-public class DescriptorFactory {
+public final class DescriptorFactory {
 
   private DescriptorFactory() {
     throw new AssertionError();
@@ -26,7 +26,8 @@ public class DescriptorFactory {
   public static Descriptor userManagementDescriptor(UserAccount userAccount) {
     Objects.requireNonNull(userAccount);
     final EntityDescriptor descriptor = new EntityDescriptor(userAccount.getUri());
-    descriptor.addAttributeDescriptor(UserAccount.getPasswordField(), new EntityDescriptor(null));
+    descriptor
+        .addAttributeDescriptor(UserAccount.getPasswordField(), new EntityDescriptor(null));
     return descriptor;
   }
 }

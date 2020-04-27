@@ -77,10 +77,12 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
   void setUp() {
     MockitoAnnotations.initMocks(this);
     super.setupObjectMappers();
-    // WebApplicationContext is required for proper security. Otherwise, standaloneSetup could be
+    // WebApplicationContext is required for proper security. Otherwise, standaloneSetup
+    // could be
     // used
     this.mockMvc =
-        MockMvcBuilders.webAppContextSetup(context).apply(springSecurity(springSecurityFilterChain))
+        MockMvcBuilders.webAppContextSetup(context)
+            .apply(springSecurity(springSecurityFilterChain))
             .build();
   }
 
@@ -124,7 +126,8 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
     Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
     final UserAccount toEnable = Generator.generateUserAccountWithPassword();
 
-    mockMvc.perform(post(BASE_URL + "/" + extractIdentifierFragment(toEnable.getUri()) + "/status"))
+    mockMvc.perform(
+        post(BASE_URL + "/" + extractIdentifierFragment(toEnable.getUri()) + "/status"))
         .andExpect(status().isForbidden());
     verify(userService, never()).enable(any());
   }
@@ -136,7 +139,8 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
     final UserAccount toDisable = Generator.generateUserAccountWithPassword();
 
     mockMvc
-        .perform(delete(BASE_URL + "/" + extractIdentifierFragment(toDisable.getUri()) + "/status"))
+        .perform(
+            delete(BASE_URL + "/" + extractIdentifierFragment(toDisable.getUri()) + "/status"))
         .andExpect(status().isForbidden());
     verify(userService, never()).disable(any());
   }

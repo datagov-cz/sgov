@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @Import(MainPersistenceFactory.class)
 @ComponentScan(basePackageClasses = Persistence.class)
+@SuppressWarnings("checkstyle:MissingJavadocType")
 public class PersistenceConfig {
 
   @Bean

@@ -12,7 +12,10 @@ import java.util.Optional;
 
 /**
  * Base implementation of the generic DAO API.
+ *
+ * @param <T> the entity class this DAO manages
  */
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public abstract class BaseDao<T extends HasIdentifier> implements GenericDao<T> {
 
   protected final Class<T> type;
