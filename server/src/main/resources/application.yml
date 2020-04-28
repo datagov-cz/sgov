@@ -1,8 +1,16 @@
 spring:
-management.endpoint.shutdown.enabled: true
+#  main.allow-bean-definition-overriding: true
+
+jwt.secretKey: SecretKey
+
 server.port: 49080
-backend:
-  repositoryUrl: http://onto.fel.cvut.cz:7200/repositories/kodi-pracovni-prostor-sample
+repository:
+  url: https://onto.fel.cvut.cz:7200/repositories/kodi-pracovni-prostor-validace
+
+persistence:
+  driver: cz.cvut.kbss.ontodriver.sesame.SesameDataSource
+  language: cs
+
 logging:
   level:
     root: INFO

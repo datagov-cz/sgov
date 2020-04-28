@@ -7,66 +7,68 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.github.sgov.server.data.WorkspaceDao;
+import com.github.sgov.server.dao.WorkspaceDao;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.topbraid.shacl.validation.ValidationReport;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(WorkspaceController.class)
-class WorkspaceControllerTest {
+class WorkspaceControllerTest extends BaseControllerTestRunner {
 
-  @Autowired
-  private MockMvc mvc;
+    @InjectMocks
+    private WorkspaceController sut;
 
-  @MockBean
-  private WorkspaceDao workspaceDao;
+    @Mock
+    private WorkspaceDao workspaceDao;
 
-  @Mock
-  private ValidationReport report;
+    @Mock
+    private ValidationReport report;
 
-  @Test
-  void getAllRetrievesAllWorkspaces() throws Exception {
-    List<String> workspaces = Arrays.asList("http://example.org/test1", "http://example.org/test2");
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        super.setUp(sut);
+    }
 
-    BDDMockito.given(workspaceDao.getAllWorkspaceIris())
-        .willReturn(workspaces);
+    @Test
+    void getAllRetrievesAllWorkspaces() throws Exception {
+        List<String> workspaces =
+            Arrays.asList("http://example.org/test1", "http://example.org/test2");
 
-    mvc.perform(get("/workspace/all")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)))
-        .andExpect(jsonPath("$[0]", is("http://example.org/test1")))
-        .andExpect(jsonPath("$[1]", is("http://example.org/test2")));
-  }
+        BDDMockito.given(workspaceDao.getAllWorkspaceIris())
+            .willReturn(workspaces);
 
-  @Test
-  void validateWithoutIriThrows400() throws Exception {
-    BDDMockito.given(workspaceDao.validateWorkspace(anyString()))
-        .willReturn(report);
+        mockMvc.perform(get("/workspace/all")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0]", is("http://example.org/test1")))
+            .andExpect(jsonPath("$[1]", is("http://example.org/test2")));
+    }
 
-    mvc.perform(get("/workspace/validate"))
-        .andExpect(status().is4xxClientError());
-  }
+    @Test
+    void validateWithoutIriThrows400() throws Exception {
+        BDDMockito.given(workspaceDao.validateWorkspace(anyString()))
+            .willReturn(report);
 
-  @Test
-  void validateWithIriSucceeds() throws Exception {
-    BDDMockito.given(workspaceDao.validateWorkspace(anyString()))
-        .willReturn(report);
+        mockMvc.perform(get("/workspace/validate"))
+            .andExpect(status().is4xxClientError());
+    }
 
-    mvc.perform(get("/workspace/validate")
-        .param("iri", "http://example.org/test")
-        .header("Accept-language", "cs"))
-        .andExpect(status().isOk());
-  }
+    @Test
+    void validateWithIriSucceeds() throws Exception {
+        BDDMockito.given(workspaceDao.validateWorkspace(anyString()))
+            .willReturn(report);
+
+        mockMvc.perform(get("/workspace/validate")
+            .param("iri", "http://example.org/test")
+            .header("Accept-language", "cs"))
+            .andExpect(status().isOk());
+    }
 }
