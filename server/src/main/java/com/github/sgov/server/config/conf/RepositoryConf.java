@@ -14,12 +14,12 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RepositoryConf {
 
-  /**
-   * URL of the main application repository.
-   */
-  private String url;
+    /**
+     * URL of the main application repository.
+     */
+    private String url;
 
-  private String username;
+    private String username;
 
-  private String password;
+    private String password;
 }

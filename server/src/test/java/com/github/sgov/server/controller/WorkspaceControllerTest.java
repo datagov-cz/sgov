@@ -21,54 +21,54 @@ import org.topbraid.shacl.validation.ValidationReport;
 
 class WorkspaceControllerTest extends BaseControllerTestRunner {
 
-  @InjectMocks
-  private WorkspaceController sut;
+    @InjectMocks
+    private WorkspaceController sut;
 
-  @Mock
-  private WorkspaceDao workspaceDao;
+    @Mock
+    private WorkspaceDao workspaceDao;
 
-  @Mock
-  private ValidationReport report;
+    @Mock
+    private ValidationReport report;
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.initMocks(this);
-    super.setUp(sut);
-  }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        super.setUp(sut);
+    }
 
-  @Test
-  void getAllRetrievesAllWorkspaces() throws Exception {
-    List<String> workspaces =
-        Arrays.asList("http://example.org/test1", "http://example.org/test2");
+    @Test
+    void getAllRetrievesAllWorkspaces() throws Exception {
+        List<String> workspaces =
+            Arrays.asList("http://example.org/test1", "http://example.org/test2");
 
-    BDDMockito.given(workspaceDao.getAllWorkspaceIris())
-        .willReturn(workspaces);
+        BDDMockito.given(workspaceDao.getAllWorkspaceIris())
+            .willReturn(workspaces);
 
-    mockMvc.perform(get("/workspace/all")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)))
-        .andExpect(jsonPath("$[0]", is("http://example.org/test1")))
-        .andExpect(jsonPath("$[1]", is("http://example.org/test2")));
-  }
+        mockMvc.perform(get("/workspace/all")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0]", is("http://example.org/test1")))
+            .andExpect(jsonPath("$[1]", is("http://example.org/test2")));
+    }
 
-  @Test
-  void validateWithoutIriThrows400() throws Exception {
-    BDDMockito.given(workspaceDao.validateWorkspace(anyString()))
-        .willReturn(report);
+    @Test
+    void validateWithoutIriThrows400() throws Exception {
+        BDDMockito.given(workspaceDao.validateWorkspace(anyString()))
+            .willReturn(report);
 
-    mockMvc.perform(get("/workspace/validate"))
-        .andExpect(status().is4xxClientError());
-  }
+        mockMvc.perform(get("/workspace/validate"))
+            .andExpect(status().is4xxClientError());
+    }
 
-  @Test
-  void validateWithIriSucceeds() throws Exception {
-    BDDMockito.given(workspaceDao.validateWorkspace(anyString()))
-        .willReturn(report);
+    @Test
+    void validateWithIriSucceeds() throws Exception {
+        BDDMockito.given(workspaceDao.validateWorkspace(anyString()))
+            .willReturn(report);
 
-    mockMvc.perform(get("/workspace/validate")
-        .param("iri", "http://example.org/test")
-        .header("Accept-language", "cs"))
-        .andExpect(status().isOk());
-  }
+        mockMvc.perform(get("/workspace/validate")
+            .param("iri", "http://example.org/test")
+            .header("Accept-language", "cs"))
+            .andExpect(status().isOk());
+    }
 }

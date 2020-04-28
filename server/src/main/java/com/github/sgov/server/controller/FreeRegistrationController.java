@@ -26,24 +26,24 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Free Registration")
 public class FreeRegistrationController {
 
-  private static final Logger LOG = LoggerFactory.getLogger(FreeRegistrationController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FreeRegistrationController.class);
 
-  private final UserService userService;
+    private final UserService userService;
 
-  @Autowired
-  public FreeRegistrationController(UserService userService) {
-    this.userService = userService;
-    LOG.debug("Instantiating free registration controller.");
-  }
+    @Autowired
+    public FreeRegistrationController(UserService userService) {
+        this.userService = userService;
+        LOG.debug("Instantiating free registration controller.");
+    }
 
-  /**
-   * Creates a new user.
-   */
-  @PreAuthorize("permitAll()")
-  @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
-  public ResponseEntity<Void> createUser(@RequestBody UserAccount user) {
-    userService.persist(user);
-    LOG.info("User {} successfully registered.", user);
-    return new ResponseEntity<>(HttpStatus.CREATED);
-  }
+    /**
+     * Creates a new user.
+     */
+    @PreAuthorize("permitAll()")
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
+    public ResponseEntity<Void> createUser(@RequestBody UserAccount user) {
+        userService.persist(user);
+        LOG.info("User {} successfully registered.", user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 }

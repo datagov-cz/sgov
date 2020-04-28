@@ -9,19 +9,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class Listener {
 
-  private UserAccount user;
+    private UserAccount user;
 
-  public UserAccount getUser() {
-    return user;
-  }
+    public UserAccount getUser() {
+        return user;
+    }
 
-  @EventListener
-  public void onSuccess(LoginSuccessEvent event) {
-    this.user = event.getUser();
-  }
+    @EventListener
+    public void onSuccess(LoginSuccessEvent event) {
+        this.user = event.getUser();
+    }
 
-  @EventListener
-  public void onFailure(LoginFailureEvent event) {
-    this.user = event.getUser();
-  }
+    @EventListener
+    public void onFailure(LoginFailureEvent event) {
+        this.user = event.getUser();
+    }
 }

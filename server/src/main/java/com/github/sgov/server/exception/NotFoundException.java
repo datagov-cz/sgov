@@ -5,11 +5,11 @@ package com.github.sgov.server.exception;
  */
 public class NotFoundException extends SGoVException {
 
-  public NotFoundException(String message) {
-    super(message);
-  }
+    public NotFoundException(String message) {
+        super(message);
+    }
 
-  public static NotFoundException create(String resourceName, Object identifier) {
-    return new NotFoundException(resourceName + " identified by " + identifier + " not found.");
-  }
+    public static NotFoundException create(String resourceName, Object identifier) {
+        return new NotFoundException(resourceName + " identified by " + identifier + " not found.");
+    }
 }

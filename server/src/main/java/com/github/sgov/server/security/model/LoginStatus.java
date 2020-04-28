@@ -12,12 +12,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class LoginStatus {
 
-  private boolean loggedIn;
-  private String username;
-  private String errorMessage;
-  /**
-   * Represents identifier of the error, which can be resolved to a localized message in the JS UI.
-   */
-  private String errorId;
-  private boolean success;
+    private boolean loggedIn;
+    private String username;
+    private String errorMessage;
+    /**
+     * Represents identifier of the error, which can be resolved to a localized message in the JS
+     * UI.
+     */
+    private String errorId;
+    private boolean success;
 }

@@ -27,69 +27,69 @@ import org.springframework.stereotype.Component;
 public class OntologicalAuthenticationProvider
     implements AuthenticationProvider, ApplicationEventPublisherAware {
 
-  private static final Logger LOG =
-      LoggerFactory.getLogger(OntologicalAuthenticationProvider.class);
+    private static final Logger LOG =
+        LoggerFactory.getLogger(OntologicalAuthenticationProvider.class);
 
-  private final SecurityUtils securityUtils;
+    private final SecurityUtils securityUtils;
 
-  private final SGoVUserDetailsService userDetailsService;
+    private final SGoVUserDetailsService userDetailsService;
 
-  private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-  private ApplicationEventPublisher eventPublisher;
+    private ApplicationEventPublisher eventPublisher;
 
-  /**
-   * OntologicalAuthenticationProvider.
-   */
-  @Autowired
-  public OntologicalAuthenticationProvider(SecurityUtils securityUtils,
-                                           SGoVUserDetailsService userDetailsService,
-                                           PasswordEncoder passwordEncoder) {
-    this.securityUtils = securityUtils;
-    this.userDetailsService = userDetailsService;
-    this.passwordEncoder = passwordEncoder;
-  }
-
-  private static void verifyUsernameNotEmpty(String username) {
-    if (username.isEmpty()) {
-      throw new UsernameNotFoundException("Username cannot be empty.");
+    /**
+     * OntologicalAuthenticationProvider.
+     */
+    @Autowired
+    public OntologicalAuthenticationProvider(SecurityUtils securityUtils,
+                                             SGoVUserDetailsService userDetailsService,
+                                             PasswordEncoder passwordEncoder) {
+        this.securityUtils = securityUtils;
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
     }
-  }
 
-  @Override
-  public Authentication authenticate(Authentication authentication) {
-    final String username = authentication.getPrincipal().toString();
-    verifyUsernameNotEmpty(username);
-    LOG.debug("Authenticating user {}", username);
-
-    final SGoVUserDetails userDetails = userDetailsService.loadUserByUsername(username);
-    SecurityUtils.verifyAccountStatus(userDetails.getUser());
-    final String password = (String) authentication.getCredentials();
-    if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-      onLoginFailure(userDetails.getUser());
-      throw new BadCredentialsException("Provided credentials don't match.");
+    private static void verifyUsernameNotEmpty(String username) {
+        if (username.isEmpty()) {
+            throw new UsernameNotFoundException("Username cannot be empty.");
+        }
     }
-    onLoginSuccess(userDetails.getUser());
-    return securityUtils.setCurrentUser(userDetails);
-  }
 
-  private void onLoginFailure(UserAccount user) {
-    user.erasePassword();
-    eventPublisher.publishEvent(new LoginFailureEvent(user));
-  }
+    @Override
+    public Authentication authenticate(Authentication authentication) {
+        final String username = authentication.getPrincipal().toString();
+        verifyUsernameNotEmpty(username);
+        LOG.debug("Authenticating user {}", username);
 
-  private void onLoginSuccess(UserAccount user) {
-    eventPublisher.publishEvent(new LoginSuccessEvent(user));
-  }
+        final SGoVUserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        SecurityUtils.verifyAccountStatus(userDetails.getUser());
+        final String password = (String) authentication.getCredentials();
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            onLoginFailure(userDetails.getUser());
+            throw new BadCredentialsException("Provided credentials don't match.");
+        }
+        onLoginSuccess(userDetails.getUser());
+        return securityUtils.setCurrentUser(userDetails);
+    }
 
-  @Override
-  public boolean supports(Class<?> cls) {
-    return UsernamePasswordAuthenticationToken.class.isAssignableFrom(cls)
-        || AuthenticationToken.class.isAssignableFrom(cls);
-  }
+    private void onLoginFailure(UserAccount user) {
+        user.erasePassword();
+        eventPublisher.publishEvent(new LoginFailureEvent(user));
+    }
 
-  @Override
-  public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
-    this.eventPublisher = eventPublisher;
-  }
+    private void onLoginSuccess(UserAccount user) {
+        eventPublisher.publishEvent(new LoginSuccessEvent(user));
+    }
+
+    @Override
+    public boolean supports(Class<?> cls) {
+        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(cls)
+            || AuthenticationToken.class.isAssignableFrom(cls);
+    }
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
 }

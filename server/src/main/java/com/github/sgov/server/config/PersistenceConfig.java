@@ -19,14 +19,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class PersistenceConfig {
 
-  @Bean
-  public DelegatingEntityManager entityManager() {
-    return new DelegatingEntityManager();
-  }
+    @Bean
+    public DelegatingEntityManager entityManager() {
+        return new DelegatingEntityManager();
+    }
 
-  @Bean(name = "txManager")
-  public PlatformTransactionManager transactionManager(EntityManagerFactory emf,
-                                                       DelegatingEntityManager emProxy) {
-    return new JopaTransactionManager(emf, emProxy);
-  }
+    @Bean(name = "txManager")
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf,
+                                                         DelegatingEntityManager emProxy) {
+        return new JopaTransactionManager(emf, emProxy);
+    }
 }

@@ -13,21 +13,21 @@ import org.junit.jupiter.api.Test;
 
 class DescriptorFactoryTest {
 
-  private UserAccount modelObject;
+    private UserAccount modelObject;
 
-  private FieldSpecification passwordFieldSpec;
+    private FieldSpecification passwordFieldSpec;
 
-  @BeforeEach
-  void setUp() {
-    this.modelObject = Generator.generateUserAccount();
-    this.passwordFieldSpec = mock(FieldSpecification.class);
-    when(passwordFieldSpec.getJavaField()).thenReturn(UserAccount.getPasswordField());
-  }
+    @BeforeEach
+    void setUp() {
+        this.modelObject = Generator.generateUserAccount();
+        this.passwordFieldSpec = mock(FieldSpecification.class);
+        when(passwordFieldSpec.getJavaField()).thenReturn(UserAccount.getPasswordField());
+    }
 
-  @Test
-  void userDescriptorCreatesSimpleUserDescriptor() {
-    final Descriptor result = DescriptorFactory.userManagementDescriptor(modelObject);
-    assertEquals(modelObject.getUri(), result.getContext());
-    assertEquals(modelObject.getUri(), result.getAttributeContext(passwordFieldSpec));
-  }
+    @Test
+    void userDescriptorCreatesSimpleUserDescriptor() {
+        final Descriptor result = DescriptorFactory.userManagementDescriptor(modelObject);
+        assertEquals(modelObject.getUri(), result.getContext());
+        assertEquals(modelObject.getUri(), result.getAttributeContext(passwordFieldSpec));
+    }
 }

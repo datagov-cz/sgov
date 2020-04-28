@@ -22,55 +22,55 @@ import org.springframework.web.accept.ContentNegotiationManager;
  */
 public class BaseControllerTestRunner {
 
-  ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
-  ObjectMapper jsonLdObjectMapper;
+    ObjectMapper jsonLdObjectMapper;
 
-  MockMvc mockMvc;
+    MockMvc mockMvc;
 
-  /**
-   * Sets up the controller.
-   */
-  public void setUp(Object controller) {
-    setupObjectMappers();
-    this.mockMvc =
-        MockMvcBuilders.standaloneSetup(controller)
-            .setControllerAdvice(new RestExceptionHandler())
-            .setMessageConverters(createJsonLdMessageConverter(),
-                createDefaultMessageConverter(), createStringEncodingMessageConverter(),
-                createResourceMessageConverter())
-            .setUseSuffixPatternMatch(false)
-            .setContentNegotiationManager(new ContentNegotiationManager())
-            .build();
-  }
+    /**
+     * Sets up the controller.
+     */
+    public void setUp(Object controller) {
+        setupObjectMappers();
+        this.mockMvc =
+            MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new RestExceptionHandler())
+                .setMessageConverters(createJsonLdMessageConverter(),
+                    createDefaultMessageConverter(), createStringEncodingMessageConverter(),
+                    createResourceMessageConverter())
+                .setUseSuffixPatternMatch(false)
+                .setContentNegotiationManager(new ContentNegotiationManager())
+                .build();
+    }
 
-  void setupObjectMappers() {
-    this.objectMapper = Environment.getObjectMapper();
-    this.jsonLdObjectMapper = Environment.getJsonLdObjectMapper();
-  }
+    void setupObjectMappers() {
+        this.objectMapper = Environment.getObjectMapper();
+        this.jsonLdObjectMapper = Environment.getJsonLdObjectMapper();
+    }
 
-  String toJson(Object object) throws Exception {
-    return objectMapper.writeValueAsString(object);
-  }
+    String toJson(Object object) throws Exception {
+        return objectMapper.writeValueAsString(object);
+    }
 
-  String toJsonLd(Object object) throws Exception {
-    return jsonLdObjectMapper.writeValueAsString(object);
-  }
+    String toJsonLd(Object object) throws Exception {
+        return jsonLdObjectMapper.writeValueAsString(object);
+    }
 
-  <T> T readValue(MvcResult result, Class<T> targetType) throws Exception {
-    return objectMapper.readValue(result.getResponse().getContentAsByteArray(), targetType);
-  }
+    <T> T readValue(MvcResult result, Class<T> targetType) throws Exception {
+        return objectMapper.readValue(result.getResponse().getContentAsByteArray(), targetType);
+    }
 
-  <T> T readValue(MvcResult result, TypeReference<T> targetType) throws Exception {
-    return objectMapper.readValue(result.getResponse().getContentAsByteArray(), targetType);
-  }
+    <T> T readValue(MvcResult result, TypeReference<T> targetType) throws Exception {
+        return objectMapper.readValue(result.getResponse().getContentAsByteArray(), targetType);
+    }
 
-  void verifyLocationEquals(String expectedPath, MvcResult result) {
-    final String locationHeader = result.getResponse().getHeader(HttpHeaders.LOCATION);
-    assertNotNull(locationHeader);
-    final String path = locationHeader.substring(0,
-        locationHeader.indexOf('?') != -1 ? locationHeader.indexOf('?') :
-            locationHeader.length());
-    assertEquals("http://localhost" + expectedPath, path);
-  }
+    void verifyLocationEquals(String expectedPath, MvcResult result) {
+        final String locationHeader = result.getResponse().getHeader(HttpHeaders.LOCATION);
+        assertNotNull(locationHeader);
+        final String path = locationHeader.substring(0,
+            locationHeader.indexOf('?') != -1 ? locationHeader.indexOf('?') :
+                locationHeader.length());
+        assertEquals("http://localhost" + expectedPath, path);
+    }
 }

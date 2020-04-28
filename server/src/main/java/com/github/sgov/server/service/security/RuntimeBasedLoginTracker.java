@@ -27,45 +27,45 @@ import org.springframework.context.ApplicationEventPublisherAware;
  */
 public class RuntimeBasedLoginTracker implements LoginTracker, ApplicationEventPublisherAware {
 
-  private static final Logger LOG = LoggerFactory.getLogger(RuntimeBasedLoginTracker.class);
-  private final Map<URI, AtomicInteger> counter = new ConcurrentHashMap<>();
-  private ApplicationEventPublisher eventPublisher;
+    private static final Logger LOG = LoggerFactory.getLogger(RuntimeBasedLoginTracker.class);
+    private final Map<URI, AtomicInteger> counter = new ConcurrentHashMap<>();
+    private ApplicationEventPublisher eventPublisher;
 
-  @Override
-  public void onLoginFailure(LoginFailureEvent event) {
-    final UserAccount user = event.getUser();
-    if (!counter.containsKey(user.getUri())) {
-      counter.putIfAbsent(user.getUri(), new AtomicInteger());
+    @Override
+    public void onLoginFailure(LoginFailureEvent event) {
+        final UserAccount user = event.getUser();
+        if (!counter.containsKey(user.getUri())) {
+            counter.putIfAbsent(user.getUri(), new AtomicInteger());
+        }
+        final AtomicInteger cnt = counter.get(user.getUri());
+        final int attempts = cnt.incrementAndGet();
+        if (attempts > SecurityConstants.MAX_LOGIN_ATTEMPTS) {
+            emitThresholdExceeded(user);
+        }
     }
-    final AtomicInteger cnt = counter.get(user.getUri());
-    final int attempts = cnt.incrementAndGet();
-    if (attempts > SecurityConstants.MAX_LOGIN_ATTEMPTS) {
-      emitThresholdExceeded(user);
+
+    private void emitThresholdExceeded(UserAccount user) {
+        if (counter.get(user.getUri()).get() > SecurityConstants.MAX_LOGIN_ATTEMPTS + 1) {
+            // Do not emit multiple times
+            return;
+        }
+        LOG.warn("Unsuccessful login attempts limit exceeded by user {}. Locking the account.",
+            user);
+        eventPublisher.publishEvent(new LoginAttemptsThresholdExceeded(user));
     }
-  }
 
-  private void emitThresholdExceeded(UserAccount user) {
-    if (counter.get(user.getUri()).get() > SecurityConstants.MAX_LOGIN_ATTEMPTS + 1) {
-      // Do not emit multiple times
-      return;
+    @Override
+    public void onLoginSuccess(LoginSuccessEvent event) {
+        final UserAccount user = event.getUser();
+        Objects.requireNonNull(user);
+        counter.computeIfPresent(user.getUri(), (uri, attempts) -> {
+            attempts.set(0);
+            return attempts;
+        });
     }
-    LOG.warn("Unsuccessful login attempts limit exceeded by user {}. Locking the account.",
-        user);
-    eventPublisher.publishEvent(new LoginAttemptsThresholdExceeded(user));
-  }
 
-  @Override
-  public void onLoginSuccess(LoginSuccessEvent event) {
-    final UserAccount user = event.getUser();
-    Objects.requireNonNull(user);
-    counter.computeIfPresent(user.getUri(), (uri, attempts) -> {
-      attempts.set(0);
-      return attempts;
-    });
-  }
-
-  @Override
-  public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
-    this.eventPublisher = eventPublisher;
-  }
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
 }

@@ -116,8 +116,8 @@ public class UserAccount extends AbstractUser {
   }
 
   /**
-   * Transforms this security-related {@code UserAccount} instance to a domain-specific {@code User}
-   * instance.
+   * Transforms this security-related {@code UserAccount} instance to a domain-specific {@code
+   * User} instance.
    *
    * @return new user instance based on this account
    */

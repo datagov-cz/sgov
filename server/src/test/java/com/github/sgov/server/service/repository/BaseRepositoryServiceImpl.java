@@ -8,16 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseRepositoryServiceImpl extends BaseRepositoryService<UserAccount> {
 
-  private final UserAccountDao userAccountDao;
+    private final UserAccountDao userAccountDao;
 
-  @Autowired
-  public BaseRepositoryServiceImpl(UserAccountDao userAccountDao, Validator validator) {
-    super(validator);
-    this.userAccountDao = userAccountDao;
-  }
+    @Autowired
+    public BaseRepositoryServiceImpl(UserAccountDao userAccountDao, Validator validator) {
+        super(validator);
+        this.userAccountDao = userAccountDao;
+    }
 
-  @Override
-  protected GenericDao<UserAccount> getPrimaryDao() {
-    return userAccountDao;
-  }
+    @Override
+    protected GenericDao<UserAccount> getPrimaryDao() {
+        return userAccountDao;
+    }
 }

@@ -16,23 +16,23 @@ import org.topbraid.shacl.validation.ValidationReport;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class JacksonConfig {
 
-  /**
-   * Generates an object mapper. It is made RequestScope in order to use Accept-language inside the
-   * serializer.
-   *
-   * @param request injected request to get Accept-language header.
-   * @return Object mapper for serializing ValidationReport
-   */
-  @Bean
-  @RequestScope
-  public ObjectMapper objectMapper(@Autowired HttpServletRequest request) {
-    final ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
-    final SimpleModule module = new SimpleModule();
-    module.addSerializer(ValidationReport.class, new ValidationReportSerializer(
-        request.getLocale().toLanguageTag()));
-    mapper.registerModule(module);
-    return mapper;
-  }
+    /**
+     * Generates an object mapper. It is made RequestScope in order to use Accept-language inside
+     * the serializer.
+     *
+     * @param request injected request to get Accept-language header.
+     * @return Object mapper for serializing ValidationReport
+     */
+    @Bean
+    @RequestScope
+    public ObjectMapper objectMapper(@Autowired HttpServletRequest request) {
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
+        final SimpleModule module = new SimpleModule();
+        module.addSerializer(ValidationReport.class, new ValidationReportSerializer(
+            request.getLocale().toLanguageTag()));
+        mapper.registerModule(module);
+        return mapper;
+    }
 }

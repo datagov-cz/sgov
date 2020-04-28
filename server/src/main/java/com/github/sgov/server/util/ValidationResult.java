@@ -14,22 +14,22 @@ import javax.validation.ConstraintViolation;
  */
 public final class ValidationResult<T> implements Serializable {
 
-  private final Collection<ConstraintViolation<T>> violations;
+    private final Collection<ConstraintViolation<T>> violations;
 
-  private ValidationResult(Collection<ConstraintViolation<T>> violations) {
-    this.violations = violations;
-  }
+    private ValidationResult(Collection<ConstraintViolation<T>> violations) {
+        this.violations = violations;
+    }
 
-  public static <T> ValidationResult<T> of(Collection<ConstraintViolation<T>> violations) {
-    return new ValidationResult<>(violations);
-  }
+    public static <T> ValidationResult<T> of(Collection<ConstraintViolation<T>> violations) {
+        return new ValidationResult<>(violations);
+    }
 
-  public Collection<ConstraintViolation<T>> getViolations() {
-    return violations;
-  }
+    public Collection<ConstraintViolation<T>> getViolations() {
+        return violations;
+    }
 
-  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-  public boolean isValid() {
-    return violations.isEmpty();
-  }
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean isValid() {
+        return violations.isEmpty();
+    }
 }

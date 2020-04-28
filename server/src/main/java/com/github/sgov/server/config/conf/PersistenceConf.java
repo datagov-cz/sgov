@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class PersistenceConf {
 
-  /**
-   * OntoDriver class for the repository.
-   */
-  private String driver;
+    /**
+     * OntoDriver class for the repository.
+     */
+    private String driver;
 
-  /**
-   * Language used to store strings in the repository (persistence unit language).
-   */
-  private String language = "en";
+    /**
+     * Language used to store strings in the repository (persistence unit language).
+     */
+    private String language = "en";
 }

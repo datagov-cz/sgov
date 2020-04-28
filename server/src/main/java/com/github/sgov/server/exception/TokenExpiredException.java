@@ -5,7 +5,7 @@ package com.github.sgov.server.exception;
  */
 public class TokenExpiredException extends JwtException {
 
-  public TokenExpiredException(String message) {
-    super(message);
-  }
+    public TokenExpiredException(String message) {
+        super(message);
+    }
 }

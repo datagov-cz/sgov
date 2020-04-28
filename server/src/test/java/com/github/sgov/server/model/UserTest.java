@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 class UserTest {
 
-  private User sut = new User();
+    private User sut = new User();
 
-  @Test
-  void removeTypeHandlesNullTypesAttribute() {
-    sut.removeType(Vocabulary.s_c_administrator);
-  }
+    @Test
+    void removeTypeHandlesNullTypesAttribute() {
+        sut.removeType(Vocabulary.s_c_administrator);
+    }
 }

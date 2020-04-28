@@ -13,14 +13,14 @@ import org.springframework.mock.web.MockHttpServletRequest;
 @ComponentScan(basePackageClasses = {Security.class})
 public class TestSecurityConfig {
 
-  @Bean
-  public HttpServletRequest request() {
-    return new MockHttpServletRequest();
-  }
+    @Bean
+    public HttpServletRequest request() {
+        return new MockHttpServletRequest();
+    }
 
-  @Bean
-  public ObjectMapper objectMapper() {
-    return Environment.getObjectMapper();
-  }
+    @Bean
+    public ObjectMapper objectMapper() {
+        return Environment.getObjectMapper();
+    }
 
 }

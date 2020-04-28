@@ -23,55 +23,55 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = {TestSecurityConfig.class})
 class AuthenticationFailureTest extends BaseServiceTestRunner {
 
-  @Autowired
-  private AuthenticationFailure failure;
+    @Autowired
+    private AuthenticationFailure failure;
 
-  @Autowired
-  private ObjectMapper mapper;
+    @Autowired
+    private ObjectMapper mapper;
 
-  @Test
-  void authenticationFailureReturnsLoginStatusWithErrorInfoOnUsernameNotFound() throws Exception {
-    final MockHttpServletRequest request = AuthenticationSuccessTest.request();
-    final MockHttpServletResponse response = AuthenticationSuccessTest.response();
-    final String msg = "Username not found";
-    final AuthenticationException e = new UsernameNotFoundException(msg);
-    failure.onAuthenticationFailure(request, response, e);
-    final LoginStatus status =
-        mapper.readValue(response.getContentAsString(), LoginStatus.class);
-    assertFalse(status.isSuccess());
-    assertFalse(status.isLoggedIn());
-    assertNull(status.getUsername());
-    assertEquals(msg, status.getErrorMessage());
-    assertEquals("login.error", status.getErrorId());
-  }
+    @Test
+    void authenticationFailureReturnsLoginStatusWithErrorInfoOnUsernameNotFound() throws Exception {
+        final MockHttpServletRequest request = AuthenticationSuccessTest.request();
+        final MockHttpServletResponse response = AuthenticationSuccessTest.response();
+        final String msg = "Username not found";
+        final AuthenticationException e = new UsernameNotFoundException(msg);
+        failure.onAuthenticationFailure(request, response, e);
+        final LoginStatus status =
+            mapper.readValue(response.getContentAsString(), LoginStatus.class);
+        assertFalse(status.isSuccess());
+        assertFalse(status.isLoggedIn());
+        assertNull(status.getUsername());
+        assertEquals(msg, status.getErrorMessage());
+        assertEquals("login.error", status.getErrorId());
+    }
 
-  @Test
-  void authenticationFailureReturnsLoginStatusWithErrorInfoOnAccountLocked() throws Exception {
-    final MockHttpServletRequest request = AuthenticationSuccessTest.request();
-    final MockHttpServletResponse response = AuthenticationSuccessTest.response();
-    final String msg = "Account is locked.";
-    failure.onAuthenticationFailure(request, response, new LockedException(msg));
-    final LoginStatus status =
-        mapper.readValue(response.getContentAsString(), LoginStatus.class);
-    assertFalse(status.isSuccess());
-    assertFalse(status.isLoggedIn());
-    assertNull(status.getUsername());
-    assertEquals(msg, status.getErrorMessage());
-    assertEquals("login.locked", status.getErrorId());
-  }
+    @Test
+    void authenticationFailureReturnsLoginStatusWithErrorInfoOnAccountLocked() throws Exception {
+        final MockHttpServletRequest request = AuthenticationSuccessTest.request();
+        final MockHttpServletResponse response = AuthenticationSuccessTest.response();
+        final String msg = "Account is locked.";
+        failure.onAuthenticationFailure(request, response, new LockedException(msg));
+        final LoginStatus status =
+            mapper.readValue(response.getContentAsString(), LoginStatus.class);
+        assertFalse(status.isSuccess());
+        assertFalse(status.isLoggedIn());
+        assertNull(status.getUsername());
+        assertEquals(msg, status.getErrorMessage());
+        assertEquals("login.locked", status.getErrorId());
+    }
 
-  @Test
-  void authenticationFailureReturnsLoginStatusWithErrorInfoOnAccountDisabled() throws Exception {
-    final MockHttpServletRequest request = AuthenticationSuccessTest.request();
-    final MockHttpServletResponse response = AuthenticationSuccessTest.response();
-    final String msg = "Account is disabled.";
-    failure.onAuthenticationFailure(request, response, new DisabledException(msg));
-    final LoginStatus status =
-        mapper.readValue(response.getContentAsString(), LoginStatus.class);
-    assertFalse(status.isSuccess());
-    assertFalse(status.isLoggedIn());
-    assertNull(status.getUsername());
-    assertEquals(msg, status.getErrorMessage());
-    assertEquals("login.disabled", status.getErrorId());
-  }
+    @Test
+    void authenticationFailureReturnsLoginStatusWithErrorInfoOnAccountDisabled() throws Exception {
+        final MockHttpServletRequest request = AuthenticationSuccessTest.request();
+        final MockHttpServletResponse response = AuthenticationSuccessTest.response();
+        final String msg = "Account is disabled.";
+        failure.onAuthenticationFailure(request, response, new DisabledException(msg));
+        final LoginStatus status =
+            mapper.readValue(response.getContentAsString(), LoginStatus.class);
+        assertFalse(status.isSuccess());
+        assertFalse(status.isLoggedIn());
+        assertNull(status.getUsername());
+        assertEquals(msg, status.getErrorMessage());
+        assertEquals("login.disabled", status.getErrorId());
+    }
 }

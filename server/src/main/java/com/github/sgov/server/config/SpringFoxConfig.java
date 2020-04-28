@@ -16,26 +16,26 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class SpringFoxConfig {
 
-  /**
-   * Returns Swagger_2 Docket.
-   */
-  @Bean
-  public Docket api() {
-    return new Docket(DocumentationType.SWAGGER_2)
-        .pathMapping("/")
-        .select()
-        .apis(RequestHandlerSelectors.basePackage("com.github.sgov"))
-        .paths(PathSelectors.any())
-        .build()
-        .apiInfo(apiInfo());
-  }
+    /**
+     * Returns Swagger_2 Docket.
+     */
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+            .pathMapping("/")
+            .select()
+            .apis(RequestHandlerSelectors.basePackage("com.github.sgov"))
+            .paths(PathSelectors.any())
+            .build()
+            .apiInfo(apiInfo());
+    }
 
-  ApiInfo apiInfo() {
-    return new ApiInfoBuilder()
-        .title("SGoV Server")
-        .description("Server for Semantic Government Vocabulary (SGoV) management.")
-        .version("1.0.0")
-        .contact(new Contact("Petr Křemen", "", "petr.kremen@mvcr.cz"))
-        .build();
-  }
+    ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+            .title("SGoV Server")
+            .description("Server for Semantic Government Vocabulary (SGoV) management.")
+            .version("1.0.0")
+            .contact(new Contact("Petr Křemen", "", "petr.kremen@mvcr.cz"))
+            .build();
+    }
 }

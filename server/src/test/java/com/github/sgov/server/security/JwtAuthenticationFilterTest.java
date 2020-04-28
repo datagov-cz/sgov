@@ -38,42 +38,42 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles("test")
 class JwtAuthenticationFilterTest {
 
-  @Autowired
-  private JwtConf config;
+    @Autowired
+    private JwtConf config;
 
-  private MockHttpServletRequest mockRequest;
+    private MockHttpServletRequest mockRequest;
 
-  private MockHttpServletResponse mockResponse;
+    private MockHttpServletResponse mockResponse;
 
-  private UserAccount user;
+    private UserAccount user;
 
-  @Mock
-  private FilterChain filterChain;
+    @Mock
+    private FilterChain filterChain;
 
-  private JwtAuthenticationFilter sut;
+    private JwtAuthenticationFilter sut;
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.initMocks(this);
-    this.user = Generator.generateUserAccount();
-    this.mockRequest = new MockHttpServletRequest();
-    this.mockResponse = new MockHttpServletResponse();
-    this.sut =
-        new JwtAuthenticationFilter(mock(AuthenticationManager.class), new JwtUtils(config));
-  }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        this.user = Generator.generateUserAccount();
+        this.mockRequest = new MockHttpServletRequest();
+        this.mockResponse = new MockHttpServletResponse();
+        this.sut =
+            new JwtAuthenticationFilter(mock(AuthenticationManager.class), new JwtUtils(config));
+    }
 
-  @Test
-  void successfulAuthenticationAddsJwtToResponse() throws Exception {
-    final AuthenticationToken token =
-        new AuthenticationToken(Collections.emptySet(), new SGoVUserDetails(user));
-    sut.successfulAuthentication(mockRequest, mockResponse, filterChain, token);
-    assertTrue(mockResponse.containsHeader(HttpHeaders.AUTHORIZATION));
-    final String value = mockResponse.getHeader(HttpHeaders.AUTHORIZATION);
-    assertNotNull(value);
-    assertTrue(value.startsWith(SecurityConstants.JWT_TOKEN_PREFIX));
-    final String jwtToken = value.substring(SecurityConstants.JWT_TOKEN_PREFIX.length());
-    final Jws<Claims> jwt = Jwts.parser().setSigningKey(config.getSecretKey())
-        .parseClaimsJws(jwtToken);
-    assertFalse(jwt.getBody().isEmpty());
-  }
+    @Test
+    void successfulAuthenticationAddsJwtToResponse() throws Exception {
+        final AuthenticationToken token =
+            new AuthenticationToken(Collections.emptySet(), new SGoVUserDetails(user));
+        sut.successfulAuthentication(mockRequest, mockResponse, filterChain, token);
+        assertTrue(mockResponse.containsHeader(HttpHeaders.AUTHORIZATION));
+        final String value = mockResponse.getHeader(HttpHeaders.AUTHORIZATION);
+        assertNotNull(value);
+        assertTrue(value.startsWith(SecurityConstants.JWT_TOKEN_PREFIX));
+        final String jwtToken = value.substring(SecurityConstants.JWT_TOKEN_PREFIX.length());
+        final Jws<Claims> jwt = Jwts.parser().setSigningKey(config.getSecretKey())
+            .parseClaimsJws(jwtToken);
+        assertFalse(jwt.getBody().isEmpty());
+    }
 }

@@ -27,116 +27,116 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class RestExceptionHandler {
 
-  private static final Logger LOG = LoggerFactory.getLogger(RestExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RestExceptionHandler.class);
 
-  private static void logException(Throwable ex) {
-    logException("Exception caught.", ex);
-  }
+    private static void logException(Throwable ex) {
+        logException("Exception caught.", ex);
+    }
 
-  private static void logException(String message, Throwable ex) {
-    LOG.error(message, ex);
-  }
+    private static void logException(String message, Throwable ex) {
+        LOG.error(message, ex);
+    }
 
-  private static ErrorInfo errorInfo(HttpServletRequest request, Throwable e) {
-    return ErrorInfo.createWithMessage(e.getMessage(), request.getRequestURI());
-  }
+    private static ErrorInfo errorInfo(HttpServletRequest request, Throwable e) {
+        return ErrorInfo.createWithMessage(e.getMessage(), request.getRequestURI());
+    }
 
-  /**
-   * Persistence Exception.
-   */
-  @ExceptionHandler(PersistenceException.class)
-  public ResponseEntity<ErrorInfo> persistenceException(HttpServletRequest request,
-                                                        PersistenceException e) {
-    logException(e);
-    return new ResponseEntity<>(errorInfo(request, e.getCause()),
-        HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+    /**
+     * Persistence Exception.
+     */
+    @ExceptionHandler(PersistenceException.class)
+    public ResponseEntity<ErrorInfo> persistenceException(HttpServletRequest request,
+                                                          PersistenceException e) {
+        logException(e);
+        return new ResponseEntity<>(errorInfo(request, e.getCause()),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-  /**
-   * JOPA Exception.
-   */
-  @ExceptionHandler(OWLPersistenceException.class)
-  public ResponseEntity<ErrorInfo> jopaException(HttpServletRequest request,
-                                                 OWLPersistenceException e) {
-    logException("Persistence exception caught.", e);
-    return new ResponseEntity<>(errorInfo(request, e),
-        HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+    /**
+     * JOPA Exception.
+     */
+    @ExceptionHandler(OWLPersistenceException.class)
+    public ResponseEntity<ErrorInfo> jopaException(HttpServletRequest request,
+                                                   OWLPersistenceException e) {
+        logException("Persistence exception caught.", e);
+        return new ResponseEntity<>(errorInfo(request, e),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-  /**
-   * Not Found Exception.
-   */
-  @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<ErrorInfo> notFound(HttpServletRequest request,
-                                            NotFoundException e) {
-    // Not necessary to log NotFoundException, they may be quite frequent and do not
-    // represent an
-    // issue with the application
-    return new ResponseEntity<>(errorInfo(request, e), HttpStatus.NOT_FOUND);
-  }
+    /**
+     * Not Found Exception.
+     */
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorInfo> notFound(HttpServletRequest request,
+                                              NotFoundException e) {
+        // Not necessary to log NotFoundException, they may be quite frequent and do not
+        // represent an
+        // issue with the application
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.NOT_FOUND);
+    }
 
-  /**
-   * Username not found.
-   */
-  @ExceptionHandler(UsernameNotFoundException.class)
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public ResponseEntity<ErrorInfo> usernameNotFound(HttpServletRequest request,
-                                                    UsernameNotFoundException e) {
-    return new ResponseEntity<>(errorInfo(request, e), HttpStatus.NOT_FOUND);
-  }
+    /**
+     * Username not found.
+     */
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
+    public ResponseEntity<ErrorInfo> usernameNotFound(HttpServletRequest request,
+                                                      UsernameNotFoundException e) {
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.NOT_FOUND);
+    }
 
-  /**
-   * Authorization exception.
-   */
-  @ExceptionHandler(AuthorizationException.class)
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public ResponseEntity<ErrorInfo> authorizationException(HttpServletRequest request,
-                                                          AuthorizationException e) {
-    logException(e);
-    return new ResponseEntity<>(errorInfo(request, e), HttpStatus.FORBIDDEN);
-  }
+    /**
+     * Authorization exception.
+     */
+    @ExceptionHandler(AuthorizationException.class)
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
+    public ResponseEntity<ErrorInfo> authorizationException(HttpServletRequest request,
+                                                            AuthorizationException e) {
+        logException(e);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.FORBIDDEN);
+    }
 
-  /**
-   * Validation Exception.
-   */
-  @ExceptionHandler(ValidationException.class)
-  public ResponseEntity<ErrorInfo> validationException(HttpServletRequest request,
-                                                       ValidationException e) {
-    logException(e);
-    return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
-  }
+    /**
+     * Validation Exception.
+     */
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorInfo> validationException(HttpServletRequest request,
+                                                         ValidationException e) {
+        logException(e);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
+    }
 
-  /**
-   * SGoVException.
-   */
-  @ExceptionHandler(SGoVException.class)
-  public ResponseEntity<ErrorInfo> termItException(HttpServletRequest request,
-                                                   SGoVException e) {
-    logException(e);
-    return new ResponseEntity<>(errorInfo(request, e), HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+    /**
+     * SGoVException.
+     */
+    @ExceptionHandler(SGoVException.class)
+    public ResponseEntity<ErrorInfo> termItException(HttpServletRequest request,
+                                                     SGoVException e) {
+        logException(e);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-  /**
-   * JSON-LD Exception.
-   */
-  @ExceptionHandler(JsonLdException.class)
-  public ResponseEntity<ErrorInfo> jsonLdException(HttpServletRequest request,
-                                                   JsonLdException e) {
-    logException(e);
-    return new ResponseEntity<>(
-        ErrorInfo.createWithMessage("Error when processing JSON-LD.",
-            request.getRequestURI()),
-        HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+    /**
+     * JSON-LD Exception.
+     */
+    @ExceptionHandler(JsonLdException.class)
+    public ResponseEntity<ErrorInfo> jsonLdException(HttpServletRequest request,
+                                                     JsonLdException e) {
+        logException(e);
+        return new ResponseEntity<>(
+            ErrorInfo.createWithMessage("Error when processing JSON-LD.",
+                request.getRequestURI()),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-  /**
-   * Unsupported Asset Operation Exception.
-   */
-  @ExceptionHandler(UnsupportedOperationException.class)
-  public ResponseEntity<ErrorInfo> unsupportedAssetOperationException(
-      HttpServletRequest request,
-      UnsupportedOperationException e) {
-    logException(e);
-    return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
-  }
+    /**
+     * Unsupported Asset Operation Exception.
+     */
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ErrorInfo> unsupportedAssetOperationException(
+        HttpServletRequest request,
+        UnsupportedOperationException e) {
+        logException(e);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
+    }
 }

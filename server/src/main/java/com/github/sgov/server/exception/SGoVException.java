@@ -7,18 +7,18 @@ package com.github.sgov.server.exception;
  */
 public class SGoVException extends RuntimeException {
 
-  protected SGoVException() {
-  }
+    protected SGoVException() {
+    }
 
-  public SGoVException(String message) {
-    super(message);
-  }
+    public SGoVException(String message) {
+        super(message);
+    }
 
-  public SGoVException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public SGoVException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public SGoVException(Throwable cause) {
-    super(cause);
-  }
+    public SGoVException(Throwable cause) {
+        super(cause);
+    }
 }

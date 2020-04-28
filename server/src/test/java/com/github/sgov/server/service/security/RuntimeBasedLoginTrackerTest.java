@@ -32,65 +32,65 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RuntimeBasedLoginTrackerTest {
 
-  @Autowired
-  private LoginTracker loginTracker;
-  @Autowired
-  private LoginListener listener;
-  private UserAccount user;
-
-  @Bean
-  public LoginTracker loginTracker() {
-    return new RuntimeBasedLoginTracker();
-  }
-
-  @Bean
-  public LoginListener loginListener() {
-    return spy(new LoginListener());
-  }
-
-  @BeforeEach
-  void setUp() {
-    this.user = Generator.generateUserAccount();
-  }
-
-  @Test
-  void emitsThresholdExceededEventWhenMaximumLoginCountIsExceeded() {
-    for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS; i++) {
-      assertNull(listener.user);
-      loginTracker.onLoginFailure(new LoginFailureEvent(user));
-    }
-    loginTracker.onLoginFailure(new LoginFailureEvent(user));
-    assertNotNull(listener.user);
-    assertEquals(user, listener.user);
-  }
-
-  @Test
-  void doesNotReemitThresholdExceededWhenAdditionalLoginAttemptsAreMade() {
-    for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS * 2; i++) {
-      loginTracker.onLoginFailure(new LoginFailureEvent(user));
-    }
-    verify(listener, times(1)).onEvent(ArgumentMatchers.any());
-  }
-
-  @Test
-  void successfulLoginResetsCounter() {
-    for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS - 1; i++) {
-      loginTracker.onLoginFailure(new LoginFailureEvent(user));
-    }
-    loginTracker.onLoginSuccess(new LoginSuccessEvent(user));
-    for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS; i++) {
-      loginTracker.onLoginFailure(new LoginFailureEvent(user));
-    }
-    verify(listener, never()).onEvent(ArgumentMatchers.any());
-  }
-
-  public static class LoginListener {
-
+    @Autowired
+    private LoginTracker loginTracker;
+    @Autowired
+    private LoginListener listener;
     private UserAccount user;
 
-    @EventListener
-    public void onEvent(LoginAttemptsThresholdExceeded event) {
-      this.user = event.getUser();
+    @Bean
+    public LoginTracker loginTracker() {
+        return new RuntimeBasedLoginTracker();
     }
-  }
+
+    @Bean
+    public LoginListener loginListener() {
+        return spy(new LoginListener());
+    }
+
+    @BeforeEach
+    void setUp() {
+        this.user = Generator.generateUserAccount();
+    }
+
+    @Test
+    void emitsThresholdExceededEventWhenMaximumLoginCountIsExceeded() {
+        for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS; i++) {
+            assertNull(listener.user);
+            loginTracker.onLoginFailure(new LoginFailureEvent(user));
+        }
+        loginTracker.onLoginFailure(new LoginFailureEvent(user));
+        assertNotNull(listener.user);
+        assertEquals(user, listener.user);
+    }
+
+    @Test
+    void doesNotReemitThresholdExceededWhenAdditionalLoginAttemptsAreMade() {
+        for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS * 2; i++) {
+            loginTracker.onLoginFailure(new LoginFailureEvent(user));
+        }
+        verify(listener, times(1)).onEvent(ArgumentMatchers.any());
+    }
+
+    @Test
+    void successfulLoginResetsCounter() {
+        for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS - 1; i++) {
+            loginTracker.onLoginFailure(new LoginFailureEvent(user));
+        }
+        loginTracker.onLoginSuccess(new LoginSuccessEvent(user));
+        for (int i = 0; i < SecurityConstants.MAX_LOGIN_ATTEMPTS; i++) {
+            loginTracker.onLoginFailure(new LoginFailureEvent(user));
+        }
+        verify(listener, never()).onEvent(ArgumentMatchers.any());
+    }
+
+    public static class LoginListener {
+
+        private UserAccount user;
+
+        @EventListener
+        public void onEvent(LoginAttemptsThresholdExceeded event) {
+            this.user = event.getUser();
+        }
+    }
 }

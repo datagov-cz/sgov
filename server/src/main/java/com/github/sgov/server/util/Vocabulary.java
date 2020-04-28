@@ -20,7 +20,8 @@ public final class Vocabulary {
   public static final String s_c_omezeny_uzivatel =
       "http://onto.fel.cvut.cz/ontologies/slovnik/agendovy/popis-dat/pojem/" + "omezený-uživatel";
   public static final String s_c_uzamceny_uzivatel =
-      "http://onto.fel.cvut.cz/ontologies/slovnik/agendovy/popis-dat/pojem/" + "uzamčený-uživatel";
+      "http://onto.fel.cvut.cz/ontologies/slovnik/agendovy/popis-dat/pojem/"
+          + "uzamčený-uživatel";
   public static final String s_c_zablokovany_uzivatel =
       "http://onto.fel.cvut.cz/ontologies/slovnik/agendovy/popis-dat/pojem/"
           + "zablokovaný-uživatel";

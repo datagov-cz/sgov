@@ -62,139 +62,139 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ActiveProfiles("test")
 class UserControllerSecurityTest extends BaseControllerTestRunner {
 
-  private static final String BASE_URL = "/users";
+    private static final String BASE_URL = "/users";
 
-  @Autowired
-  private Filter springSecurityFilterChain;
+    @Autowired
+    private Filter springSecurityFilterChain;
 
-  @Autowired
-  private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-  @Autowired
-  private UserService userService;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.initMocks(this);
-    super.setupObjectMappers();
-    // WebApplicationContext is required for proper security. Otherwise, standaloneSetup
-    // could be
-    // used
-    this.mockMvc =
-        MockMvcBuilders.webAppContextSetup(context)
-            .apply(springSecurity(springSecurityFilterChain))
-            .build();
-  }
-
-  @Test
-  void findAllThrowsForbiddenForUnauthorizedUser() throws Exception {
-    Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
-    when(userService.findAll()).thenReturn(Collections.emptyList());
-
-    mockMvc.perform(get("/users")).andExpect(status().isForbidden());
-    verify(userService, never()).findAll();
-  }
-
-  @Test
-  void getCurrentReturnsCurrentlyLoggedInUser() throws Exception {
-    final UserAccount user = Generator.generateUserAccountWithPassword();
-    Environment.setCurrentUser(user);
-    when(userService.getCurrent()).thenReturn(user);
-    final MvcResult mvcResult =
-        mockMvc.perform(get(BASE_URL + "/current").accept(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk()).andReturn();
-    final UserAccount result = readValue(mvcResult, UserAccount.class);
-    Assert.assertEquals(user, result);
-  }
-
-  @Test
-  void unlockThrowsForbiddenForNonAdmin() throws Exception {
-    // This one is not an admin
-    Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
-    final UserAccount toUnlock = Generator.generateUserAccountWithPassword();
-
-    mockMvc.perform(
-        delete(BASE_URL + "/" + extractIdentifierFragment(toUnlock.getUri()) + "/lock")
-            .content(toUnlock.getPassword()))
-        .andExpect(status().isForbidden());
-    verify(userService, never()).unlock(any(), any());
-  }
-
-  @Test
-  void enableThrowsForbiddenForNonAdmin() throws Exception {
-    // This one is not an admin
-    Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
-    final UserAccount toEnable = Generator.generateUserAccountWithPassword();
-
-    mockMvc.perform(
-        post(BASE_URL + "/" + extractIdentifierFragment(toEnable.getUri()) + "/status"))
-        .andExpect(status().isForbidden());
-    verify(userService, never()).enable(any());
-  }
-
-  @Test
-  void disableThrowsForbiddenForNonAdmin() throws Exception {
-    // This one is not an admin
-    Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
-    final UserAccount toDisable = Generator.generateUserAccountWithPassword();
-
-    mockMvc
-        .perform(
-            delete(BASE_URL + "/" + extractIdentifierFragment(toDisable.getUri()) + "/status"))
-        .andExpect(status().isForbidden());
-    verify(userService, never()).disable(any());
-  }
-
-  /**
-   * Inner class is necessary to provide the controller as a bean, so that the WebApplicationContext
-   * can map it.
-   */
-  @EnableWebMvc
-  @Configuration
-  public static class Config implements WebMvcConfigurer {
-    @Mock
+    @Autowired
     private UserService userService;
 
-    @Mock
-    private SecurityUtils securityUtilsMock;
-
-    @InjectMocks
-    private UserController controller;
-
-    Config() {
-      MockitoAnnotations.initMocks(this);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        super.setupObjectMappers();
+        // WebApplicationContext is required for proper security. Otherwise, standaloneSetup
+        // could be
+        // used
+        this.mockMvc =
+            MockMvcBuilders.webAppContextSetup(context)
+                .apply(springSecurity(springSecurityFilterChain))
+                .build();
     }
 
-    @Bean
-    public UserService userService() {
-      return userService;
+    @Test
+    void findAllThrowsForbiddenForUnauthorizedUser() throws Exception {
+        Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
+        when(userService.findAll()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/users")).andExpect(status().isForbidden());
+        verify(userService, never()).findAll();
     }
 
-    @Bean
-    public UserController userController() {
-      return controller;
+    @Test
+    void getCurrentReturnsCurrentlyLoggedInUser() throws Exception {
+        final UserAccount user = Generator.generateUserAccountWithPassword();
+        Environment.setCurrentUser(user);
+        when(userService.getCurrent()).thenReturn(user);
+        final MvcResult mvcResult =
+            mockMvc.perform(get(BASE_URL + "/current").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andReturn();
+        final UserAccount result = readValue(mvcResult, UserAccount.class);
+        Assert.assertEquals(user, result);
     }
 
-    @Bean
-    public SecurityUtils securityUtils() {
-      return securityUtilsMock;
+    @Test
+    void unlockThrowsForbiddenForNonAdmin() throws Exception {
+        // This one is not an admin
+        Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
+        final UserAccount toUnlock = Generator.generateUserAccountWithPassword();
+
+        mockMvc.perform(
+            delete(BASE_URL + "/" + extractIdentifierFragment(toUnlock.getUri()) + "/lock")
+                .content(toUnlock.getPassword()))
+            .andExpect(status().isForbidden());
+        verify(userService, never()).unlock(any(), any());
     }
 
-    @Bean
-    public RestExceptionHandler restExceptionHandler() {
-      return new RestExceptionHandler();
+    @Test
+    void enableThrowsForbiddenForNonAdmin() throws Exception {
+        // This one is not an admin
+        Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
+        final UserAccount toEnable = Generator.generateUserAccountWithPassword();
+
+        mockMvc.perform(
+            post(BASE_URL + "/" + extractIdentifierFragment(toEnable.getUri()) + "/status"))
+            .andExpect(status().isForbidden());
+        verify(userService, never()).enable(any());
     }
 
-    @Bean
-    public JwtUtils jwtUtils(JwtConf config) {
-      return new JwtUtils(config);
+    @Test
+    void disableThrowsForbiddenForNonAdmin() throws Exception {
+        // This one is not an admin
+        Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
+        final UserAccount toDisable = Generator.generateUserAccountWithPassword();
+
+        mockMvc
+            .perform(
+                delete(BASE_URL + "/" + extractIdentifierFragment(toDisable.getUri()) + "/status"))
+            .andExpect(status().isForbidden());
+        verify(userService, never()).disable(any());
     }
 
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-      converters.add(Environment.createJsonLdMessageConverter());
-      converters.add(Environment.createDefaultMessageConverter());
-      converters.add(Environment.createStringEncodingMessageConverter());
+    /**
+     * Inner class is necessary to provide the controller as a bean, so that the
+     * WebApplicationContext can map it.
+     */
+    @EnableWebMvc
+    @Configuration
+    public static class Config implements WebMvcConfigurer {
+        @Mock
+        private UserService userService;
+
+        @Mock
+        private SecurityUtils securityUtilsMock;
+
+        @InjectMocks
+        private UserController controller;
+
+        Config() {
+            MockitoAnnotations.initMocks(this);
+        }
+
+        @Bean
+        public UserService userService() {
+            return userService;
+        }
+
+        @Bean
+        public UserController userController() {
+            return controller;
+        }
+
+        @Bean
+        public SecurityUtils securityUtils() {
+            return securityUtilsMock;
+        }
+
+        @Bean
+        public RestExceptionHandler restExceptionHandler() {
+            return new RestExceptionHandler();
+        }
+
+        @Bean
+        public JwtUtils jwtUtils(JwtConf config) {
+            return new JwtUtils(config);
+        }
+
+        @Override
+        public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+            converters.add(Environment.createJsonLdMessageConverter());
+            converters.add(Environment.createDefaultMessageConverter());
+            converters.add(Environment.createStringEncodingMessageConverter());
+        }
     }
-  }
 }

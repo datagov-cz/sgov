@@ -21,77 +21,77 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 class RestUtilsTest {
 
-  @Test
-  void createLocationHeaderFromCurrentUriWithPathAddsPathWithVariableReplacementsToRequestUri() {
-    final MockHttpServletRequest mockRequest =
-        new MockHttpServletRequest(HttpMethod.GET.toString(),
-            "/vocabularies");
-    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
-    final String id = "117";
+    @Test
+    void createLocationHeaderFromCurrentUriWithPathAddsPathWithVariableReplacementsToRequestUri() {
+        final MockHttpServletRequest mockRequest =
+            new MockHttpServletRequest(HttpMethod.GET.toString(),
+                "/vocabularies");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
+        final String id = "117";
 
-    final URI result = RestUtils.createLocationFromCurrentUriWithPath("/{id}", id);
-    assertThat(result.toString(), endsWith("/vocabularies/" + id));
-  }
+        final URI result = RestUtils.createLocationFromCurrentUriWithPath("/{id}", id);
+        assertThat(result.toString(), endsWith("/vocabularies/" + id));
+    }
 
-  @Test
-  void createLocationHeaderFromCurrentUriWithQueryParamAddsQueryParameterWithValueToRequestUri() {
-    final MockHttpServletRequest mockRequest =
-        new MockHttpServletRequest(HttpMethod.GET.toString(),
-            "/vocabularies");
-    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
-    final URI id = Generator.generateUri();
+    @Test
+    void createLocationHeaderFromCurrentUriWithQueryParamAddsQueryParameterWithValueToRequestUri() {
+        final MockHttpServletRequest mockRequest =
+            new MockHttpServletRequest(HttpMethod.GET.toString(),
+                "/vocabularies");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
+        final URI id = Generator.generateUri();
 
-    final URI result = RestUtils.createLocationFromCurrentUriWithQueryParam("id", id);
-    assertThat(result.toString(), endsWith("/vocabularies?id=" + id));
-  }
+        final URI result = RestUtils.createLocationFromCurrentUriWithQueryParam("id", id);
+        assertThat(result.toString(), endsWith("/vocabularies?id=" + id));
+    }
 
-  @Test
-  void getCookieExtractsCookieValueFromRequest() {
-    final MockHttpServletRequest mockRequest =
-        new MockHttpServletRequest(HttpMethod.GET.toString(),
-            "/vocabularies");
-    mockRequest
-        .setCookies(
-            new Cookie(SecurityConstants.REMEMBER_ME_COOKIE_NAME, Boolean.TRUE.toString()));
+    @Test
+    void getCookieExtractsCookieValueFromRequest() {
+        final MockHttpServletRequest mockRequest =
+            new MockHttpServletRequest(HttpMethod.GET.toString(),
+                "/vocabularies");
+        mockRequest
+            .setCookies(
+                new Cookie(SecurityConstants.REMEMBER_ME_COOKIE_NAME, Boolean.TRUE.toString()));
 
-    final Optional<String> result =
-        RestUtils.getCookie(mockRequest, SecurityConstants.REMEMBER_ME_COOKIE_NAME);
-    assertTrue(result.isPresent());
-    assertTrue(Boolean.parseBoolean(result.get()));
-  }
+        final Optional<String> result =
+            RestUtils.getCookie(mockRequest, SecurityConstants.REMEMBER_ME_COOKIE_NAME);
+        assertTrue(result.isPresent());
+        assertTrue(Boolean.parseBoolean(result.get()));
+    }
 
-  @Test
-  void getCookieReturnsEmptyOptionalWhenCookieIsNotFound() {
-    final MockHttpServletRequest mockRequest =
-        new MockHttpServletRequest(HttpMethod.GET.toString(),
-            "/vocabularies");
-    mockRequest
-        .setCookies(
-            new Cookie(SecurityConstants.REMEMBER_ME_COOKIE_NAME, Boolean.TRUE.toString()));
+    @Test
+    void getCookieReturnsEmptyOptionalWhenCookieIsNotFound() {
+        final MockHttpServletRequest mockRequest =
+            new MockHttpServletRequest(HttpMethod.GET.toString(),
+                "/vocabularies");
+        mockRequest
+            .setCookies(
+                new Cookie(SecurityConstants.REMEMBER_ME_COOKIE_NAME, Boolean.TRUE.toString()));
 
-    final Optional<String> result = RestUtils.getCookie(mockRequest, "unknown-cookie");
-    assertFalse(result.isPresent());
-  }
+        final Optional<String> result = RestUtils.getCookie(mockRequest, "unknown-cookie");
+        assertFalse(result.isPresent());
+    }
 
-  @Test
-  void urlEncodeEncodesSpecifiedStringWithUtf8UrlEncoding() throws Exception {
-    final String value = Generator.generateUri().toString();
-    Assert.assertEquals(URLEncoder.encode(value, StandardCharsets.UTF_8.name()),
-        RestUtils.urlEncode(value));
-  }
+    @Test
+    void urlEncodeEncodesSpecifiedStringWithUtf8UrlEncoding() throws Exception {
+        final String value = Generator.generateUri().toString();
+        Assert.assertEquals(URLEncoder.encode(value, StandardCharsets.UTF_8.name()),
+            RestUtils.urlEncode(value));
+    }
 
-  @Test
-  void createLocationHeaderFromCurrentUriWithPathAndQueryCreatesLocationHeader() {
-    final MockHttpServletRequest mockRequest =
-        new MockHttpServletRequest(HttpMethod.GET.toString(),
-            "/vocabularies");
-    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
-    final String name = "metropolitan-plan";
-    final String param = "namespace";
-    final String paramValue = "http://onto.fel.cvut.cz/ontologies/termit/vocabularies/";
-    final URI result =
-        RestUtils
-            .createLocationFromCurrentUriWithPathAndQuery("/{name}", param, paramValue, name);
-    assertThat(result.toString(), endsWith("/" + name + "?" + param + "=" + paramValue));
-  }
+    @Test
+    void createLocationHeaderFromCurrentUriWithPathAndQueryCreatesLocationHeader() {
+        final MockHttpServletRequest mockRequest =
+            new MockHttpServletRequest(HttpMethod.GET.toString(),
+                "/vocabularies");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
+        final String name = "metropolitan-plan";
+        final String param = "namespace";
+        final String paramValue = "http://onto.fel.cvut.cz/ontologies/termit/vocabularies/";
+        final URI result =
+            RestUtils
+                .createLocationFromCurrentUriWithPathAndQuery("/{name}", param, paramValue, name);
+        assertThat(result.toString(), endsWith("/" + name + "?" + param + "=" + paramValue));
+    }
 }

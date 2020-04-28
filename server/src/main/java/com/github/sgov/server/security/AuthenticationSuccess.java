@@ -22,46 +22,46 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationSuccess implements AuthenticationSuccessHandler, LogoutSuccessHandler {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AuthenticationSuccess.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationSuccess.class);
 
-  private final ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-  @Autowired
-  public AuthenticationSuccess(@Qualifier("objectMapper") ObjectMapper mapper) {
-    this.mapper = mapper;
-  }
+    @Autowired
+    public AuthenticationSuccess(@Qualifier("objectMapper") ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
-  private static String getUsername(Authentication authentication) {
-    return authentication != null ? ((UserDetails) authentication.getDetails()).getUsername()
-        : "";
-  }
+    private static String getUsername(Authentication authentication) {
+        return authentication != null ? ((UserDetails) authentication.getDetails()).getUsername()
+            : "";
+    }
 
-  @Override
-  public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
-                                      HttpServletResponse httpServletResponse,
-                                      Authentication authentication) throws IOException {
-    Objects.requireNonNull(authentication);
-    final String username = getUsername(authentication);
-    final LoginStatus loginStatus = new LoginStatus()
-        .setLoggedIn(true)
-        .setSuccess(authentication.isAuthenticated())
-        .setUsername(username)
-        .setErrorMessage(null);
-    mapper.writeValue(httpServletResponse.getOutputStream(), loginStatus);
-  }
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
+                                        HttpServletResponse httpServletResponse,
+                                        Authentication authentication) throws IOException {
+        Objects.requireNonNull(authentication);
+        final String username = getUsername(authentication);
+        final LoginStatus loginStatus = new LoginStatus()
+            .setLoggedIn(true)
+            .setSuccess(authentication.isAuthenticated())
+            .setUsername(username)
+            .setErrorMessage(null);
+        mapper.writeValue(httpServletResponse.getOutputStream(), loginStatus);
+    }
 
-  @Override
-  public void onLogoutSuccess(HttpServletRequest httpServletRequest,
-                              HttpServletResponse httpServletResponse,
-                              Authentication authentication) throws IOException {
-    LOG.trace("Successfully logged out user {}", getUsername(authentication));
+    @Override
+    public void onLogoutSuccess(HttpServletRequest httpServletRequest,
+                                HttpServletResponse httpServletResponse,
+                                Authentication authentication) throws IOException {
+        LOG.trace("Successfully logged out user {}", getUsername(authentication));
 
 
-    final LoginStatus loginStatus = new LoginStatus()
-        .setLoggedIn(false)
-        .setSuccess(true)
-        .setUsername(null)
-        .setErrorMessage(null);
-    mapper.writeValue(httpServletResponse.getOutputStream(), loginStatus);
-  }
+        final LoginStatus loginStatus = new LoginStatus()
+            .setLoggedIn(false)
+            .setSuccess(true)
+            .setUsername(null)
+            .setErrorMessage(null);
+        mapper.writeValue(httpServletResponse.getOutputStream(), loginStatus);
+    }
 }

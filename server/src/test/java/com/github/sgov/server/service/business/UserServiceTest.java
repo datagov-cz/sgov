@@ -34,223 +34,223 @@ import org.mockito.MockitoAnnotations;
 
 class UserServiceTest {
 
-  @Mock
-  private UserRepositoryService repositoryServiceMock;
+    @Mock
+    private UserRepositoryService repositoryServiceMock;
 
-  @Mock
-  private SecurityUtils securityUtilsMock;
+    @Mock
+    private SecurityUtils securityUtilsMock;
 
-  @InjectMocks
-  private UserService sut;
+    @InjectMocks
+    private UserService sut;
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.initMocks(this);
-  }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-  @Test
-  void findAllLoadsUsersFromRepositoryService() {
-    sut.findAll();
-    verify(repositoryServiceMock).findAll();
-  }
+    @Test
+    void findAllLoadsUsersFromRepositoryService() {
+        sut.findAll();
+        verify(repositoryServiceMock).findAll();
+    }
 
-  @Test
-  void persistPassesAccountToPersistToRepositoryService() {
-    final UserAccount toPersist = Generator.generateUserAccount();
-    sut.persist(toPersist);
-    verify(repositoryServiceMock).persist(toPersist);
-  }
+    @Test
+    void persistPassesAccountToPersistToRepositoryService() {
+        final UserAccount toPersist = Generator.generateUserAccount();
+        sut.persist(toPersist);
+        verify(repositoryServiceMock).persist(toPersist);
+    }
 
-  @Test
-  void updateVerifiesOriginalPasswordBeforeUpdatingAccountWithNewPassword() {
-    final UserUpdateDto update = new UserUpdateDto();
-    update.setUri(Generator.generateUri());
-    update.setFirstName("firstName");
-    update.setLastName("lastName");
-    update.setUsername("username");
-    update.setPassword("password");
-    update.setOriginalPassword("originalPassword");
-    when(securityUtilsMock.getCurrentUser()).thenReturn(update.asUserAccount());
-    sut.updateCurrent(update);
-    final InOrder inOrder = Mockito.inOrder(securityUtilsMock, repositoryServiceMock);
-    inOrder.verify(securityUtilsMock).verifyCurrentUserPassword(update.getOriginalPassword());
-    inOrder.verify(repositoryServiceMock).update(update.asUserAccount());
-  }
+    @Test
+    void updateVerifiesOriginalPasswordBeforeUpdatingAccountWithNewPassword() {
+        final UserUpdateDto update = new UserUpdateDto();
+        update.setUri(Generator.generateUri());
+        update.setFirstName("firstName");
+        update.setLastName("lastName");
+        update.setUsername("username");
+        update.setPassword("password");
+        update.setOriginalPassword("originalPassword");
+        when(securityUtilsMock.getCurrentUser()).thenReturn(update.asUserAccount());
+        sut.updateCurrent(update);
+        final InOrder inOrder = Mockito.inOrder(securityUtilsMock, repositoryServiceMock);
+        inOrder.verify(securityUtilsMock).verifyCurrentUserPassword(update.getOriginalPassword());
+        inOrder.verify(repositoryServiceMock).update(update.asUserAccount());
+    }
 
-  @Test
-  void updateDoesNotVerifyOriginalPasswordWhenAccountDoesNotUpdatePassword() {
-    final UserUpdateDto update = new UserUpdateDto();
-    update.setUri(Generator.generateUri());
-    update.setFirstName("firstName");
-    update.setLastName("lastName");
-    update.setUsername("username");
-    when(securityUtilsMock.getCurrentUser()).thenReturn(update.asUserAccount());
-    sut.updateCurrent(update);
-    verify(repositoryServiceMock).update(update.asUserAccount());
-    verify(securityUtilsMock, never()).verifyCurrentUserPassword(any());
-  }
+    @Test
+    void updateDoesNotVerifyOriginalPasswordWhenAccountDoesNotUpdatePassword() {
+        final UserUpdateDto update = new UserUpdateDto();
+        update.setUri(Generator.generateUri());
+        update.setFirstName("firstName");
+        update.setLastName("lastName");
+        update.setUsername("username");
+        when(securityUtilsMock.getCurrentUser()).thenReturn(update.asUserAccount());
+        sut.updateCurrent(update);
+        verify(repositoryServiceMock).update(update.asUserAccount());
+        verify(securityUtilsMock, never()).verifyCurrentUserPassword(any());
+    }
 
-  @Test
-  void updateThrowsAuthorizationExceptionWhenAttemptingToUpdateDifferentUserThatCurrent() {
-    final UserUpdateDto update = new UserUpdateDto();
-    update.setUri(Generator.generateUri());
-    update.setFirstName("firstName");
-    update.setLastName("lastName");
-    update.setUsername("username");
-    final UserAccount ua = Generator.generateUserAccount();
-    when(securityUtilsMock.getCurrentUser()).thenReturn(ua);
-    assertThrows(AuthorizationException.class, () -> sut.updateCurrent(update));
-  }
+    @Test
+    void updateThrowsAuthorizationExceptionWhenAttemptingToUpdateDifferentUserThatCurrent() {
+        final UserUpdateDto update = new UserUpdateDto();
+        update.setUri(Generator.generateUri());
+        update.setFirstName("firstName");
+        update.setLastName("lastName");
+        update.setUsername("username");
+        final UserAccount ua = Generator.generateUserAccount();
+        when(securityUtilsMock.getCurrentUser()).thenReturn(ua);
+        assertThrows(AuthorizationException.class, () -> sut.updateCurrent(update));
+    }
 
-  @Test
-  void updateThrowsValidationExceptionWhenAttemptingToUpdateUsernameOfAccount() {
-    final UserAccount ua = Generator.generateUserAccount();
-    final UserUpdateDto update = new UserUpdateDto();
+    @Test
+    void updateThrowsValidationExceptionWhenAttemptingToUpdateUsernameOfAccount() {
+        final UserAccount ua = Generator.generateUserAccount();
+        final UserUpdateDto update = new UserUpdateDto();
 
-    update.setUri(ua.getUri());
-    update.setUsername("username");
+        update.setUri(ua.getUri());
+        update.setUsername("username");
 
-    when(securityUtilsMock.getCurrentUser()).thenReturn(ua);
-    assertThrows(ValidationException.class, () -> sut.updateCurrent(update));
-  }
+        when(securityUtilsMock.getCurrentUser()).thenReturn(ua);
+        assertThrows(ValidationException.class, () -> sut.updateCurrent(update));
+    }
 
-  @Test
-  void existsChecksForUsernameExistenceInRepositoryService() {
-    final String username = "user@termit";
-    sut.exists(username);
-    verify(repositoryServiceMock).exists(username);
-  }
+    @Test
+    void existsChecksForUsernameExistenceInRepositoryService() {
+        final String username = "user@termit";
+        sut.exists(username);
+        verify(repositoryServiceMock).exists(username);
+    }
 
-  @Test
-  void unlockUnlocksUserAccountAndUpdatesItViaRepositoryService() {
-    when(securityUtilsMock.getCurrentUser()).thenReturn(Generator.generateUserAccount());
-    final UserAccount account = Generator.generateUserAccount();
-    account.lock();
-    sut.unlock(account, "newPassword");
-    final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-    verify(repositoryServiceMock).update(captor.capture());
-    assertFalse(captor.getValue().isLocked());
-  }
+    @Test
+    void unlockUnlocksUserAccountAndUpdatesItViaRepositoryService() {
+        when(securityUtilsMock.getCurrentUser()).thenReturn(Generator.generateUserAccount());
+        final UserAccount account = Generator.generateUserAccount();
+        account.lock();
+        sut.unlock(account, "newPassword");
+        final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(repositoryServiceMock).update(captor.capture());
+        assertFalse(captor.getValue().isLocked());
+    }
 
-  @Test
-  void unlockSetsNewPasswordOnAccountSpecifiedAsArgument() {
-    when(securityUtilsMock.getCurrentUser()).thenReturn(Generator.generateUserAccount());
-    final UserAccount account = Generator.generateUserAccount();
-    account.lock();
-    final String newPassword = "newPassword";
-    sut.unlock(account, newPassword);
-    final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-    verify(repositoryServiceMock).update(captor.capture());
-    assertEquals(newPassword, captor.getValue().getPassword());
-  }
+    @Test
+    void unlockSetsNewPasswordOnAccountSpecifiedAsArgument() {
+        when(securityUtilsMock.getCurrentUser()).thenReturn(Generator.generateUserAccount());
+        final UserAccount account = Generator.generateUserAccount();
+        account.lock();
+        final String newPassword = "newPassword";
+        sut.unlock(account, newPassword);
+        final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(repositoryServiceMock).update(captor.capture());
+        assertEquals(newPassword, captor.getValue().getPassword());
+    }
 
-  @Test
-  void unlockThrowsUnsupportedOperationExceptionWhenAttemptingToUnlockOwnAccount() {
-    final UserAccount account = Generator.generateUserAccount();
-    account.lock();
-    when(securityUtilsMock.getCurrentUser()).thenReturn(account);
-    assertThrows(UnsupportedOperationException.class, () -> sut.unlock(account, "newPassword"));
-    verify(repositoryServiceMock, never()).update(any());
-  }
+    @Test
+    void unlockThrowsUnsupportedOperationExceptionWhenAttemptingToUnlockOwnAccount() {
+        final UserAccount account = Generator.generateUserAccount();
+        account.lock();
+        when(securityUtilsMock.getCurrentUser()).thenReturn(account);
+        assertThrows(UnsupportedOperationException.class, () -> sut.unlock(account, "newPassword"));
+        verify(repositoryServiceMock, never()).update(any());
+    }
 
-  @Test
-  void disableDisablesUserAccountAndUpdatesItViaRepositoryService() {
-    when(securityUtilsMock.getCurrentUser()).thenReturn(Generator.generateUserAccount());
-    final UserAccount account = Generator.generateUserAccount();
-    sut.disable(account);
-    final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-    verify(repositoryServiceMock).update(captor.capture());
-    assertFalse(captor.getValue().isEnabled());
-  }
+    @Test
+    void disableDisablesUserAccountAndUpdatesItViaRepositoryService() {
+        when(securityUtilsMock.getCurrentUser()).thenReturn(Generator.generateUserAccount());
+        final UserAccount account = Generator.generateUserAccount();
+        sut.disable(account);
+        final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(repositoryServiceMock).update(captor.capture());
+        assertFalse(captor.getValue().isEnabled());
+    }
 
-  @Test
-  void disableThrowsUnsupportedOperationExceptionWhenAttemptingToDisableOwnAccount() {
-    final UserAccount account = Generator.generateUserAccount();
-    when(securityUtilsMock.getCurrentUser()).thenReturn(account);
-    assertThrows(UnsupportedOperationException.class, () -> sut.disable(account));
-    verify(repositoryServiceMock, never()).update(any());
-  }
+    @Test
+    void disableThrowsUnsupportedOperationExceptionWhenAttemptingToDisableOwnAccount() {
+        final UserAccount account = Generator.generateUserAccount();
+        when(securityUtilsMock.getCurrentUser()).thenReturn(account);
+        assertThrows(UnsupportedOperationException.class, () -> sut.disable(account));
+        verify(repositoryServiceMock, never()).update(any());
+    }
 
-  @Test
-  void enableEnablesUserAccountAndUpdatesItViaRepositoryService() {
-    when(securityUtilsMock.getCurrentUser()).thenReturn(Generator.generateUserAccount());
-    final UserAccount account = Generator.generateUserAccount();
-    account.disable();
-    sut.enable(account);
-    final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-    verify(repositoryServiceMock).update(captor.capture());
-    assertTrue(captor.getValue().isEnabled());
-  }
+    @Test
+    void enableEnablesUserAccountAndUpdatesItViaRepositoryService() {
+        when(securityUtilsMock.getCurrentUser()).thenReturn(Generator.generateUserAccount());
+        final UserAccount account = Generator.generateUserAccount();
+        account.disable();
+        sut.enable(account);
+        final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(repositoryServiceMock).update(captor.capture());
+        assertTrue(captor.getValue().isEnabled());
+    }
 
-  @Test
-  void enableThrowsUnsupportedOperationExceptionWhenAttemptingToEnableOwnAccount() {
-    final UserAccount account = Generator.generateUserAccount();
-    account.disable();
-    when(securityUtilsMock.getCurrentUser()).thenReturn(account);
-    assertThrows(UnsupportedOperationException.class, () -> sut.enable(account));
-    verify(repositoryServiceMock, never()).update(any());
-  }
+    @Test
+    void enableThrowsUnsupportedOperationExceptionWhenAttemptingToEnableOwnAccount() {
+        final UserAccount account = Generator.generateUserAccount();
+        account.disable();
+        when(securityUtilsMock.getCurrentUser()).thenReturn(account);
+        assertThrows(UnsupportedOperationException.class, () -> sut.enable(account));
+        verify(repositoryServiceMock, never()).update(any());
+    }
 
-  @Test
-  void onLoginAttemptsThresholdExceededLocksUserAccountAndUpdatesItViaRepositoryService() {
-    final UserAccount account = Generator.generateUserAccount();
-    sut.onLoginAttemptsThresholdExceeded(new LoginAttemptsThresholdExceeded(account));
-    final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-    verify(repositoryServiceMock).update(captor.capture());
-    assertTrue(captor.getValue().isLocked());
-  }
+    @Test
+    void onLoginAttemptsThresholdExceededLocksUserAccountAndUpdatesItViaRepositoryService() {
+        final UserAccount account = Generator.generateUserAccount();
+        sut.onLoginAttemptsThresholdExceeded(new LoginAttemptsThresholdExceeded(account));
+        final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(repositoryServiceMock).update(captor.capture());
+        assertTrue(captor.getValue().isLocked());
+    }
 
-  @Test
-  void getCurrentRetrievesCurrentlyLoggedInUserAccount() {
-    final UserAccount account = Generator.generateUserAccount();
-    when(securityUtilsMock.getCurrentUser()).thenReturn(account);
-    final UserAccount result = sut.getCurrent();
-    assertEquals(account, result);
-  }
+    @Test
+    void getCurrentRetrievesCurrentlyLoggedInUserAccount() {
+        final UserAccount account = Generator.generateUserAccount();
+        when(securityUtilsMock.getCurrentUser()).thenReturn(account);
+        final UserAccount result = sut.getCurrent();
+        assertEquals(account, result);
+    }
 
-  @Test
-  void getCurrentReturnsCurrentUserAccountWithoutPassword() {
-    final UserAccount account = Generator.generateUserAccount();
-    account.setPassword("12345");
-    when(securityUtilsMock.getCurrentUser()).thenReturn(account);
-    final UserAccount result = sut.getCurrent();
-    assertNull(result.getPassword());
-  }
+    @Test
+    void getCurrentReturnsCurrentUserAccountWithoutPassword() {
+        final UserAccount account = Generator.generateUserAccount();
+        account.setPassword("12345");
+        when(securityUtilsMock.getCurrentUser()).thenReturn(account);
+        final UserAccount result = sut.getCurrent();
+        assertNull(result.getPassword());
+    }
 
-  @Test
-  void persistAddsUserRestrictedType() {
-    final UserAccount user = Generator.generateUserAccountWithPassword();
-    sut.persist(user);
+    @Test
+    void persistAddsUserRestrictedType() {
+        final UserAccount user = Generator.generateUserAccountWithPassword();
+        sut.persist(user);
 
-    final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-    verify(repositoryServiceMock).persist(captor.capture());
-    assertThat(captor.getValue().getTypes(), hasItem(Vocabulary.s_c_omezeny_uzivatel));
-  }
+        final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(repositoryServiceMock).persist(captor.capture());
+        assertThat(captor.getValue().getTypes(), hasItem(Vocabulary.s_c_omezeny_uzivatel));
+    }
 
-  @Test
-  void persistEnsuresAdminTypeIsNotPresentInUserAccount() {
-    final UserAccount user = Generator.generateUserAccountWithPassword();
-    user.addType(Vocabulary.s_c_administrator);
-    sut.persist(user);
+    @Test
+    void persistEnsuresAdminTypeIsNotPresentInUserAccount() {
+        final UserAccount user = Generator.generateUserAccountWithPassword();
+        user.addType(Vocabulary.s_c_administrator);
+        sut.persist(user);
 
-    final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-    verify(repositoryServiceMock).persist(captor.capture());
-    assertThat(captor.getValue().getTypes(), not(hasItem(Vocabulary.s_c_administrator)));
-  }
+        final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(repositoryServiceMock).persist(captor.capture());
+        assertThat(captor.getValue().getTypes(), not(hasItem(Vocabulary.s_c_administrator)));
+    }
 
-  @Test
-  void persistDoesNotRestrictUserTypeIfItIsBeingPersistedByAdmin() {
-    final UserAccount currentUser = Generator.generateUserAccountWithPassword();
-    currentUser.addType(Vocabulary.s_c_administrator);
-    when(securityUtilsMock.isAuthenticated()).thenReturn(true);
-    when(securityUtilsMock.getCurrentUser()).thenReturn(currentUser);
-    final UserAccount user = Generator.generateUserAccountWithPassword();
-    user.addType(Vocabulary.s_c_administrator);
-    sut.persist(user);
+    @Test
+    void persistDoesNotRestrictUserTypeIfItIsBeingPersistedByAdmin() {
+        final UserAccount currentUser = Generator.generateUserAccountWithPassword();
+        currentUser.addType(Vocabulary.s_c_administrator);
+        when(securityUtilsMock.isAuthenticated()).thenReturn(true);
+        when(securityUtilsMock.getCurrentUser()).thenReturn(currentUser);
+        final UserAccount user = Generator.generateUserAccountWithPassword();
+        user.addType(Vocabulary.s_c_administrator);
+        sut.persist(user);
 
-    final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-    verify(repositoryServiceMock).persist(captor.capture());
-    assertThat(captor.getValue().getTypes(), hasItem(Vocabulary.s_c_administrator));
-    assertThat(captor.getValue().getTypes(), not(hasItem(Vocabulary.s_c_omezeny_uzivatel)));
-  }
+        final ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
+        verify(repositoryServiceMock).persist(captor.capture());
+        assertThat(captor.getValue().getTypes(), hasItem(Vocabulary.s_c_administrator));
+        assertThat(captor.getValue().getTypes(), not(hasItem(Vocabulary.s_c_omezeny_uzivatel)));
+    }
 }

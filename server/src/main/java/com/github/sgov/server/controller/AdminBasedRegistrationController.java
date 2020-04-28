@@ -27,24 +27,24 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Admin Based Registration")
 public class AdminBasedRegistrationController {
 
-  private static final Logger LOG = LoggerFactory.getLogger(FreeRegistrationController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FreeRegistrationController.class);
 
-  private final UserService userService;
+    private final UserService userService;
 
-  @Autowired
-  public AdminBasedRegistrationController(UserService userService) {
-    this.userService = userService;
-    LOG.debug("Instantiating admin-based registration controller.");
-  }
+    @Autowired
+    public AdminBasedRegistrationController(UserService userService) {
+        this.userService = userService;
+        LOG.debug("Instantiating admin-based registration controller.");
+    }
 
-  /**
-   * Creates a new user.
-   */
-  @PreAuthorize("hasRole('" + SecurityConstants.ROLE_ADMIN + "')")
-  @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
-  public ResponseEntity<Void> createUser(@RequestBody UserAccount user) {
-    userService.persist(user);
-    LOG.info("User {} successfully registered.", user);
-    return new ResponseEntity<>(HttpStatus.CREATED);
-  }
+    /**
+     * Creates a new user.
+     */
+    @PreAuthorize("hasRole('" + SecurityConstants.ROLE_ADMIN + "')")
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
+    public ResponseEntity<Void> createUser(@RequestBody UserAccount user) {
+        userService.persist(user);
+        LOG.info("User {} successfully registered.", user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 }

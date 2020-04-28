@@ -38,52 +38,52 @@ import org.springframework.test.context.ContextConfiguration;
 @ActiveProfiles("test")
 public class TestRestSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private AuthenticationEntryPoint authenticationEntryPoint = new HttpAuthenticationEntryPoint();
+    private AuthenticationEntryPoint authenticationEntryPoint = new HttpAuthenticationEntryPoint();
 
-  @Mock
-  private AuthenticationFailureHandler authenticationFailureHandler;
+    @Mock
+    private AuthenticationFailureHandler authenticationFailureHandler;
 
-  @Mock
-  private AuthenticationSuccessHandler authenticationSuccessHandler;
+    @Mock
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
 
-  @Mock
-  private AuthenticationProvider authenticationProvider;
+    @Mock
+    private AuthenticationProvider authenticationProvider;
 
-  @Mock
-  private SGoVUserDetailsService userDetailsService;
+    @Mock
+    private SGoVUserDetailsService userDetailsService;
 
-  @Autowired
-  private JwtUtils jwtUtils;
+    @Autowired
+    private JwtUtils jwtUtils;
 
-  @Autowired
-  private SecurityUtils securityUtils;
+    @Autowired
+    private SecurityUtils securityUtils;
 
-  protected TestRestSecurityConfig() {
-    MockitoAnnotations.initMocks(this);
-  }
+    protected TestRestSecurityConfig() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) {
-    auth.authenticationProvider(authenticationProvider);
-  }
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authenticationProvider);
+    }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests().anyRequest().permitAll().and()
-        .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
-        .and().cors().and().csrf().disable()
-        .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtUtils))
-        .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtUtils, securityUtils,
-            userDetailsService,
-            Environment.getObjectMapper()))
-        .formLogin().successHandler(authenticationSuccessHandler)
-        .failureHandler(authenticationFailureHandler).and().sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-  }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().anyRequest().permitAll().and()
+            .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
+            .and().cors().and().csrf().disable()
+            .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtUtils))
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtUtils, securityUtils,
+                userDetailsService,
+                Environment.getObjectMapper()))
+            .formLogin().successHandler(authenticationSuccessHandler)
+            .failureHandler(authenticationFailureHandler).and().sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
 
-  @Bean
-  @Override
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
-  }
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 }

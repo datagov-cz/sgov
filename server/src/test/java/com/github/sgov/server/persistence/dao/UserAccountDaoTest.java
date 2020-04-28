@@ -23,53 +23,53 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = {UserAccountDao.class})
 class UserAccountDaoTest extends BaseDaoTestRunner {
 
-  @Autowired
-  private EntityManager em;
+    @Autowired
+    private EntityManager em;
 
-  @Autowired
-  private UserAccountDao sut;
+    @Autowired
+    private UserAccountDao sut;
 
-  @Test
-  void findByUsernameReturnsMatchingUser() {
-    final UserAccount user = Generator.generateUserAccountWithPassword();
-    transactional(() -> em.persist(user));
+    @Test
+    void findByUsernameReturnsMatchingUser() {
+        final UserAccount user = Generator.generateUserAccountWithPassword();
+        transactional(() -> em.persist(user));
 
-    final Optional<UserAccount> result = sut.findByUsername(user.getUsername());
-    assertTrue(result.isPresent());
-    assertEquals(user, result.get());
-  }
+        final Optional<UserAccount> result = sut.findByUsername(user.getUsername());
+        assertTrue(result.isPresent());
+        assertEquals(user, result.get());
+    }
 
-  @Test
-  void findByUsernameReturnsEmptyOptionalWhenNoMatchingUserIsFound() {
-    final Optional<UserAccount> result = sut.findByUsername("unknown@kbss.felk.cvut.cz");
-    assertNotNull(result);
-    assertFalse(result.isPresent());
-  }
+    @Test
+    void findByUsernameReturnsEmptyOptionalWhenNoMatchingUserIsFound() {
+        final Optional<UserAccount> result = sut.findByUsername("unknown@kbss.felk.cvut.cz");
+        assertNotNull(result);
+        assertFalse(result.isPresent());
+    }
 
-  @Test
-  void existsByUsernameReturnsTrueForExistingUsername() {
-    final UserAccount user = Generator.generateUserAccountWithPassword();
-    transactional(() -> em.persist(user));
+    @Test
+    void existsByUsernameReturnsTrueForExistingUsername() {
+        final UserAccount user = Generator.generateUserAccountWithPassword();
+        transactional(() -> em.persist(user));
 
-    assertTrue(sut.exists(user.getUsername()));
-  }
+        assertTrue(sut.exists(user.getUsername()));
+    }
 
-  @Test
-  void existsByUsernameReturnsFalseForUnknownUsername() {
-    assertFalse(sut.exists("unknownUsername"));
-  }
+    @Test
+    void existsByUsernameReturnsFalseForUnknownUsername() {
+        assertFalse(sut.exists("unknownUsername"));
+    }
 
-  @Test
-  void findAllReturnsAccountsSortedByUserLastNameAndFirstName() {
-    final List<UserAccount> accounts = IntStream.range(0, 10)
-        .mapToObj(i -> Generator.generateUserAccountWithPassword()).collect(
-            Collectors.toList());
-    transactional(() -> accounts.forEach(em::persist));
+    @Test
+    void findAllReturnsAccountsSortedByUserLastNameAndFirstName() {
+        final List<UserAccount> accounts = IntStream.range(0, 10)
+            .mapToObj(i -> Generator.generateUserAccountWithPassword()).collect(
+                Collectors.toList());
+        transactional(() -> accounts.forEach(em::persist));
 
-    final List<UserAccount> result = sut.findAll();
-    accounts.sort(
-        Comparator.comparing(UserAccount::getLastName)
-            .thenComparing(UserAccount::getFirstName));
-    assertEquals(result, accounts);
-  }
+        final List<UserAccount> result = sut.findAll();
+        accounts.sort(
+            Comparator.comparing(UserAccount::getLastName)
+                .thenComparing(UserAccount::getFirstName));
+        assertEquals(result, accounts);
+    }
 }

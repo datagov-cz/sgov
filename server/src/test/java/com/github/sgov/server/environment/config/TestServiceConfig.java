@@ -25,41 +25,41 @@ import org.springframework.web.client.RestTemplate;
 @ContextConfiguration(classes = {UserDetailsService.class})
 public class TestServiceConfig {
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  /**
-   * Rest template.
-   */
-  @Bean
-  public RestTemplate restTemplate() {
-    final RestTemplate client = new RestTemplate();
-    final MappingJackson2HttpMessageConverter jacksonConverter =
-        new MappingJackson2HttpMessageConverter();
-    jacksonConverter.setObjectMapper(Environment.getObjectMapper());
-    final StringHttpMessageConverter stringConverter =
-        new StringHttpMessageConverter(StandardCharsets.UTF_8);
-    client.setMessageConverters(
-        Arrays.asList(jacksonConverter, stringConverter, new ResourceHttpMessageConverter()));
-    return client;
-  }
+    /**
+     * Rest template.
+     */
+    @Bean
+    public RestTemplate restTemplate() {
+        final RestTemplate client = new RestTemplate();
+        final MappingJackson2HttpMessageConverter jacksonConverter =
+            new MappingJackson2HttpMessageConverter();
+        jacksonConverter.setObjectMapper(Environment.getObjectMapper());
+        final StringHttpMessageConverter stringConverter =
+            new StringHttpMessageConverter(StandardCharsets.UTF_8);
+        client.setMessageConverters(
+            Arrays.asList(jacksonConverter, stringConverter, new ResourceHttpMessageConverter()));
+        return client;
+    }
 
-  @Bean
-  public LocalValidatorFactoryBean validatorFactoryBean() {
-    return new LocalValidatorFactoryBean();
-  }
+    @Bean
+    public LocalValidatorFactoryBean validatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
+    }
 
-  @Bean
-  public ClassPathResource languageSpecification() {
-    return new ClassPathResource("languages/language.ttl");
-  }
+    @Bean
+    public ClassPathResource languageSpecification() {
+        return new ClassPathResource("languages/language.ttl");
+    }
 
-  @Bean
-  @Autowired
-  public SecurityUtils securityUtils(UserDetailsService userDetailService,
-                                     PasswordEncoder passwordEncoder) {
-    return new SecurityUtils(userDetailService, passwordEncoder);
-  }
+    @Bean
+    @Autowired
+    public SecurityUtils securityUtils(UserDetailsService userDetailService,
+                                       PasswordEncoder passwordEncoder) {
+        return new SecurityUtils(userDetailService, passwordEncoder);
+    }
 }

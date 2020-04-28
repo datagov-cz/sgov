@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class JwtConf {
 
-  /**
-   * OntoDriver class for the repository.
-   */
-  private String secretKey;
+    /**
+     * OntoDriver class for the repository.
+     */
+    private String secretKey;
 }

@@ -8,18 +8,18 @@ import java.util.Objects;
  */
 abstract class UserEvent {
 
-  private final UserAccount user;
+    private final UserAccount user;
 
-  UserEvent(UserAccount user) {
-    this.user = Objects.requireNonNull(user);
-  }
+    UserEvent(UserAccount user) {
+        this.user = Objects.requireNonNull(user);
+    }
 
-  /**
-   * Gets the user who is concerned by this event.
-   *
-   * @return User
-   */
-  public UserAccount getUser() {
-    return user;
-  }
+    /**
+     * Gets the user who is concerned by this event.
+     *
+     * @return User
+     */
+    public UserAccount getUser() {
+        return user;
+    }
 }

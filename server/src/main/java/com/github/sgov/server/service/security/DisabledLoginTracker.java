@@ -8,13 +8,13 @@ import com.github.sgov.server.event.LoginSuccessEvent;
  */
 public class DisabledLoginTracker implements LoginTracker {
 
-  @Override
-  public void onLoginFailure(LoginFailureEvent event) {
-    // Do nothing
-  }
+    @Override
+    public void onLoginFailure(LoginFailureEvent event) {
+        // Do nothing
+    }
 
-  @Override
-  public void onLoginSuccess(LoginSuccessEvent event) {
-    // Do nothing
-  }
+    @Override
+    public void onLoginSuccess(LoginSuccessEvent event) {
+        // Do nothing
+    }
 }

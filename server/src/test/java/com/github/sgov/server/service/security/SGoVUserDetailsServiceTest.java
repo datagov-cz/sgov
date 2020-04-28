@@ -15,27 +15,27 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 class SGoVUserDetailsServiceTest extends BaseServiceTestRunner {
 
-  @Autowired
-  private EntityManager em;
+    @Autowired
+    private EntityManager em;
 
-  @Autowired
-  private SGoVUserDetailsService sut;
+    @Autowired
+    private SGoVUserDetailsService sut;
 
-  @Test
-  void loadUserByUsernameReturnsUserDetailsForLoadedUser() {
-    final UserAccount user = Generator.generateUserAccountWithPassword();
-    transactional(() -> em.persist(user));
+    @Test
+    void loadUserByUsernameReturnsUserDetailsForLoadedUser() {
+        final UserAccount user = Generator.generateUserAccountWithPassword();
+        transactional(() -> em.persist(user));
 
-    final SGoVUserDetails result = sut.loadUserByUsername(user.getUsername());
-    assertNotNull(result);
-    assertEquals(user, result.getUser());
-  }
+        final SGoVUserDetails result = sut.loadUserByUsername(user.getUsername());
+        assertNotNull(result);
+        assertEquals(user, result.getUser());
+    }
 
-  @Test
-  void loadUserByUsernameThrowsUsernameNotFoundForUnknownUsername() {
-    final String username = "unknownUsername";
-    final UsernameNotFoundException ex =
-        assertThrows(UsernameNotFoundException.class, () -> sut.loadUserByUsername(username));
-    assertEquals("User with username " + username + " not found.", ex.getMessage());
-  }
+    @Test
+    void loadUserByUsernameThrowsUsernameNotFoundForUnknownUsername() {
+        final String username = "unknownUsername";
+        final UsernameNotFoundException ex =
+            assertThrows(UsernameNotFoundException.class, () -> sut.loadUserByUsername(username));
+        assertEquals("User with username " + username + " not found.", ex.getMessage());
+    }
 }

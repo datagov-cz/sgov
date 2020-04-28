@@ -15,58 +15,58 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 class SGoVUserDetailsTest {
 
-  @Test
-  void constructorInitializesDefaultUserAuthority() {
-    final UserAccount user = Generator.generateUserAccount();
-    final SGoVUserDetails result = new SGoVUserDetails(user);
-    assertEquals(1, result.getAuthorities().size());
-    assertTrue(
-        result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.USER.getName())));
-  }
+    @Test
+    void constructorInitializesDefaultUserAuthority() {
+        final UserAccount user = Generator.generateUserAccount();
+        final SGoVUserDetails result = new SGoVUserDetails(user);
+        assertEquals(1, result.getAuthorities().size());
+        assertTrue(
+            result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.USER.getName())));
+    }
 
-  @Test
-  void authorityBasedConstructorAddsDefaultAuthority() {
-    final Set<GrantedAuthority> authorities =
-        Collections.singleton(new SimpleGrantedAuthority("ROLE_MANAGER"));
-    final SGoVUserDetails result =
-        new SGoVUserDetails(Generator.generateUserAccount(), authorities);
-    assertTrue(
-        result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.USER.getName())));
-  }
+    @Test
+    void authorityBasedConstructorAddsDefaultAuthority() {
+        final Set<GrantedAuthority> authorities =
+            Collections.singleton(new SimpleGrantedAuthority("ROLE_MANAGER"));
+        final SGoVUserDetails result =
+            new SGoVUserDetails(Generator.generateUserAccount(), authorities);
+        assertTrue(
+            result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.USER.getName())));
+    }
 
-  @Test
-  void constructorResolvesAuthoritiesFromUserTypes() {
-    final UserAccount user = Generator.generateUserAccount();
-    user.addType(Vocabulary.s_c_administrator);
-    final SGoVUserDetails result = new SGoVUserDetails(user);
-    assertEquals(2, result.getAuthorities().size());
-    assertTrue(
-        result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.USER.getName())));
-    assertTrue(
-        result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ADMIN.getName())));
-  }
+    @Test
+    void constructorResolvesAuthoritiesFromUserTypes() {
+        final UserAccount user = Generator.generateUserAccount();
+        user.addType(Vocabulary.s_c_administrator);
+        final SGoVUserDetails result = new SGoVUserDetails(user);
+        assertEquals(2, result.getAuthorities().size());
+        assertTrue(
+            result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.USER.getName())));
+        assertTrue(
+            result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ADMIN.getName())));
+    }
 
-  @Test
-  void authorityBasedConstructorResolvesAuthoritiesFromUserTypes() {
-    final Set<GrantedAuthority> authorities =
-        Collections.singleton(new SimpleGrantedAuthority("ROLE_MANAGER"));
-    final UserAccount user = Generator.generateUserAccount();
-    user.addType(Vocabulary.s_c_administrator);
-    final SGoVUserDetails result = new SGoVUserDetails(user, authorities);
-    assertEquals(3, result.getAuthorities().size());
-    assertTrue(
-        result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.USER.getName())));
-    assertTrue(
-        result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ADMIN.getName())));
-    assertTrue(result.getAuthorities().containsAll(authorities));
-  }
+    @Test
+    void authorityBasedConstructorResolvesAuthoritiesFromUserTypes() {
+        final Set<GrantedAuthority> authorities =
+            Collections.singleton(new SimpleGrantedAuthority("ROLE_MANAGER"));
+        final UserAccount user = Generator.generateUserAccount();
+        user.addType(Vocabulary.s_c_administrator);
+        final SGoVUserDetails result = new SGoVUserDetails(user, authorities);
+        assertEquals(3, result.getAuthorities().size());
+        assertTrue(
+            result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.USER.getName())));
+        assertTrue(
+            result.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ADMIN.getName())));
+        assertTrue(result.getAuthorities().containsAll(authorities));
+    }
 
-  @Test
-  void getUserReturnsCopyOfUser() {
-    final UserAccount user = Generator.generateUserAccount();
-    final SGoVUserDetails sut = new SGoVUserDetails(user);
-    final UserAccount result = sut.getUser();
-    assertEquals(user, result);
-    assertNotSame(user, result);
-  }
+    @Test
+    void getUserReturnsCopyOfUser() {
+        final UserAccount user = Generator.generateUserAccount();
+        final SGoVUserDetails sut = new SGoVUserDetails(user);
+        final UserAccount result = sut.getUser();
+        assertEquals(user, result);
+        assertNotSame(user, result);
+    }
 }

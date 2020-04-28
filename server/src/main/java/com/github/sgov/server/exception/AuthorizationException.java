@@ -6,7 +6,7 @@ package com.github.sgov.server.exception;
  */
 public class AuthorizationException extends SGoVException {
 
-  public AuthorizationException(String message) {
-    super(message);
-  }
+    public AuthorizationException(String message) {
+        super(message);
+    }
 }

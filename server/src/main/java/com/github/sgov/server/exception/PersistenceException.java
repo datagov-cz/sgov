@@ -5,8 +5,8 @@ package com.github.sgov.server.exception;
  */
 public class PersistenceException extends SGoVException {
 
-  public PersistenceException(Throwable cause) {
-    super(cause);
-  }
+    public PersistenceException(Throwable cause) {
+        super(cause);
+    }
 
 }

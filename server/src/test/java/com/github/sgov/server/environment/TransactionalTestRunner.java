@@ -5,10 +5,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 public abstract class TransactionalTestRunner {
 
-  @Autowired
-  protected PlatformTransactionManager txManager;
+    @Autowired
+    protected PlatformTransactionManager txManager;
 
-  protected void transactional(Runnable procedure) {
-    Transaction.execute(txManager, procedure);
-  }
+    protected void transactional(Runnable procedure) {
+        Transaction.execute(txManager, procedure);
+    }
 }

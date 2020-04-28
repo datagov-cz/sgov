@@ -22,34 +22,34 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationFailure implements AuthenticationFailureHandler {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFailure.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFailure.class);
 
-  private final ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
-  @Autowired
-  public AuthenticationFailure(@Qualifier("objectMapper") ObjectMapper mapper) {
-    this.mapper = mapper;
-  }
-
-  @Override
-  public void onAuthenticationFailure(HttpServletRequest httpServletRequest,
-                                      HttpServletResponse httpServletResponse,
-                                      AuthenticationException e) throws IOException {
-    LOG.trace("Login failed for user {}.", httpServletRequest
-        .getParameter(SecurityConstants.USERNAME_PARAM));
-    final LoginStatus status = new LoginStatus()
-        .setLoggedIn(false)
-        .setSuccess(false)
-        .setUsername(null)
-        .setErrorMessage(e.getMessage());
-
-    if (e instanceof LockedException) {
-      status.setErrorId("login.locked");
-    } else if (e instanceof DisabledException) {
-      status.setErrorId("login.disabled");
-    } else if (e instanceof UsernameNotFoundException) {
-      status.setErrorId("login.error");
+    @Autowired
+    public AuthenticationFailure(@Qualifier("objectMapper") ObjectMapper mapper) {
+        this.mapper = mapper;
     }
-    mapper.writeValue(httpServletResponse.getOutputStream(), status);
-  }
+
+    @Override
+    public void onAuthenticationFailure(HttpServletRequest httpServletRequest,
+                                        HttpServletResponse httpServletResponse,
+                                        AuthenticationException e) throws IOException {
+        LOG.trace("Login failed for user {}.", httpServletRequest
+            .getParameter(SecurityConstants.USERNAME_PARAM));
+        final LoginStatus status = new LoginStatus()
+            .setLoggedIn(false)
+            .setSuccess(false)
+            .setUsername(null)
+            .setErrorMessage(e.getMessage());
+
+        if (e instanceof LockedException) {
+            status.setErrorId("login.locked");
+        } else if (e instanceof DisabledException) {
+            status.setErrorId("login.disabled");
+        } else if (e instanceof UsernameNotFoundException) {
+            status.setErrorId("login.error");
+        }
+        mapper.writeValue(httpServletResponse.getOutputStream(), status);
+    }
 }

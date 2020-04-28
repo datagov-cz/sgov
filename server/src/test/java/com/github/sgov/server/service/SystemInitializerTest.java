@@ -29,100 +29,100 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 class SystemInitializerTest extends BaseServiceTestRunner {
 
-  private static final URI ADMIN_URI = URI.create(SystemInitializer.SYSTEM_ADMIN_USER_URI);
+    private static final URI ADMIN_URI = URI.create(SystemInitializer.SYSTEM_ADMIN_USER_URI);
 
-  @Autowired
-  private UserConf userConf;
+    @Autowired
+    private UserConf userConf;
 
-  @Autowired
-  private UserRepositoryService userService;
+    @Autowired
+    private UserRepositoryService userService;
 
-  @Autowired
-  private EntityManager em;
+    @Autowired
+    private EntityManager em;
 
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-  private String adminCredentialsDir;
+    private String adminCredentialsDir;
 
-  private SystemInitializer sut;
+    private SystemInitializer sut;
 
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.initMocks(this);
-    // Randomize admin credentials folder
-    this.adminCredentialsDir =
-        System.getProperty("java.io.tmpdir") + File.separator + Generator.randomInt(0, 10000);
-    userConf.setAdminCredentialsLocation(adminCredentialsDir);
-    this.sut = new SystemInitializer(userConf, userService, txManager);
-  }
-
-  @AfterEach
-  void tearDown() throws Exception {
-    final File dir = new File(adminCredentialsDir);
-    if (dir.listFiles() != null) {
-      for (File child : Objects.requireNonNull(dir.listFiles())) {
-        Files.deleteIfExists(child.toPath());
-      }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        // Randomize admin credentials folder
+        this.adminCredentialsDir =
+            System.getProperty("java.io.tmpdir") + File.separator + Generator.randomInt(0, 10000);
+        userConf.setAdminCredentialsLocation(adminCredentialsDir);
+        this.sut = new SystemInitializer(userConf, userService, txManager);
     }
-    Files.deleteIfExists(dir.toPath());
-  }
 
-  @Test
-  void persistsSystemAdminWhenHeDoesNotExist() {
-    sut.initSystemAdmin();
-    assertNotNull(em.find(UserAccount.class, ADMIN_URI));
-  }
+    @AfterEach
+    void tearDown() throws Exception {
+        final File dir = new File(adminCredentialsDir);
+        if (dir.listFiles() != null) {
+            for (File child : Objects.requireNonNull(dir.listFiles())) {
+                Files.deleteIfExists(child.toPath());
+            }
+        }
+        Files.deleteIfExists(dir.toPath());
+    }
 
-  @Test
-  void doesNotCreateNewAdminWhenOneAlreadyExists() {
-    sut.initSystemAdmin();
-    final UserAccount admin = em.find(UserAccount.class, ADMIN_URI);
-    sut.initSystemAdmin();
-    final UserAccount result = em.find(UserAccount.class, ADMIN_URI);
-    // We know that password is generated, so the same password means no new instance was
-    // created
-    Assert.assertEquals(admin.getPassword(), result.getPassword());
-  }
+    @Test
+    void persistsSystemAdminWhenHeDoesNotExist() {
+        sut.initSystemAdmin();
+        assertNotNull(em.find(UserAccount.class, ADMIN_URI));
+    }
 
-  @Test
-  void savesAdminLoginCredentialsIntoHiddenFileInUserHome() throws Exception {
-    sut.initSystemAdmin();
-    final UserAccount admin = em.find(UserAccount.class, ADMIN_URI);
-    final File credentialsFile = new File(userConf.getAdminCredentialsLocation()
-        + File.separator + userConf.getAdminCredentialsFile());
-    assertTrue(credentialsFile.exists());
-    assertTrue(credentialsFile.isHidden());
-    verifyAdminCredentialsFileContent(admin, credentialsFile);
-  }
+    @Test
+    void doesNotCreateNewAdminWhenOneAlreadyExists() {
+        sut.initSystemAdmin();
+        final UserAccount admin = em.find(UserAccount.class, ADMIN_URI);
+        sut.initSystemAdmin();
+        final UserAccount result = em.find(UserAccount.class, ADMIN_URI);
+        // We know that password is generated, so the same password means no new instance was
+        // created
+        Assert.assertEquals(admin.getPassword(), result.getPassword());
+    }
 
-  private void verifyAdminCredentialsFileContent(UserAccount admin, File credentialsFile)
-      throws IOException {
-    final List<String> lines = Files.readAllLines(credentialsFile.toPath());
-    assertThat(lines.get(0), containsString(admin.getUsername() + "/"));
-    final String password = lines.get(0).substring(lines.get(0).indexOf('/') + 1);
-    assertTrue(passwordEncoder.matches(password, admin.getPassword()));
-  }
+    @Test
+    void savesAdminLoginCredentialsIntoHiddenFileInUserHome() throws Exception {
+        sut.initSystemAdmin();
+        final UserAccount admin = em.find(UserAccount.class, ADMIN_URI);
+        final File credentialsFile = new File(userConf.getAdminCredentialsLocation()
+            + File.separator + userConf.getAdminCredentialsFile());
+        assertTrue(credentialsFile.exists());
+        assertTrue(credentialsFile.isHidden());
+        verifyAdminCredentialsFileContent(admin, credentialsFile);
+    }
 
-  @Test
-  void savesAdminLoginCredentialsIntoConfiguredFile() throws Exception {
-    final String adminFileName = ".admin-file-with-different-name";
-    userConf.setAdminCredentialsFile(adminFileName);
-    this.sut = new SystemInitializer(userConf, userService, txManager);
-    sut.initSystemAdmin();
-    final UserAccount admin = em.find(UserAccount.class, ADMIN_URI);
-    final File credentialsFile = new File(adminCredentialsDir + File.separator + adminFileName);
-    assertTrue(credentialsFile.exists());
-    assertTrue(credentialsFile.isHidden());
-    verifyAdminCredentialsFileContent(admin, credentialsFile);
-  }
+    private void verifyAdminCredentialsFileContent(UserAccount admin, File credentialsFile)
+        throws IOException {
+        final List<String> lines = Files.readAllLines(credentialsFile.toPath());
+        assertThat(lines.get(0), containsString(admin.getUsername() + "/"));
+        final String password = lines.get(0).substring(lines.get(0).indexOf('/') + 1);
+        assertTrue(passwordEncoder.matches(password, admin.getPassword()));
+    }
 
-  @Test
-  void ensuresGeneratedAccountIsAdmin() {
-    sut.initSystemAdmin();
-    final UserAccount result = em.find(UserAccount.class, ADMIN_URI);
-    assertNotNull(result);
-    assertThat(result.getTypes(), hasItem(Vocabulary.s_c_administrator));
-    assertThat(result.getTypes(), not(hasItem(Vocabulary.s_c_omezeny_uzivatel)));
-  }
+    @Test
+    void savesAdminLoginCredentialsIntoConfiguredFile() throws Exception {
+        final String adminFileName = ".admin-file-with-different-name";
+        userConf.setAdminCredentialsFile(adminFileName);
+        this.sut = new SystemInitializer(userConf, userService, txManager);
+        sut.initSystemAdmin();
+        final UserAccount admin = em.find(UserAccount.class, ADMIN_URI);
+        final File credentialsFile = new File(adminCredentialsDir + File.separator + adminFileName);
+        assertTrue(credentialsFile.exists());
+        assertTrue(credentialsFile.isHidden());
+        verifyAdminCredentialsFileContent(admin, credentialsFile);
+    }
+
+    @Test
+    void ensuresGeneratedAccountIsAdmin() {
+        sut.initSystemAdmin();
+        final UserAccount result = em.find(UserAccount.class, ADMIN_URI);
+        assertNotNull(result);
+        assertThat(result.getTypes(), hasItem(Vocabulary.s_c_administrator));
+        assertThat(result.getTypes(), not(hasItem(Vocabulary.s_c_omezeny_uzivatel)));
+    }
 }

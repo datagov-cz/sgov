@@ -7,7 +7,7 @@ import com.github.sgov.server.model.UserAccount;
  */
 public class LoginSuccessEvent extends UserEvent {
 
-  public LoginSuccessEvent(UserAccount user) {
-    super(user);
-  }
+    public LoginSuccessEvent(UserAccount user) {
+        super(user);
+    }
 }

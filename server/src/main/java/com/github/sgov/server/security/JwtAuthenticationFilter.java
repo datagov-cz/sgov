@@ -16,22 +16,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
-  public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
-    this.jwtUtils = jwtUtils;
-    setAuthenticationManager(authenticationManager);
-  }
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
+        setAuthenticationManager(authenticationManager);
+    }
 
-  @Override
-  protected void successfulAuthentication(HttpServletRequest request,
-                                          HttpServletResponse response,
-                                          FilterChain chain,
-                                          Authentication authResult)
-      throws IOException, ServletException {
-    final SGoVUserDetails ud = (SGoVUserDetails) authResult.getDetails();
-    final String token = jwtUtils.generateToken(ud);
-    response.addHeader(HttpHeaders.AUTHORIZATION, SecurityConstants.JWT_TOKEN_PREFIX + token);
-    super.successfulAuthentication(request, response, chain, authResult);
-  }
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult)
+        throws IOException, ServletException {
+        final SGoVUserDetails ud = (SGoVUserDetails) authResult.getDetails();
+        final String token = jwtUtils.generateToken(ud);
+        response.addHeader(HttpHeaders.AUTHORIZATION, SecurityConstants.JWT_TOKEN_PREFIX + token);
+        super.successfulAuthentication(request, response, chain, authResult);
+    }
 }

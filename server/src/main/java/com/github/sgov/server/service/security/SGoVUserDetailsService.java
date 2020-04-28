@@ -13,16 +13,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class SGoVUserDetailsService implements UserDetailsService {
 
-  private final UserAccountDao userAccountDao;
+    private final UserAccountDao userAccountDao;
 
-  @Autowired
-  public SGoVUserDetailsService(UserAccountDao userAccountDao) {
-    this.userAccountDao = userAccountDao;
-  }
+    @Autowired
+    public SGoVUserDetailsService(UserAccountDao userAccountDao) {
+        this.userAccountDao = userAccountDao;
+    }
 
-  @Override
-  public SGoVUserDetails loadUserByUsername(String username) {
-    return new SGoVUserDetails(userAccountDao.findByUsername(username).orElseThrow(
-        () -> new UsernameNotFoundException("User with username " + username + " not found.")));
-  }
+    @Override
+    public SGoVUserDetails loadUserByUsername(String username) {
+        return new SGoVUserDetails(userAccountDao.findByUsername(username).orElseThrow(
+            () -> new UsernameNotFoundException("User with username " + username + " not found.")));
+    }
 }

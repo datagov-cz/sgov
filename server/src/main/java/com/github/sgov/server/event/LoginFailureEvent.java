@@ -7,7 +7,7 @@ import com.github.sgov.server.model.UserAccount;
  */
 public class LoginFailureEvent extends UserEvent {
 
-  public LoginFailureEvent(UserAccount user) {
-    super(user);
-  }
+    public LoginFailureEvent(UserAccount user) {
+        super(user);
+    }
 }

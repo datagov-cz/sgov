@@ -28,45 +28,45 @@ import org.springframework.test.context.ContextConfiguration;
 @ActiveProfiles("test")
 public class TestPersistenceFactory {
 
-  private final RepositoryConf confRepository;
+    private final RepositoryConf confRepository;
 
-  private final PersistenceConf confPersistence;
+    private final PersistenceConf confPersistence;
 
-  private EntityManagerFactory emf;
+    private EntityManagerFactory emf;
 
-  @Autowired
-  public TestPersistenceFactory(RepositoryConf confRepository, PersistenceConf confPersistence) {
-    this.confRepository = confRepository;
-    this.confPersistence = confPersistence;
-  }
-
-  @Bean
-  @Primary
-  public EntityManagerFactory getEntityManagerFactory() {
-    return emf;
-  }
-
-  @PostConstruct
-  private void init() {
-    final Map<String, String> properties = MainPersistenceFactory.defaultParams();
-    properties.put(ONTOLOGY_PHYSICAL_URI_KEY, confRepository.getUrl());
-    properties
-        .put(SesameOntoDriverProperties.SESAME_USE_VOLATILE_STORAGE, Boolean.TRUE.toString());
-    properties.put(SesameOntoDriverProperties.SESAME_USE_INFERENCE, Boolean.TRUE.toString());
-    properties.put(DATA_SOURCE_CLASS, confPersistence.getDriver());
-    properties.put(LANG, confPersistence.getLanguage());
-    // OPTIMIZATION: Always use statement retrieval with unbound property. Should spare
-    // repository queries
-    properties.put(SesameOntoDriverProperties.SESAME_LOAD_ALL_THRESHOLD, "1");
-    properties
-        .put(SesameOntoDriverProperties.SESAME_REPOSITORY_CONFIG, "rdf4j-memory-spin-rdfs.ttl");
-    this.emf = Persistence.createEntityManagerFactory("termitTestPU", properties);
-  }
-
-  @PreDestroy
-  private void close() {
-    if (emf.isOpen()) {
-      emf.close();
+    @Autowired
+    public TestPersistenceFactory(RepositoryConf confRepository, PersistenceConf confPersistence) {
+        this.confRepository = confRepository;
+        this.confPersistence = confPersistence;
     }
-  }
+
+    @Bean
+    @Primary
+    public EntityManagerFactory getEntityManagerFactory() {
+        return emf;
+    }
+
+    @PostConstruct
+    private void init() {
+        final Map<String, String> properties = MainPersistenceFactory.defaultParams();
+        properties.put(ONTOLOGY_PHYSICAL_URI_KEY, confRepository.getUrl());
+        properties
+            .put(SesameOntoDriverProperties.SESAME_USE_VOLATILE_STORAGE, Boolean.TRUE.toString());
+        properties.put(SesameOntoDriverProperties.SESAME_USE_INFERENCE, Boolean.TRUE.toString());
+        properties.put(DATA_SOURCE_CLASS, confPersistence.getDriver());
+        properties.put(LANG, confPersistence.getLanguage());
+        // OPTIMIZATION: Always use statement retrieval with unbound property. Should spare
+        // repository queries
+        properties.put(SesameOntoDriverProperties.SESAME_LOAD_ALL_THRESHOLD, "1");
+        properties
+            .put(SesameOntoDriverProperties.SESAME_REPOSITORY_CONFIG, "rdf4j-memory-spin-rdfs.ttl");
+        this.emf = Persistence.createEntityManagerFactory("termitTestPU", properties);
+    }
+
+    @PreDestroy
+    private void close() {
+        if (emf.isOpen()) {
+            emf.close();
+        }
+    }
 }

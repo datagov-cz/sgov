@@ -22,39 +22,39 @@ import org.topbraid.shacl.validation.ValidationReport;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class WorkspaceController extends BaseController {
 
-  private final WorkspaceDao workspaceDao;
+    private final WorkspaceDao workspaceDao;
 
-  @Autowired
-  public WorkspaceController(WorkspaceDao workspaceDao, IdentifierResolver idResolver) {
-    super(idResolver);
-    this.workspaceDao = workspaceDao;
-  }
+    @Autowired
+    public WorkspaceController(WorkspaceDao workspaceDao, IdentifierResolver idResolver) {
+        super(idResolver);
+        this.workspaceDao = workspaceDao;
+    }
 
-  @GetMapping(value = "/all", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-  @ApiOperation(value = "Retrieves IRIs of all workspaces.")
-  @ResponseBody
-  public List<String> getAll() {
-    return workspaceDao.getAllWorkspaceIris();
-  }
+    @GetMapping(value = "/all", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Retrieves IRIs of all workspaces.")
+    @ResponseBody
+    public List<String> getAll() {
+        return workspaceDao.getAllWorkspaceIris();
+    }
 
-  @GetMapping(value = "/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-  @ApiOperation(value = "Validates workspace using predefined rules. This involves "
-      + "e.g. checking that each term has a skos:prefLabel, or that each Role-typed "
-      + "term has a super term typed as Kind.")
-  @ResponseBody
-  @ApiImplicitParam(name = "Accept-language",
-      value = "cs",
-      required = true,
-      paramType = "header",
-      dataTypeClass = String.class,
-      example = "cs"
-  )
-  public ValidationReport validate(
-      @ApiParam(value = "http://example.org/mc",
-          required = true,
-          example = "http://example.org/mc"
-      ) @RequestParam String iri
-  ) {
-    return workspaceDao.validateWorkspace(iri);
-  }
+    @GetMapping(value = "/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Validates workspace using predefined rules. This involves "
+        + "e.g. checking that each term has a skos:prefLabel, or that each Role-typed "
+        + "term has a super term typed as Kind.")
+    @ResponseBody
+    @ApiImplicitParam(name = "Accept-language",
+        value = "cs",
+        required = true,
+        paramType = "header",
+        dataTypeClass = String.class,
+        example = "cs"
+    )
+    public ValidationReport validate(
+        @ApiParam(value = "http://example.org/mc",
+            required = true,
+            example = "http://example.org/mc"
+        ) @RequestParam String iri
+    ) {
+        return workspaceDao.validateWorkspace(iri);
+    }
 }

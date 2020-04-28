@@ -9,7 +9,7 @@ import com.github.sgov.server.model.UserAccount;
  */
 public class LoginAttemptsThresholdExceeded extends UserEvent {
 
-  public LoginAttemptsThresholdExceeded(UserAccount user) {
-    super(user);
-  }
+    public LoginAttemptsThresholdExceeded(UserAccount user) {
+        super(user);
+    }
 }

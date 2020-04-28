@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class HttpAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-  @Override
-  public void commence(HttpServletRequest httpServletRequest,
-                       HttpServletResponse httpServletResponse,
-                       AuthenticationException e) throws IOException {
-    httpServletResponse
-        .sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required.");
-  }
+    @Override
+    public void commence(HttpServletRequest httpServletRequest,
+                         HttpServletResponse httpServletResponse,
+                         AuthenticationException e) throws IOException {
+        httpServletResponse
+            .sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required.");
+    }
 }

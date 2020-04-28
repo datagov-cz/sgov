@@ -39,93 +39,93 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 })
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private final AuthenticationProvider authenticationProvider;
+    private final AuthenticationProvider authenticationProvider;
 
-  private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
-  private final AuthenticationSuccess authenticationSuccessHandler;
+    private final AuthenticationSuccess authenticationSuccessHandler;
 
-  private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final AuthenticationFailureHandler authenticationFailureHandler;
 
-  private final JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
-  private final SecurityUtils securityUtils;
+    private final SecurityUtils securityUtils;
 
-  private final SGoVUserDetailsService userDetailsService;
+    private final SGoVUserDetailsService userDetailsService;
 
-  private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-  /**
-   * SecurityConfig.
-   */
-  @Autowired
-  @SuppressWarnings("checkstyle:ParameterNumber")
-  public SecurityConfig(AuthenticationProvider authenticationProvider,
-                        AuthenticationEntryPoint authenticationEntryPoint,
-                        AuthenticationSuccess authenticationSuccessHandler,
-                        AuthenticationFailureHandler authenticationFailureHandler,
-                        JwtUtils jwtUtils, SecurityUtils securityUtils,
-                        SGoVUserDetailsService userDetailsService,
-                        ObjectMapper objectMapper) {
-    this.authenticationProvider = authenticationProvider;
-    this.authenticationEntryPoint = authenticationEntryPoint;
-    this.authenticationSuccessHandler = authenticationSuccessHandler;
-    this.authenticationFailureHandler = authenticationFailureHandler;
-    this.jwtUtils = jwtUtils;
-    this.securityUtils = securityUtils;
-    this.userDetailsService = userDetailsService;
-    this.objectMapper = objectMapper;
-  }
+    /**
+     * SecurityConfig.
+     */
+    @Autowired
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    public SecurityConfig(AuthenticationProvider authenticationProvider,
+                          AuthenticationEntryPoint authenticationEntryPoint,
+                          AuthenticationSuccess authenticationSuccessHandler,
+                          AuthenticationFailureHandler authenticationFailureHandler,
+                          JwtUtils jwtUtils, SecurityUtils securityUtils,
+                          SGoVUserDetailsService userDetailsService,
+                          ObjectMapper objectMapper) {
+        this.authenticationProvider = authenticationProvider;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.authenticationFailureHandler = authenticationFailureHandler;
+        this.jwtUtils = jwtUtils;
+        this.securityUtils = securityUtils;
+        this.userDetailsService = userDetailsService;
+        this.objectMapper = objectMapper;
+    }
 
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) {
-    auth.authenticationProvider(authenticationProvider);
-  }
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authenticationProvider);
+    }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests().antMatchers("/rest/query").permitAll().and().cors().and().csrf()
-        .disable()
-        .authorizeRequests().antMatchers("/**").permitAll()
-        .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
-        .and().cors().and().csrf().disable()
-        .addFilter(authenticationFilter())
-        .addFilter(
-            new JwtAuthorizationFilter(authenticationManager(), jwtUtils, securityUtils,
-                userDetailsService,
-                objectMapper))
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-  }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers("/rest/query").permitAll().and().cors().and().csrf()
+            .disable()
+            .authorizeRequests().antMatchers("/**").permitAll()
+            .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
+            .and().cors().and().csrf().disable()
+            .addFilter(authenticationFilter())
+            .addFilter(
+                new JwtAuthorizationFilter(authenticationManager(), jwtUtils, securityUtils,
+                    userDetailsService,
+                    objectMapper))
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
 
-  /**
-   * JwtAuthenticationFilter.
-   */
-  @Bean
-  public JwtAuthenticationFilter authenticationFilter() throws Exception {
-    final JwtAuthenticationFilter authenticationFilter =
-        new JwtAuthenticationFilter(authenticationManager(),
-            jwtUtils);
-    authenticationFilter.setFilterProcessesUrl(SecurityConstants.SECURITY_CHECK_URI);
-    authenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
-    authenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
-    return authenticationFilter;
-  }
+    /**
+     * JwtAuthenticationFilter.
+     */
+    @Bean
+    public JwtAuthenticationFilter authenticationFilter() throws Exception {
+        final JwtAuthenticationFilter authenticationFilter =
+            new JwtAuthenticationFilter(authenticationManager(),
+                jwtUtils);
+        authenticationFilter.setFilterProcessesUrl(SecurityConstants.SECURITY_CHECK_URI);
+        authenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
+        authenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
+        return authenticationFilter;
+    }
 
-  @Bean
-  CorsConfigurationSource corsConfigurationSource() {
-    // We're allowing all methods from all origins so that the application API is usable also by
-    // other clients
-    // than just the UI.
-    // This behavior can be restricted later.
-    final CorsConfiguration corsConfiguration =
-        new CorsConfiguration().applyPermitDefaultValues();
-    corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
-    corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
-    corsConfiguration.addExposedHeader(HttpHeaders.AUTHORIZATION);
-    corsConfiguration.addExposedHeader(HttpHeaders.LOCATION);
-    corsConfiguration.addExposedHeader(HttpHeaders.CONTENT_DISPOSITION);
-    final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", corsConfiguration);
-    return source;
-  }
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        // We're allowing all methods from all origins so that the application API is usable also by
+        // other clients
+        // than just the UI.
+        // This behavior can be restricted later.
+        final CorsConfiguration corsConfiguration =
+            new CorsConfiguration().applyPermitDefaultValues();
+        corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
+        corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
+        corsConfiguration.addExposedHeader(HttpHeaders.AUTHORIZATION);
+        corsConfiguration.addExposedHeader(HttpHeaders.LOCATION);
+        corsConfiguration.addExposedHeader(HttpHeaders.CONTENT_DISPOSITION);
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
+    }
 }

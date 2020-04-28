@@ -20,14 +20,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class TestPersistenceConfig {
 
-  @Bean
-  public DelegatingEntityManager entityManager() {
-    return new DelegatingEntityManager();
-  }
+    @Bean
+    public DelegatingEntityManager entityManager() {
+        return new DelegatingEntityManager();
+    }
 
-  @Bean(name = "txManager")
-  public PlatformTransactionManager transactionManager(EntityManagerFactory emf,
-                                                       DelegatingEntityManager emProxy) {
-    return new JopaTransactionManager(emf, emProxy);
-  }
+    @Bean(name = "txManager")
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf,
+                                                         DelegatingEntityManager emProxy) {
+        return new JopaTransactionManager(emf, emProxy);
+    }
 }

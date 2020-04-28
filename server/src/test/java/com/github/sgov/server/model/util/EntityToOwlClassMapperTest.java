@@ -9,17 +9,17 @@ import org.junit.jupiter.api.Test;
 
 class EntityToOwlClassMapperTest {
 
-  @Test
-  void getOwlClassForEntityReturnsClassIriForEntityClass() {
-    final String result = EntityToOwlClassMapper.getOwlClassForEntity(User.class);
-    assertEquals(Vocabulary.s_c_uzivatel, result);
-  }
+    @Test
+    void getOwlClassForEntityReturnsClassIriForEntityClass() {
+        final String result = EntityToOwlClassMapper.getOwlClassForEntity(User.class);
+        assertEquals(Vocabulary.s_c_uzivatel, result);
+    }
 
-  @Test
-  void getOwlClassForEntityThrowsIllegalArgumentForClassNotAnnotatedWithOwlClass() {
-    final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-        () -> EntityToOwlClassMapper.getOwlClassForEntity(EntityToOwlClassMapper.class));
-    assertEquals("Class " + EntityToOwlClassMapper.class + " is not an OWL entity.",
-        ex.getMessage());
-  }
+    @Test
+    void getOwlClassForEntityThrowsIllegalArgumentForClassNotAnnotatedWithOwlClass() {
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+            () -> EntityToOwlClassMapper.getOwlClassForEntity(EntityToOwlClassMapper.class));
+        assertEquals("Class " + EntityToOwlClassMapper.class + " is not an OWL entity.",
+            ex.getMessage());
+    }
 }

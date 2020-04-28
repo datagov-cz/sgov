@@ -17,24 +17,24 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class ServiceConfig {
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  /**
-   * Provides JSR 380 validator for bean validation.
-   */
-  @Bean
-  public LocalValidatorFactoryBean validatorFactoryBean() {
-    return new LocalValidatorFactoryBean();
-  }
+    /**
+     * Provides JSR 380 validator for bean validation.
+     */
+    @Bean
+    public LocalValidatorFactoryBean validatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
+    }
 
-  @Bean
-  public SystemInitializer systemInitializer(UserConf config,
-                                             UserRepositoryService userService,
-                                             PlatformTransactionManager txManager) {
-    return new SystemInitializer(config, userService, txManager);
-  }
+    @Bean
+    public SystemInitializer systemInitializer(UserConf config,
+                                               UserRepositoryService userService,
+                                               PlatformTransactionManager txManager) {
+        return new SystemInitializer(config, userService, txManager);
+    }
 }
 

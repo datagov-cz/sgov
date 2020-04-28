@@ -10,27 +10,27 @@ import java.util.stream.Collectors;
  */
 public class ValidationException extends SGoVException {
 
-  private final ValidationResult<?> validationResult;
+    private final ValidationResult<?> validationResult;
 
-  public ValidationException(String message) {
-    super(message);
-    this.validationResult = null;
-  }
-
-  public ValidationException(ValidationResult<?> validationResult) {
-    assert !validationResult.isValid();
-    this.validationResult = validationResult;
-  }
-
-  @Override
-  public String getMessage() {
-    if (validationResult == null) {
-      return super.getMessage();
+    public ValidationException(String message) {
+        super(message);
+        this.validationResult = null;
     }
-    return String.join("\n",
-        validationResult.getViolations().stream()
-            .map(cv -> "Value of " + cv.getRootBeanClass().getSimpleName() + "."
-                + cv.getPropertyPath() + " " + cv.getMessage())
-            .collect(Collectors.toSet()));
-  }
+
+    public ValidationException(ValidationResult<?> validationResult) {
+        assert !validationResult.isValid();
+        this.validationResult = validationResult;
+    }
+
+    @Override
+    public String getMessage() {
+        if (validationResult == null) {
+            return super.getMessage();
+        }
+        return String.join("\n",
+            validationResult.getViolations().stream()
+                .map(cv -> "Value of " + cv.getRootBeanClass().getSimpleName() + "."
+                    + cv.getPropertyPath() + " " + cv.getMessage())
+                .collect(Collectors.toSet()));
+    }
 }

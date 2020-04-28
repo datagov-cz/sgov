@@ -25,52 +25,52 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(classes = {TestSecurityConfig.class})
 class AuthenticationSuccessTest extends BaseServiceTestRunner {
 
-  private UserAccount person = Generator.generateUserAccount();
+    private UserAccount person = Generator.generateUserAccount();
 
-  @Autowired
-  private AuthenticationSuccess success;
+    @Autowired
+    private AuthenticationSuccess success;
 
-  @Autowired
-  private ObjectMapper mapper;
+    @Autowired
+    private ObjectMapper mapper;
 
-  static MockHttpServletRequest request() {
-    return new MockHttpServletRequest();
-  }
+    static MockHttpServletRequest request() {
+        return new MockHttpServletRequest();
+    }
 
-  static MockHttpServletResponse response() {
-    return new MockHttpServletResponse();
-  }
+    static MockHttpServletResponse response() {
+        return new MockHttpServletResponse();
+    }
 
-  @Test
-  void authenticationSuccessReturnsResponseContainingUsername() throws Exception {
-    final MockHttpServletResponse response = response();
-    success.onAuthenticationSuccess(request(), response, generateAuthenticationToken());
-    verifyLoginStatus(response);
-  }
+    @Test
+    void authenticationSuccessReturnsResponseContainingUsername() throws Exception {
+        final MockHttpServletResponse response = response();
+        success.onAuthenticationSuccess(request(), response, generateAuthenticationToken());
+        verifyLoginStatus(response);
+    }
 
-  private void verifyLoginStatus(MockHttpServletResponse response) throws java.io.IOException {
-    final LoginStatus status =
-        mapper.readValue(response.getContentAsString(), LoginStatus.class);
-    assertTrue(status.isSuccess());
-    assertTrue(status.isLoggedIn());
-    assertEquals(person.getUsername(), status.getUsername());
-    assertNull(status.getErrorMessage());
-  }
+    private void verifyLoginStatus(MockHttpServletResponse response) throws java.io.IOException {
+        final LoginStatus status =
+            mapper.readValue(response.getContentAsString(), LoginStatus.class);
+        assertTrue(status.isSuccess());
+        assertTrue(status.isLoggedIn());
+        assertEquals(person.getUsername(), status.getUsername());
+        assertNull(status.getErrorMessage());
+    }
 
-  private Authentication generateAuthenticationToken() {
-    final SGoVUserDetails userDetails = new SGoVUserDetails(person);
-    return new AuthenticationToken(userDetails.getAuthorities(), userDetails);
-  }
+    private Authentication generateAuthenticationToken() {
+        final SGoVUserDetails userDetails = new SGoVUserDetails(person);
+        return new AuthenticationToken(userDetails.getAuthorities(), userDetails);
+    }
 
-  @Test
-  void logoutSuccessReturnsResponseContainingLoginStatus() throws Exception {
-    final MockHttpServletResponse response = response();
-    success.onLogoutSuccess(request(), response, generateAuthenticationToken());
-    final LoginStatus status =
-        mapper.readValue(response.getContentAsString(), LoginStatus.class);
-    assertTrue(status.isSuccess());
-    assertFalse(status.isLoggedIn());
-    assertNull(status.getUsername());
-    assertNull(status.getErrorMessage());
-  }
+    @Test
+    void logoutSuccessReturnsResponseContainingLoginStatus() throws Exception {
+        final MockHttpServletResponse response = response();
+        success.onLogoutSuccess(request(), response, generateAuthenticationToken());
+        final LoginStatus status =
+            mapper.readValue(response.getContentAsString(), LoginStatus.class);
+        assertTrue(status.isSuccess());
+        assertFalse(status.isLoggedIn());
+        assertNull(status.getUsername());
+        assertNull(status.getErrorMessage());
+    }
 }

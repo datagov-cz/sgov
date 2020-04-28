@@ -5,7 +5,7 @@ package com.github.sgov.server.exception;
  */
 public class IncompleteJwtException extends JwtException {
 
-  public IncompleteJwtException(String message) {
-    super(message);
-  }
+    public IncompleteJwtException(String message) {
+        super(message);
+    }
 }

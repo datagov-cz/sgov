@@ -10,7 +10,7 @@ import java.net.URI;
  */
 public interface HasIdentifier {
 
-  URI getUri();
+    URI getUri();
 
-  void setUri(URI uri);
+    void setUri(URI uri);
 }
