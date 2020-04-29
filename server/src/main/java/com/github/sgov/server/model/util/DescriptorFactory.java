@@ -1,8 +1,10 @@
 package com.github.sgov.server.model.util;
 
 import com.github.sgov.server.model.UserAccount;
+import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
 import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
+import java.net.URI;
 import java.util.Objects;
 
 /**
@@ -25,9 +27,11 @@ public final class DescriptorFactory {
      */
     public static Descriptor userManagementDescriptor(UserAccount userAccount) {
         Objects.requireNonNull(userAccount);
-        final EntityDescriptor descriptor = new EntityDescriptor(userAccount.getUri());
+        final EntityDescriptor descriptor
+            = new EntityDescriptor(URI.create(Vocabulary.s_c_uzivatel));
         descriptor
-            .addAttributeDescriptor(UserAccount.getPasswordField(), new EntityDescriptor(null));
+            .addAttributeDescriptor(UserAccount.getPasswordField(),
+                new EntityDescriptor(null));
         return descriptor;
     }
 }
