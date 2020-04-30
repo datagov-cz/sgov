@@ -1,6 +1,7 @@
 # SGoV
 This repository contains web services for SGoV workspace tools:
 - user management
+- user authentication
 - workspace validation
 
 ## Workspace Validation
