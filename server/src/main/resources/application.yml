@@ -1,11 +1,14 @@
 spring:
 #  main.allow-bean-definition-overriding: true
+server:
+  port: 18189
+  servlet:
+    contextPath: /sgov-server
 
 jwt.secretKey: SecretKey
 
-server.port: 49080
 repository:
-  url: https://onto.fel.cvut.cz:7200/repositories/kodi-pracovni-prostor-validace
+  url: https://onto.fel.cvut.cz:7200/repositories/kodi-uloziste-dev
 
 persistence:
   driver: cz.cvut.kbss.ontodriver.sesame.SesameDataSource
