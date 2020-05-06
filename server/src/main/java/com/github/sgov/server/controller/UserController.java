@@ -7,6 +7,8 @@ import com.github.sgov.server.security.SecurityConstants;
 import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.UserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import java.net.URI;
 import java.util.List;
 import org.slf4j.Logger;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/users")
@@ -57,6 +60,20 @@ public class UserController extends BaseController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping(value = "/current",
         consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
+    @ApiOperation(value = "Updates the current user. Note that all fields must be present. Also, "
+        + "'uri' and 'username' must correspond to those of the current user.")
+    @ApiImplicitParam(name = "update",
+        required = true,
+        paramType = "body",
+        dataTypeClass = Json.class,
+        value = "{\n"
+            + "        \"uri\":\"http://onto.fel.cvut"
+            + ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka\",\n"
+            + "        \"username\" : \"franta.vomacka@mujma.il\",\n"
+            + "        \"lastName\" : \"Vomáčka\",\n"
+            + "        \"firstName\" : \"Franta\"\n"
+            + "    }"
+    )
     public void updateCurrent(@RequestBody UserUpdateDto update) {
         userService.updateCurrent(update);
         LOG.debug("User {} successfully updated.", update);

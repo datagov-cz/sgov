@@ -12,6 +12,7 @@ import com.github.sgov.server.environment.Environment;
 import com.github.sgov.server.environment.Generator;
 import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.UserAccount;
+import com.github.sgov.server.model.util.DescriptorFactory;
 import com.github.sgov.server.service.BaseServiceTestRunner;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import java.net.URI;
@@ -34,7 +35,7 @@ class UserRepositoryServiceTest extends BaseServiceTestRunner {
     @Test
     void existsByUsernameReturnsTrueForExistingUsername() {
         final UserAccount user = Generator.generateUserAccountWithPassword();
-        transactional(() -> em.persist(user));
+        transactional(() -> em.persist(user, DescriptorFactory.userManagementDescriptor(user)));
 
         assertTrue(sut.exists(user.getUsername()));
     }
@@ -98,7 +99,7 @@ class UserRepositoryServiceTest extends BaseServiceTestRunner {
         final UserAccount user = Generator.generateUserAccountWithPassword();
         final String plainPassword = user.getPassword();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        transactional(() -> em.persist(user));
+        transactional(() -> em.persist(user, DescriptorFactory.userManagementDescriptor(user)));
         Environment.setCurrentUser(user);
         user.setPassword(null); // Simulate instance being loaded from repo
         final String newLastName = "newLastName";
@@ -122,7 +123,7 @@ class UserRepositoryServiceTest extends BaseServiceTestRunner {
     private UserAccount persistUser() {
         final UserAccount user = Generator.generateUserAccountWithPassword();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        transactional(() -> em.persist(user));
+        transactional(() -> em.persist(user, DescriptorFactory.userManagementDescriptor(user)));
         return user;
     }
 

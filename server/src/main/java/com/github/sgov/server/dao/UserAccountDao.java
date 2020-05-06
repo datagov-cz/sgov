@@ -39,6 +39,16 @@ public class UserAccountDao extends BaseDao<UserAccount> {
         }
     }
 
+    @Override
+    public UserAccount update(UserAccount entity) {
+        Objects.requireNonNull(entity);
+        try {
+            return em.merge(entity, DescriptorFactory.userManagementDescriptor(entity));
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
     /**
      * Finds a user with the specified username.
      *
