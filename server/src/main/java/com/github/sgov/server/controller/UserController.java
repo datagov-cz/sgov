@@ -60,19 +60,19 @@ public class UserController extends BaseController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping(value = "/current",
         consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
-    @ApiOperation(value = "Updates the current user. Note that all fields must be present. Also, " +
-        "'uri' and 'username' must correspond to those of the current user.")
+    @ApiOperation(value = "Updates the current user. Note that all fields must be present. Also, "
+        + "'uri' and 'username' must correspond to those of the current user.")
     @ApiImplicitParam(name = "update",
         required = true,
         paramType = "body",
         dataTypeClass = Json.class,
-        value = "{\n" +
-            "        \"uri\":\"http://onto.fel.cvut" +
-            ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka\",\n" +
-            "        \"username\" : \"franta.vomacka@mujma.il\",\n" +
-            "        \"lastName\" : \"Vomáčka\",\n" +
-            "        \"firstName\" : \"Franta\"\n" +
-            "    }"
+        value = "{\n"
+            + "        \"uri\":\"http://onto.fel.cvut"
+            + ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka\",\n"
+            + "        \"username\" : \"franta.vomacka@mujma.il\",\n"
+            + "        \"lastName\" : \"Vomáčka\",\n"
+            + "        \"firstName\" : \"Franta\"\n"
+            + "    }"
     )
     public void updateCurrent(@RequestBody UserUpdateDto update) {
         userService.updateCurrent(update);
