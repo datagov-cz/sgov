@@ -43,6 +43,7 @@ public class UserAccountDao extends BaseDao<UserAccount> {
     public UserAccount update(UserAccount entity) {
         Objects.requireNonNull(entity);
         try {
+            em.getEntityManagerFactory().getCache().evict(UserAccount.class, entity.getUri(), null);
             return em.merge(entity, DescriptorFactory.userManagementDescriptor(entity));
         } catch (RuntimeException e) {
             throw new PersistenceException(e);

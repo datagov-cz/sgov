@@ -9,6 +9,7 @@ import com.github.sgov.server.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.net.URI;
 import java.util.List;
 import org.slf4j.Logger;
@@ -47,12 +48,14 @@ public class UserController extends BaseController {
 
     @PreAuthorize("hasRole('" + SecurityConstants.ROLE_ADMIN + "')")
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
+    @ApiOperation(value = "Lists all registered users (including disabled).")
     public List<UserAccount> getAll() {
         return userService.findAll();
     }
 
     @GetMapping(value = "/current", produces = {MediaType.APPLICATION_JSON_VALUE,
         RestUtils.MEDIA_TYPE_JSONLD})
+    @ApiOperation(value = "Gets info about the currently logged-in user.")
     public UserAccount getCurrent() {
         return userService.getCurrent();
     }
@@ -88,6 +91,7 @@ public class UserController extends BaseController {
     @PreAuthorize("hasRole('" + SecurityConstants.ROLE_ADMIN + "')")
     @DeleteMapping(value = "/{fragment}/lock")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Deletes lock (unlocks) the user.")
     public void unlock(@PathVariable(name = "fragment") String identifierFragment,
                        @RequestBody String newPassword) {
         final UserAccount user = getUserAccountForUpdate(identifierFragment);
@@ -108,6 +112,7 @@ public class UserController extends BaseController {
     @PreAuthorize("hasRole('" + SecurityConstants.ROLE_ADMIN + "')")
     @PostMapping(value = "/{fragment}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Enables a (disabled) user.")
     public void enable(@PathVariable(name = "fragment") String identifierFragment) {
         final UserAccount user = getUserAccountForUpdate(identifierFragment);
         userService.enable(user);
@@ -122,6 +127,7 @@ public class UserController extends BaseController {
     @PreAuthorize("hasRole('" + SecurityConstants.ROLE_ADMIN + "')")
     @DeleteMapping(value = "/{fragment}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation(value = "Disables a user.")
     public void disable(@PathVariable(name = "fragment") String identifierFragment) {
         final UserAccount user = getUserAccountForUpdate(identifierFragment);
         userService.disable(user);
@@ -130,7 +136,14 @@ public class UserController extends BaseController {
 
     @PreAuthorize("permitAll()")
     @GetMapping(value = "/username")
-    public Boolean exists(@RequestParam(name = "username") String username) {
+    @ApiOperation(value = "Checks whether the user with the given 'username' exists.")
+    public Boolean exists(
+        @RequestParam(name = "username")
+        @ApiParam(name = "username",
+            required = true,
+            value = "franta.vomacka@mujma.il"
+        )
+            String username) {
         return userService.exists(username);
     }
 }
