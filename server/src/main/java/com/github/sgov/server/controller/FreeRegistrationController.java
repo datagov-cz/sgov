@@ -4,6 +4,8 @@ import com.github.sgov.server.controller.util.RestUtils;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.service.UserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +42,20 @@ public class FreeRegistrationController {
      * Creates a new user.
      */
     @PreAuthorize("permitAll()")
+    @ApiOperation(value = "Registers a new user.")
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
-    public ResponseEntity<Void> createUser(@RequestBody UserAccount user) {
+    public ResponseEntity<Void> createUser(
+        @RequestBody
+        @ApiParam(name = "update",
+            required = true,
+            value = "{\n"
+                + "        \"firstName\" : \"Franta\",\n"
+                + "        \"lastName\" : \"Vomáčka\",\n"
+                + "        \"username\" : \"franta.vomacka@mujma.il\",\n"
+                + "        \"password\":\"xyz\"\n"
+                + "    }"
+        )
+            UserAccount user) {
         userService.persist(user);
         LOG.info("User {} successfully registered.", user);
         return new ResponseEntity<>(HttpStatus.CREATED);

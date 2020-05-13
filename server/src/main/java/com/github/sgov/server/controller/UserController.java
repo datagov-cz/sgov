@@ -7,7 +7,6 @@ import com.github.sgov.server.security.SecurityConstants;
 import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.UserService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.net.URI;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("/users")
@@ -65,19 +63,19 @@ public class UserController extends BaseController {
         consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
     @ApiOperation(value = "Updates the current user. Note that all fields must be present. Also, "
         + "'uri' and 'username' must correspond to those of the current user.")
-    @ApiImplicitParam(name = "update",
-        required = true,
-        paramType = "body",
-        dataTypeClass = Json.class,
-        value = "{\n"
-            + "        \"uri\":\"http://onto.fel.cvut"
-            + ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka\",\n"
-            + "        \"username\" : \"franta.vomacka@mujma.il\",\n"
-            + "        \"lastName\" : \"Vomáčka\",\n"
-            + "        \"firstName\" : \"Franta\"\n"
-            + "    }"
-    )
-    public void updateCurrent(@RequestBody UserUpdateDto update) {
+    public void updateCurrent(@RequestBody
+                              @ApiParam(name = "update",
+                                  required = true,
+                                  value = "{\n"
+                                      + "        \"uri\":\"http://onto.fel.cvut"
+                                      +
+                                      ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta" +
+                                      "-vomacka\",\n"
+                                      + "        \"username\" : \"franta.vomacka@mujma.il\",\n"
+                                      + "        \"lastName\" : \"Vomáčka\",\n"
+                                      + "        \"firstName\" : \"Franta\"\n"
+                                      + "    }")
+                                  UserUpdateDto update) {
         userService.updateCurrent(update);
         LOG.debug("User {} successfully updated.", update);
     }
@@ -113,7 +111,13 @@ public class UserController extends BaseController {
     @PostMapping(value = "/{fragment}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Enables a (disabled) user.")
-    public void enable(@PathVariable(name = "fragment") String identifierFragment) {
+    public void enable(@PathVariable(name = "fragment")
+                       @ApiParam(name = "fragment",
+                           required = true,
+                           value = "'franta-vomacka' , for user with URL http://onto.fel.cvut" +
+                               ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka"
+                       )
+                           String identifierFragment) {
         final UserAccount user = getUserAccountForUpdate(identifierFragment);
         userService.enable(user);
         LOG.debug("User {} successfully enabled.", user);
@@ -128,7 +132,12 @@ public class UserController extends BaseController {
     @DeleteMapping(value = "/{fragment}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Disables a user.")
-    public void disable(@PathVariable(name = "fragment") String identifierFragment) {
+    public void disable(@PathVariable(name = "fragment")
+                        @ApiParam(name = "fragment",
+                            required = true,
+                            value = "'franta-vomacka' , for user with URL http://onto.fel.cvut" +
+                                ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka"
+                        ) String identifierFragment) {
         final UserAccount user = getUserAccountForUpdate(identifierFragment);
         userService.disable(user);
         LOG.debug("User {} successfully disabled.", user);
