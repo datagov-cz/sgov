@@ -121,12 +121,6 @@ public class UserService {
                 MessageFormat.format("User {0} attempted to update a different user''s account.",
                     currentUser));
         }
-        if (this.exists(update.getUsername())) {
-            throw new ValidationException(
-                MessageFormat
-                    .format("User {0} attempted to change username to an existing one {1}.",
-                        currentUser, update.getUsername()));
-        }
         if (!currentUser.getUsername().equals(update.getUsername())) {
             throw new ValidationException(
                 MessageFormat.format("User {0} attempted to update his username.",
