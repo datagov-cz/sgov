@@ -89,6 +89,11 @@ public class UserService {
     public void persist(UserAccount account) {
         Objects.requireNonNull(account);
         LOG.trace("Persisting user account {}.", account);
+        if (this.exists(account.getUsername())) {
+            throw new ValidationException(
+                MessageFormat.format("User with username {0} already exists.",
+                    account.getUsername()));
+        }
         if (!securityUtils.isAuthenticated() || !securityUtils.getCurrentUser().isAdmin()) {
             account.addType(Vocabulary.s_c_omezeny_uzivatel);
             account.removeType(Vocabulary.s_c_administrator);
@@ -114,12 +119,18 @@ public class UserService {
         if (!currentUser.getUri().equals(update.getUri())) {
             throw new AuthorizationException(
                 MessageFormat.format("User {0} attempted to update a different user''s account.",
-                    securityUtils.getCurrentUser()));
+                    currentUser));
+        }
+        if (this.exists(update.getUsername())) {
+            throw new ValidationException(
+                MessageFormat
+                    .format("User {0} attempted to change username to an existing one {1}.",
+                        currentUser, update.getUsername()));
         }
         if (!currentUser.getUsername().equals(update.getUsername())) {
             throw new ValidationException(
                 MessageFormat.format("User {0} attempted to update his username.",
-                    securityUtils.getCurrentUser()));
+                    currentUser));
         }
         if (update.getPassword() != null) {
             securityUtils.verifyCurrentUserPassword(update.getOriginalPassword());
