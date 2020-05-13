@@ -68,9 +68,8 @@ public class UserController extends BaseController {
                                   required = true,
                                   value = "{\n"
                                       + "        \"uri\":\"http://onto.fel.cvut"
-                                      +
-                                      ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta" +
-                                      "-vomacka\",\n"
+                                      + ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta"
+                                      + "-vomacka\",\n"
                                       + "        \"username\" : \"franta.vomacka@mujma.il\",\n"
                                       + "        \"lastName\" : \"Vomáčka\",\n"
                                       + "        \"firstName\" : \"Franta\"\n"
@@ -114,8 +113,8 @@ public class UserController extends BaseController {
     public void enable(@PathVariable(name = "fragment")
                        @ApiParam(name = "fragment",
                            required = true,
-                           value = "'franta-vomacka' , for user with URL http://onto.fel.cvut" +
-                               ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka"
+                           value = "'franta-vomacka' , for user with URL http://onto.fel.cvut"
+                               + ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka"
                        )
                            String identifierFragment) {
         final UserAccount user = getUserAccountForUpdate(identifierFragment);
@@ -135,7 +134,8 @@ public class UserController extends BaseController {
     public void disable(@PathVariable(name = "fragment")
                         @ApiParam(name = "fragment",
                             required = true,
-                            value = "'franta-vomacka' , for user with URL http://onto.fel.cvut" +
+                            value = "'franta-vomacka' , for user with URL http://onto.fel.cvut"
+                                +
                                 ".cz/ontologies/slovnik/agendovy/popis-dat/uživatel/franta-vomacka"
                         ) String identifierFragment) {
         final UserAccount user = getUserAccountForUpdate(identifierFragment);
