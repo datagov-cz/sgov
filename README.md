@@ -36,4 +36,4 @@ Create the JAR using
 
 Now you can run the server like
 
-    java -jar server/build/libs/server-1.0.jar
+    java -jar server/build/libs/sgov-server.jar

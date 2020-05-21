@@ -1,7 +1,10 @@
 package com.github.sgov.server.dao;
 
 import com.github.sgov.server.Validator;
+import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.model.UserAccount;
+import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.util.Vocabulary;
 import com.google.gson.JsonObject;
 import java.text.MessageFormat;
@@ -10,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import cz.cvut.kbss.jopa.model.EntityManager;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +37,18 @@ import org.topbraid.shacl.validation.ValidationReport;
  */
 @Slf4j
 @Repository
-public class WorkspaceDao {
+public class WorkspaceDao extends BaseDao<Workspace> {
+
+    private RepositoryConf properties;
+    private final PersistenceConf config;
 
     @Autowired
-    private RepositoryConf properties;
+    public WorkspaceDao(EntityManager em, PersistenceConf config, RepositoryConf properties) {
+        super(Workspace.class, em);
+        this.config = config;
+        this.properties = properties;
+    }
+
 
     /**
      * Returns all workspace IRIs.
@@ -48,7 +61,7 @@ public class WorkspaceDao {
         final HttpResponse<JsonObject> response =
             Unirest.post(uri).header("Content-type", "application/sparql-query")
                 .header("Accept", "application/sparql-results+json")
-                .body("SELECT ?iri WHERE { ?iri  a <" + Vocabulary.s_c_metadatový_kontextn
+                .body("SELECT ?iri WHERE { ?iri  a <" + Vocabulary.s_c_metadatovy_kontext
                     + "> }")
                 .asObject(JsonObject.class);
 
@@ -65,7 +78,7 @@ public class WorkspaceDao {
         final QuerySolutionMap map = new QuerySolutionMap();
         map.add("workspace", ResourceFactory.createResource(workspace));
         map.add("odkazujeNaKontext",
-            ResourceFactory.createResource(Vocabulary.s_c_odkazuje_na_kontext));
+            ResourceFactory.createResource(Vocabulary.s_p_odkazuje_na_kontext));
         map.add("slovnikovyKontext",
             ResourceFactory.createResource(Vocabulary.s_c_slovnikovy_kontext));
         final ParameterizedSparqlString query = new ParameterizedSparqlString(

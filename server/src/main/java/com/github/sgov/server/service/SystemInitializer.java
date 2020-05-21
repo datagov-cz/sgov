@@ -54,7 +54,7 @@ public class SystemInitializer {
         admin.setUri(URI.create(SYSTEM_ADMIN_USER_URI));
         admin.setFirstName("System");
         admin.setLastName("Administrator");
-        admin.setUsername("termit-admin@kbss.felk.cvut.cz");
+        admin.setUsername("sgov-admin@kbss.felk.cvut.cz");
         admin.addType(Vocabulary.s_c_administrator);
         return admin;
     }
