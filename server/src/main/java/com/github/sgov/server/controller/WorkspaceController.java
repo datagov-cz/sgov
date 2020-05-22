@@ -64,42 +64,6 @@ public class WorkspaceController extends BaseController {
         return workspaceService.findAll();
     }
 
-    @GetMapping(value = "/current", produces = {
-            MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
-    @ApiOperation(value = "Retrieve current workspace of authenticated user.")
-    @ResponseBody
-    public Workspace getCurrentWorkspace() {
-        return workspaceService.getCurrentWorkspace();
-    }
-
-    @DeleteMapping(value = "/current")
-    @ApiOperation(value = "Unset current workspace of authenticated user.")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unsetCurrentWorkspace() {
-        LOG.debug("Workspace unset from current user.");
-        workspaceService.removeCurrentWorkspace();
-    }
-
-    /**
-     * Set current workspace of authenticated user.
-     *
-     * @param workspaceFragment Localname of workspace id.
-     * @param namespace         Namespace used for resource identifier resolution.
-     *                          Optional, if not specified, the configured namespace is used.
-     */
-    @PutMapping(value = "/{workspaceFragment}/current", produces = {
-            MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
-    @ApiOperation(value = "Set current workspace of authenticated user.")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCurrentWorkspace(
-            @PathVariable String workspaceFragment,
-            @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
-        final URI identifier = resolveIdentifier(
-                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        LOG.debug("Workspace {} set to current user.", identifier);
-        workspaceService.updateCurrentWorkspace(identifier);
-    }
-
     /**
      * Create new workspace. If uri of workspace is not specified, it will be generated.
      *

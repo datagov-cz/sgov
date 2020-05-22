@@ -1,8 +1,6 @@
 package com.github.sgov.server.service;
 
 
-import com.github.sgov.server.exception.NotFoundException;
-import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.UserRepositoryService;
@@ -10,7 +8,6 @@ import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.service.security.SecurityUtils;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.validation.ValidationReport;
@@ -79,40 +76,6 @@ public class WorkspaceService {
     public VocabularyContext createVocabularyContext(
             URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
         return repositoryService.createVocabularyContext(workspaceUri, vocabularyUri, isReadOnly);
-    }
-
-    /**
-     * Returns workspace of authenticated user.
-     */
-    public Workspace getCurrentWorkspace() {
-        UserAccount uc = userService.getCurrent();
-        return Optional.ofNullable(uc.getCurrentWorkspace())
-                .orElseThrow(() -> new NotFoundException(
-                        "Current workspace of user " + uc + " not found."));
-    }
-
-    /**
-     * Set workspace of authenticated user.
-     *
-     * @param newWorkspaceId Workspace that should be set.
-     */
-    public void updateCurrentWorkspace(URI newWorkspaceId) {
-        Workspace newWorkspace = repositoryService.findRequired(newWorkspaceId);
-        UserAccount uc = userService.getCurrent();
-        uc.setCurrentWorkspace(newWorkspace);
-        userRepositoryService.update(uc);
-    }
-
-    /**
-     * Remove currently set workspace of authenticated user.
-     */
-    public void removeCurrentWorkspace() {
-        UserAccount uc = userService.getCurrent();
-        if (uc.getCurrentWorkspace() == null) {
-            throw new NotFoundException("Current workspace of user " + uc + " not found.");
-        }
-        uc.setCurrentWorkspace(null);
-        userRepositoryService.update(uc);
     }
 
     public List<Workspace> findAll() {
