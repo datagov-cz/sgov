@@ -20,9 +20,11 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
 
     @Types
     Set<String> types;
+
     @ParticipationConstraints(nonEmpty = true)
     @OWLObjectProperty(iri = Vocabulary.s_p_vychazi_z_verze)
     private URI basedOnVocabularyVersion;
+
     @ParticipationConstraints(nonEmpty = true)
     @OWLObjectProperty(iri = Vocabulary.s_p_ma_kontext_sledovani_zmen,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
@@ -98,6 +100,7 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
     public String toString() {
         return "VocabularyContext{"
                 + " <" + getUri() + '>'
+                + ", basedOnVocabularyVersion=" + getBasedOnVocabularyVersion()
                 + '}';
     }
 
