@@ -38,7 +38,7 @@ import org.topbraid.shacl.validation.ValidationReport;
 public class WorkspaceDao extends BaseDao<Workspace> {
 
     private final PersistenceConf config;
-    private RepositoryConf properties;
+    private final RepositoryConf properties;
 
     /**
      * Constructor.
@@ -56,7 +56,6 @@ public class WorkspaceDao extends BaseDao<Workspace> {
      *
      * @return list of workspace IRIs.
      */
-    @Autowired
     public List<String> getAllWorkspaceIris() {
         final String uri = properties.getUrl();
         final HttpResponse<JsonObject> response =

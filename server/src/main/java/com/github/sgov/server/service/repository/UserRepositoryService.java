@@ -2,6 +2,7 @@ package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.dao.GenericDao;
 import com.github.sgov.server.dao.UserAccountDao;
+import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.service.IdentifierResolver;
