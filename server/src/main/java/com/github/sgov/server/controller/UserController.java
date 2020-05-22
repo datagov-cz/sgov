@@ -169,7 +169,7 @@ public class UserController extends BaseController {
         return userService.getCurrentWorkspace();
     }
 
-    @DeleteMapping(value = "/current")
+    @DeleteMapping(value = "/current/workspace")
     @ApiOperation(value = "Unset current workspace of authenticated user.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unsetCurrentWorkspace() {
