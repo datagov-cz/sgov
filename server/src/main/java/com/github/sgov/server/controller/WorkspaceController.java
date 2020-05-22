@@ -11,6 +11,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.net.URI;
+import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +21,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.topbraid.shacl.validation.ValidationReport;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/workspaces")
@@ -65,6 +73,13 @@ public class WorkspaceController extends BaseController {
         workspaceService.removeCurrentWorkspace();
     }
 
+    /**
+     * Set current workspace of authenticated user.
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution.
+     *                          Optional, if not specified, the configured namespace is used.
+     */
     @PutMapping(value = "/{workspaceFragment}/current", produces = {
             MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Set current workspace of authenticated user.")
@@ -72,11 +87,17 @@ public class WorkspaceController extends BaseController {
     public void updateCurrentWorkspace(
             @PathVariable String workspaceFragment,
             @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
-        final URI identifier = resolveIdentifier(namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final URI identifier = resolveIdentifier(
+                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         LOG.debug("Workspace {} set to current user.", identifier);
         workspaceService.updateCurrentWorkspace(identifier);
     }
 
+    /**
+     * Create new workspace. If uri of workspace is not specified, it will be generated.
+     *
+     * @param workspace Workspace that should be created.
+     */
     @PostMapping
     @ApiOperation(value = "Create new workspace.")
     @ResponseBody
@@ -84,9 +105,19 @@ public class WorkspaceController extends BaseController {
             @RequestBody Workspace workspace) {
         Workspace ws = workspaceService.persist(workspace);
         LOG.debug("Workspace {} created.", ws);
-        return ResponseEntity.created(generateLocation(ws.getUri(), Vocabulary.s_c_metadatovy_kontext)).build();
+        return ResponseEntity.created(
+                generateLocation(ws.getUri(), Vocabulary.s_c_metadatovy_kontext)
+        ).build();
     }
 
+    /**
+     * Retrieve existing workspace.
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution.
+     *                          Optional, if not specified, the configured namespace is used.
+     * @return Workspace specified by workspaceFragment and optionally namespace.
+     */
     @GetMapping(value = "/{workspaceFragment}",
             produces = {
                     MediaType.APPLICATION_JSON_VALUE,
@@ -95,33 +126,62 @@ public class WorkspaceController extends BaseController {
     public Workspace getWorkspace(
             @PathVariable String workspaceFragment,
             @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
-        final URI identifier = resolveIdentifier(namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final URI identifier = resolveIdentifier(
+                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         return workspaceService.findRequired(identifier);
     }
 
-    @PutMapping(value = "/{workspaceFragment}", consumes = {MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
+    /**
+     * Update existing workspace.
+     *
+     * @param workspace         Workspace that will be updated.
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution.
+     *                          Optional, if not specified, the configured namespace is used.
+     */
+    @PutMapping(value = "/{workspaceFragment}", consumes = {
+            MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Update existing workspace.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateWorkspace(@PathVariable String workspaceFragment,
-                                @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
+                                @RequestParam(name = QueryParams.NAMESPACE, required = false)
+                                        String namespace,
                                 @RequestBody Workspace workspace) {
-        final URI identifier = resolveIdentifier(namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final URI identifier = resolveIdentifier(
+                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         verifyRequestAndEntityIdentifier(workspace, identifier);
         workspaceService.update(workspace);
         LOG.debug("Workspace {} updated.", workspace);
     }
 
+    /**
+     * Delete existing workspace.
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution.
+     *                          Optional, if not specified, the configured namespace is used.
+     */
     @DeleteMapping(value = "/{workspaceFragment}")
     @ApiOperation(value = "Delete existing workspace.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWorkspace(@PathVariable String workspaceFragment,
-                                @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
-        final URI identifier = resolveIdentifier(namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+                                @RequestParam(name = QueryParams.NAMESPACE, required = false)
+                                        String namespace) {
+        final URI identifier = resolveIdentifier(
+                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace toRemove = workspaceService.getRequiredReference(identifier);
         workspaceService.remove(identifier);
         LOG.debug("Workspace {} deleted.", toRemove);
     }
 
+    /**
+     * Retrieve all vocabulary contexts stored within workspace.
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution.
+     *                          Optional, if not specified, the configured namespace is used.
+     * @return Set of vocabulary contexts.
+     */
     @GetMapping(value = "/{workspaceFragment}/vocabularies",
             produces = {
                     MediaType.APPLICATION_JSON_VALUE,
@@ -130,11 +190,21 @@ public class WorkspaceController extends BaseController {
     public Set<VocabularyContext> getAllVocabularyContexts(
             @PathVariable String workspaceFragment,
             @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
-        final URI identifier = resolveIdentifier(namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final URI identifier = resolveIdentifier(
+                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace workspace = workspaceService.findRequired(identifier);
         return workspace.getVocabularyContexts();
     }
 
+    /**
+     * Create vocabulary context within workspace and its relevant context for changes.
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution.
+     *                          Optional, if not specified, the configured namespace is used.
+     * @param vocabularyUri     Uri of a vocabulary for which context should be created.
+     * @param readOnly          True if vocabulary should be readonly, false otherwise.
+     */
     @PostMapping(value = "/{workspaceFragment}/vocabularies")
     @ApiOperation(value = "Create vocabulary context within workspace.")
     public ResponseEntity<String> createVocabularyContext(
@@ -143,10 +213,14 @@ public class WorkspaceController extends BaseController {
             @RequestParam(name = "vocabularyUri") URI vocabularyUri,
             @RequestParam(name = "readOnly", required = false) boolean readOnly
     ) {
-        final URI workspaceUri = resolveIdentifier(namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        VocabularyContext vocabularyContext = workspaceService.createVocabularyContext(workspaceUri, vocabularyUri, readOnly);
+        final URI workspaceUri = resolveIdentifier(
+                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        VocabularyContext vocabularyContext =
+                workspaceService.createVocabularyContext(workspaceUri, vocabularyUri, readOnly);
         LOG.debug("Vocabulary context {} created.", vocabularyContext);
-        return ResponseEntity.created(generateLocation(vocabularyContext.getUri(), Vocabulary.s_c_slovnikovy_kontext)).build();
+        return ResponseEntity.created(
+                generateLocation(vocabularyContext.getUri(), Vocabulary.s_c_slovnikovy_kontext)
+        ).build();
     }
 
     @GetMapping(value = "/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)

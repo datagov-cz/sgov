@@ -6,9 +6,8 @@ import com.github.sgov.server.model.util.HasIdentifier;
 import com.github.sgov.server.security.SecurityConstants;
 import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.util.Constants.QueryParams;
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import java.net.URI;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Base for application REST controllers.
@@ -29,15 +28,17 @@ public class BaseController {
             return RestUtils.createLocationFromCurrentUriWithPath("/{name}",
                     IdentifierResolver.extractIdentifierFragment(identifier));
         } else {
-            return RestUtils.createLocationFromCurrentUriWithPathAndQuery("/{name}", QueryParams.NAMESPACE,
+            return RestUtils.createLocationFromCurrentUriWithPathAndQuery(
+                    "/{name}",
+                    QueryParams.NAMESPACE,
                     IdentifierResolver.extractIdentifierNamespace(identifier),
                     IdentifierResolver.extractIdentifierFragment(identifier));
         }
     }
 
     /**
-     * Resolves identifier based on the specified resource (if provided) or the namespace loaded from application
-     * configuration.
+     * Resolves identifier based on the specified resource (if provided) or the namespace
+     * loaded from application configuration.
      *
      * @param namespace  Explicitly provided namespace. Optional
      * @param fragment   Locally unique identifier fragment
@@ -53,8 +54,8 @@ public class BaseController {
     }
 
     /**
-     * Ensures that the entity specified for update has the same identifier as the one that has been resolved from the
-     * request URL.
+     * Ensures that the entity specified for update has the same identifier as the one that
+     * has been resolved from the request URL.
      *
      * @param entity            Entity
      * @param requestIdentifier Identifier resolved from request
@@ -62,8 +63,9 @@ public class BaseController {
     void verifyRequestAndEntityIdentifier(HasIdentifier entity, URI requestIdentifier) {
         if (!requestIdentifier.equals(entity.getUri())) {
             throw new ValidationException(
-                    "The ID " + requestIdentifier +
-                            ", resolved from request URL, does not match the ID of the specified entity.");
+                    "The ID " + requestIdentifier
+                            + ", resolved from request URL"
+                            + ", does not match the ID of the specified entity.");
         }
     }
 

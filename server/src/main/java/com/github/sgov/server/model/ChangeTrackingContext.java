@@ -4,7 +4,6 @@ import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
-
 import java.net.URI;
 import java.util.Objects;
 
@@ -42,9 +41,9 @@ public class ChangeTrackingContext extends AbstractEntity implements Context {
 
     @Override
     public String toString() {
-        return "ChangeTrackingContext{" +
-                " <" + getUri() + '>' +
-                ", changingVocabulary=" + getChangesVocabularyVersion() +
-                '}';
+        return "ChangeTrackingContext{"
+                + " <" + getUri() + '>'
+                + ", changingVocabulary=" + getChangesVocabularyVersion()
+                + '}';
     }
 }

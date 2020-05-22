@@ -8,14 +8,12 @@ import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.UserRepositoryService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.service.security.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.topbraid.shacl.validation.ValidationReport;
-
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.topbraid.shacl.validation.ValidationReport;
 
 /**
  * Workspace-related business logic.
@@ -28,6 +26,9 @@ public class WorkspaceService {
     private final UserService userService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Constructor.
+     */
     @Autowired
     public WorkspaceService(WorkspaceRepositoryService repositoryService,
                             UserRepositoryService userRepositoryService,
@@ -57,6 +58,10 @@ public class WorkspaceService {
         return repositoryService.findRequired(id);
     }
 
+    /**
+     * Updates only direct attributes of the workspace.
+     * @param workspace Workspace that holds updated attributes.
+     */
     public void update(Workspace workspace) {
         Workspace update = repositoryService.findRequired(workspace.getUri());
         update.setLabel(workspace.getLabel());
@@ -71,16 +76,26 @@ public class WorkspaceService {
         return repositoryService.getRequiredReference(id);
     }
 
-    public VocabularyContext createVocabularyContext(URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
+    public VocabularyContext createVocabularyContext(
+            URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
         return repositoryService.createVocabularyContext(workspaceUri, vocabularyUri, isReadOnly);
     }
 
+    /**
+     * Returns workspace of authenticated user.
+     */
     public Workspace getCurrentWorkspace() {
         UserAccount uc = userService.getCurrent();
         return Optional.ofNullable(uc.getCurrentWorkspace())
-                .orElseThrow(() -> new NotFoundException("Current workspace of user " + uc + " not found."));
+                .orElseThrow(() -> new NotFoundException(
+                        "Current workspace of user " + uc + " not found."));
     }
 
+    /**
+     * Set workspace of authenticated user.
+     *
+     * @param newWorkspaceId Workspace that should be set.
+     */
     public void updateCurrentWorkspace(URI newWorkspaceId) {
         Workspace newWorkspace = repositoryService.findRequired(newWorkspaceId);
         UserAccount uc = userService.getCurrent();
@@ -88,6 +103,9 @@ public class WorkspaceService {
         userRepositoryService.update(uc);
     }
 
+    /**
+     * Remove currently set workspace of authenticated user.
+     */
     public void removeCurrentWorkspace() {
         UserAccount uc = userService.getCurrent();
         if (uc.getCurrentWorkspace() == null) {

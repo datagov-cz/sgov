@@ -30,15 +30,15 @@ public class Constants {
 
         /**
          * HTTP request query parameter denoting identifier namespace.
-         * <p>
-         * Used in connection with normalized name of an individual.
+         *
+         * <p>Used in connection with normalized name of an individual.
          */
         public static final String NAMESPACE = "namespace";
 
         /**
          * HTTP request query parameter denoting page number.
-         * <p>
-         * Used for paging in collections of results.
+         *
+         * <p>Used for paging in collections of results.
          *
          * @see #PAGE_SIZE
          */
@@ -46,8 +46,8 @@ public class Constants {
 
         /**
          * HTTP request query parameter denoting page size.
-         * <p>
-         * Used for paging in collections of results.
+         *
+         * <p>Used for paging in collections of results.
          *
          * @see #PAGE
          */

@@ -4,14 +4,13 @@ import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import java.net.URI;
+import java.util.List;
+import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.topbraid.shacl.validation.ValidationReport;
-
-import javax.validation.Validator;
-import java.net.URI;
-import java.util.List;
 
 /**
  * Service to managed workspaces.
@@ -40,15 +39,25 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         return workspaceDao.validateWorkspace(workspaceIri);
     }
 
+    /**
+     * Creates vocabulary context.
+     * @param workspaceUri Id of the workspace.
+     * @param vocabularyUri Vocabulary for which context is created.
+     * @param isReadOnly True, if vocabulary should be readonly which the workspace.
+     * @return
+     */
     @Transactional
-    public VocabularyContext createVocabularyContext(URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
-        Workspace workspace = getRequiredReference(workspaceUri);
+    public VocabularyContext createVocabularyContext(
+            URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
+
         VocabularyContext vocabularyContext = new VocabularyContext();
         vocabularyContext.setBasedOnVocabularyVersion(vocabularyUri);
         vocabularyContext.setReadonly(isReadOnly);
         ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
         changeTrackingContext.setChangesVocabularyVersion(vocabularyUri);
         vocabularyContext.setChangeTrackingContext(changeTrackingContext);
+
+        Workspace workspace = getRequiredReference(workspaceUri);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
         workspaceDao.update(workspace);
         return vocabularyContext;

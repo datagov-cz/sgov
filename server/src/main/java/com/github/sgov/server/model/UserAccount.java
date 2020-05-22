@@ -3,8 +3,12 @@ package com.github.sgov.server.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.util.Vocabulary;
-import cz.cvut.kbss.jopa.model.annotations.*;
-
+import cz.cvut.kbss.jopa.model.annotations.CascadeType;
+import cz.cvut.kbss.jopa.model.annotations.FetchType;
+import cz.cvut.kbss.jopa.model.annotations.OWLClass;
+import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
+import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import javax.validation.constraints.NotBlank;

@@ -5,10 +5,10 @@ import com.github.sgov.server.service.security.SecurityUtils;
 import cz.cvut.kbss.jopa.model.annotations.PostLoad;
 import cz.cvut.kbss.jopa.model.annotations.PrePersist;
 import cz.cvut.kbss.jopa.model.annotations.PreUpdate;
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 
 /**
  * Entity listener used to manage provenance data.
@@ -41,7 +41,8 @@ public class ProvenanceManager {
     }
 
     /**
-     * Clears author data after instance load in case of anonymous access, i.e., when no user is authenticated.
+     * Clears author data after instance load in case of anonymous access, i.e.
+     * , when no user is authenticated.
      *
      * @param instance Loaded instance
      */

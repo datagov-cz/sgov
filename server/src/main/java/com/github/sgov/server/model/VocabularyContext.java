@@ -3,9 +3,13 @@ package com.github.sgov.server.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.sgov.server.model.util.HasTypes;
 import com.github.sgov.server.util.Vocabulary;
-import cz.cvut.kbss.jopa.model.annotations.*;
+import cz.cvut.kbss.jopa.model.annotations.CascadeType;
+import cz.cvut.kbss.jopa.model.annotations.FetchType;
+import cz.cvut.kbss.jopa.model.annotations.OWLClass;
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
+import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
+import cz.cvut.kbss.jopa.model.annotations.Types;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
-
 import java.net.URI;
 import java.util.Objects;
 import java.util.Set;
@@ -14,18 +18,16 @@ import java.util.Set;
 @JsonLdAttributeOrder({"uri", "label", "comment", "author", "lastEditor"})
 public class VocabularyContext extends AbstractEntity implements Context, HasTypes {
 
+    @Types
+    Set<String> types;
     @ParticipationConstraints(nonEmpty = true)
     @OWLObjectProperty(iri = Vocabulary.s_p_vychazi_z_verze)
     private URI basedOnVocabularyVersion;
-
     @ParticipationConstraints(nonEmpty = true)
     @OWLObjectProperty(iri = Vocabulary.s_p_ma_kontext_sledovani_zmen,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
             fetch = FetchType.EAGER)
     private ChangeTrackingContext changeTrackingContext;
-
-    @Types
-    Set<String> types;
 
     public URI getBasedOnVocabularyVersion() {
         return basedOnVocabularyVersion;
@@ -53,6 +55,10 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
         return types != null && types.contains(Vocabulary.s_c_slovnikovy_kontext_pouze_pro_cteni);
     }
 
+    /**
+     * Sets flag whether vocabulary context is readonly.
+     * @param readonly True, if vocabulary context should be readonly.
+     */
     public void setReadonly(boolean readonly) {
         if (readonly) {
             addType(Vocabulary.s_c_slovnikovy_kontext_pouze_pro_cteni);
@@ -90,9 +96,9 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
 
     @Override
     public String toString() {
-        return "VocabularyContext{" +
-                " <" + getUri() + '>' +
-                '}';
+        return "VocabularyContext{"
+                + " <" + getUri() + '>'
+                + '}';
     }
 
 }
