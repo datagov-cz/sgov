@@ -27,7 +27,7 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
 
     @ParticipationConstraints(nonEmpty = true)
     @OWLObjectProperty(iri = Vocabulary.s_p_ma_kontext_sledovani_zmen,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
             fetch = FetchType.EAGER)
     private ChangeTrackingContext changeTrackingContext;
 

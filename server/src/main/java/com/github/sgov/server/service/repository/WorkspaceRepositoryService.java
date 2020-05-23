@@ -4,6 +4,7 @@ import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import cz.cvut.kbss.jopa.model.EntityManager;
 import java.net.URI;
 import java.util.List;
 import javax.validation.Validator;
@@ -20,10 +21,13 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
 
     WorkspaceDao workspaceDao;
 
+    EntityManager em;
+
     @Autowired
-    public WorkspaceRepositoryService(Validator validator, WorkspaceDao workspaceDao) {
+    public WorkspaceRepositoryService(EntityManager em,Validator validator, WorkspaceDao workspaceDao) {
         super(validator);
         this.workspaceDao = workspaceDao;
+        this.em = em;
     }
 
     public List<String> getAllWorkspaceIris() {
@@ -50,15 +54,19 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
     public VocabularyContext createVocabularyContext(
             URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
 
+        ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
+        changeTrackingContext.setChangesVocabularyVersion(vocabularyUri);
+        em.persist(changeTrackingContext);
+
         VocabularyContext vocabularyContext = new VocabularyContext();
         vocabularyContext.setBasedOnVocabularyVersion(vocabularyUri);
         vocabularyContext.setReadonly(isReadOnly);
-        ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
-        changeTrackingContext.setChangesVocabularyVersion(vocabularyUri);
+        em.persist(vocabularyContext);
+
         vocabularyContext.setChangeTrackingContext(changeTrackingContext);
 
         Workspace workspace = getRequiredReference(workspaceUri);
-        workspace.addRefersToVocabularyContexts(vocabularyContext);
+        workspace.addRefersToVocabularyContexts(em.find(VocabularyContext.class,vocabularyContext.getUri()));
         workspaceDao.update(workspace);
         return vocabularyContext;
     }
