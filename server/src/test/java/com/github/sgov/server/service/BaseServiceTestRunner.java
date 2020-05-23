@@ -5,6 +5,7 @@ import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.config.conf.UserConf;
 import com.github.sgov.server.dao.UserAccountDao;
+import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.environment.TransactionalTestRunner;
 import com.github.sgov.server.environment.config.TestPersistenceConfig;
 import com.github.sgov.server.environment.config.TestServiceConfig;
@@ -22,14 +23,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class,
-    classes = {TestServiceConfig.class,
-        UserAccountDao.class,
-        TestPersistenceConfig.class,
-        PersistenceConf.class,
-        RepositoryConf.class,
-        UserConf.class,
-        JwtConf.class
-    })
+        classes = {TestServiceConfig.class,
+                UserAccountDao.class,
+                WorkspaceDao.class,
+                TestPersistenceConfig.class,
+                PersistenceConf.class,
+                RepositoryConf.class,
+                UserConf.class,
+                JwtConf.class
+        })
 @ActiveProfiles("test")
 public class BaseServiceTestRunner extends TransactionalTestRunner {
 }

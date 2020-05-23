@@ -131,7 +131,7 @@ public class IdentifierResolver {
      * @param fragment  Normalized string unique in the specified namespace
      * @return Identifier
      */
-    URI resolveIdentifier(String namespace, String fragment) {
+    public URI resolveIdentifier(String namespace, String fragment) {
         Objects.requireNonNull(namespace);
         String ns = namespace;
         if (!ns.endsWith("/") && !ns.endsWith("#")) {

@@ -6,7 +6,9 @@ import com.github.sgov.server.exception.AuthorizationException;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.UserAccount;
+import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.UserRepositoryService;
+import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.service.security.SecurityUtils;
 import com.github.sgov.server.util.Vocabulary;
 import java.net.URI;
@@ -31,11 +33,19 @@ public class UserService {
 
     private final UserRepositoryService repositoryService;
 
+    private final WorkspaceRepositoryService workspaceRepositoryService;
+
     private final SecurityUtils securityUtils;
 
+    /**
+     * Constructor.
+     */
     @Autowired
-    public UserService(UserRepositoryService repositoryService, SecurityUtils securityUtils) {
+    public UserService(UserRepositoryService repositoryService,
+                       WorkspaceRepositoryService workspaceRepositoryService,
+                       SecurityUtils securityUtils) {
         this.repositoryService = repositoryService;
+        this.workspaceRepositoryService = workspaceRepositoryService;
         this.securityUtils = securityUtils;
     }
 
@@ -212,4 +222,40 @@ public class UserService {
     public boolean exists(String username) {
         return repositoryService.exists(username);
     }
+
+
+    /**
+     * Returns workspace of authenticated user.
+     */
+    public Workspace getCurrentWorkspace() {
+        UserAccount uc = getCurrent();
+        return Optional.ofNullable(uc.getCurrentWorkspace())
+                .orElseThrow(() -> new NotFoundException(
+                        "Current workspace of user " + uc + " not found."));
+    }
+
+    /**
+     * Set workspace of authenticated user.
+     *
+     * @param newWorkspaceId Workspace that should be set.
+     */
+    public void changeCurrentWorkspace(URI newWorkspaceId) {
+        Workspace newWorkspace = workspaceRepositoryService.findRequired(newWorkspaceId);
+        UserAccount uc = getCurrent();
+        uc.setCurrentWorkspace(newWorkspace);
+        repositoryService.update(uc);
+    }
+
+    /**
+     * Remove currently set workspace of authenticated user.
+     */
+    public void removeCurrentWorkspace() {
+        UserAccount uc = getCurrent();
+        if (uc.getCurrentWorkspace() == null) {
+            throw new NotFoundException("Current workspace of user " + uc + " not found.");
+        }
+        uc.setCurrentWorkspace(null);
+        repositoryService.update(uc);
+    }
+
 }

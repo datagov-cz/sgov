@@ -3,9 +3,13 @@ package com.github.sgov.server.controller;
 import com.github.sgov.server.controller.dto.UserUpdateDto;
 import com.github.sgov.server.controller.util.RestUtils;
 import com.github.sgov.server.model.UserAccount;
+import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.security.SecurityConstants;
 import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.UserService;
+import com.github.sgov.server.util.Constants;
+import com.github.sgov.server.util.Vocabulary;
+import cz.cvut.kbss.jsonld.JsonLd;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,7 +57,7 @@ public class UserController extends BaseController {
     }
 
     @GetMapping(value = "/current", produces = {MediaType.APPLICATION_JSON_VALUE,
-        RestUtils.MEDIA_TYPE_JSONLD})
+            RestUtils.MEDIA_TYPE_JSONLD})
     @ApiOperation(value = "Gets info about the currently logged-in user.")
     public UserAccount getCurrent() {
         return userService.getCurrent();
@@ -60,9 +65,9 @@ public class UserController extends BaseController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping(value = "/current",
-        consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
+            consumes = {MediaType.APPLICATION_JSON_VALUE, RestUtils.MEDIA_TYPE_JSONLD})
     @ApiOperation(value = "Updates the current user. Note that all fields must be present. Also, "
-        + "'uri' and 'username' must correspond to those of the current user.")
+            + "'uri' and 'username' must correspond to those of the current user.")
     public void updateCurrent(@RequestBody
                               @ApiParam(name = "update",
                                   required = true,
@@ -154,5 +159,42 @@ public class UserController extends BaseController {
         )
             String username) {
         return userService.exists(username);
+    }
+
+    @GetMapping(value = "/current/workspace", produces = {
+            MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
+    @ApiOperation(value = "Retrieve current workspace of authenticated user.")
+    @ResponseBody
+    public Workspace getCurrentWorkspace() {
+        return userService.getCurrentWorkspace();
+    }
+
+    @DeleteMapping(value = "/current/workspace")
+    @ApiOperation(value = "Unset current workspace of authenticated user.")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unsetCurrentWorkspace() {
+        LOG.debug("Workspace unset from current user.");
+        userService.removeCurrentWorkspace();
+    }
+
+    /**
+     * Set current workspace of authenticated user.
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution.
+     *                          Optional, if not specified, the configured namespace is used.
+     */
+    @PutMapping(value = "/current/workspace/{workspaceFragment}", produces = {
+            MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
+    @ApiOperation(value = "Set current workspace of authenticated user.")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateCurrentWorkspace(
+            @PathVariable String workspaceFragment,
+            @RequestParam(name = Constants.QueryParams.NAMESPACE, required = false)
+                    String namespace) {
+        final URI identifier = resolveIdentifier(
+                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        LOG.debug("Workspace {} set to current user.", identifier);
+        userService.changeCurrentWorkspace(identifier);
     }
 }

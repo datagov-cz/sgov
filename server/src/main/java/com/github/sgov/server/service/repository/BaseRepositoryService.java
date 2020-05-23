@@ -97,8 +97,8 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
      */
     public T findRequired(URI id) {
         return find(id)
-            .orElseThrow(() -> NotFoundException.create(resolveGenericType().getSimpleName(),
-                id));
+                .orElseThrow(() -> NotFoundException.create(resolveGenericType().getSimpleName(),
+                        id));
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
      */
     public T getRequiredReference(URI id) {
         return getReference(id).orElseThrow(() -> NotFoundException
-            .create(resolveGenericType().getSimpleName(), id));
+                .create(resolveGenericType().getSimpleName(), id));
     }
 
     /**
@@ -130,8 +130,8 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
     private Class<T> resolveGenericType() {
         // Adapted from https://gist.github.com/yunspace/930d4d40a787a1f6a7d1
         final List<ResolvedType> typeParameters =
-            new TypeResolver().resolve(this.getClass())
-                .typeParametersFor(BaseRepositoryService.class);
+                new TypeResolver().resolve(this.getClass())
+                        .typeParametersFor(BaseRepositoryService.class);
         assert typeParameters.size() == 1;
         return (Class<T>) typeParameters.get(0).getErasedType();
     }
@@ -280,7 +280,7 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
      */
     protected void validate(T instance) {
         final ValidationResult<T> validationResult =
-            ValidationResult.of(validator.validate(instance));
+                ValidationResult.of(validator.validate(instance));
         if (!validationResult.isValid()) {
             throw new ValidationException(validationResult);
         }
