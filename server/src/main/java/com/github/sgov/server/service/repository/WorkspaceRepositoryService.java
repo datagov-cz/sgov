@@ -23,8 +23,13 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
 
     EntityManager em;
 
+    /**
+     * Creates a new repository service.
+     */
     @Autowired
-    public WorkspaceRepositoryService(EntityManager em,Validator validator, WorkspaceDao workspaceDao) {
+    public WorkspaceRepositoryService(EntityManager em,
+                                      Validator validator,
+                                      WorkspaceDao workspaceDao) {
         super(validator);
         this.workspaceDao = workspaceDao;
         this.em = em;
@@ -66,7 +71,8 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         vocabularyContext.setChangeTrackingContext(changeTrackingContext);
 
         Workspace workspace = getRequiredReference(workspaceUri);
-        workspace.addRefersToVocabularyContexts(em.find(VocabularyContext.class,vocabularyContext.getUri()));
+        workspace.addRefersToVocabularyContexts(em.find(VocabularyContext.class,
+            vocabularyContext.getUri()));
         workspaceDao.update(workspace);
         return vocabularyContext;
     }
