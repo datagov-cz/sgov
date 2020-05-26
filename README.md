@@ -37,3 +37,14 @@ Create the JAR using
 Now you can run the server like
 
     java -jar server/build/libs/sgov-server.jar
+
+## IDE configuration
+
+### Intellij Idea
+
+Static code analysis rules are defined in file `./config/checkstyle/checkstyle.xml`. In order to set up this checkstyle
+in Intellij Idea IDE following steps are recommended:
+1) Import the file into project checkstyle scheme using 
+`Settings/Editor/Code Style/Java/Import Scheme/Checkstyle configuration`.
+2) Install checkstyle plugin CheckStyle-IDEA
+3) Configure the plugin by adding `checkstyle.xml` into  `Settings/Other Settings/Checkstyle/Configuration file`
