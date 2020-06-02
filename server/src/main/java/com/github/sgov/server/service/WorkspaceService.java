@@ -73,9 +73,28 @@ public class WorkspaceService {
         return repositoryService.getRequiredReference(id);
     }
 
-    public VocabularyContext createVocabularyContext(
-            URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
-        return repositoryService.createVocabularyContext(workspaceUri, vocabularyUri, isReadOnly);
+    /**
+     * Ensures that a vocabulary with the given IRI is registered in the workspace. If yes, its
+     * content is kept intact. Otherwise a new context is created and the content is loaded from
+     *
+     * @param workspaceUri  URI of the workspace to connect the vocabulary context to.
+     * @param vocabularyUri URI of the vocabulary to be attached to the workspace
+     * @param isReadOnly    true if the context should be created as read-only (no effect if the
+     *                      vocabulary already exists)
+     * @return URI of the vocabulary context to create
+     */
+    public URI ensureVocabularyExistsInWorkspace(
+        URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
+        URI vocabularyContextUri =
+            repositoryService.getVocabularyContextReference(workspaceUri, vocabularyUri);
+        if (vocabularyContextUri == null) {
+            VocabularyContext vocabularyContext =
+                repositoryService.createVocabularyContext(workspaceUri, vocabularyUri, isReadOnly);
+            repositoryService.loadContext(vocabularyContext);
+            vocabularyContextUri = vocabularyContext.getUri();
+        }
+
+        return vocabularyContextUri;
     }
 
     public List<Workspace> findAll() {

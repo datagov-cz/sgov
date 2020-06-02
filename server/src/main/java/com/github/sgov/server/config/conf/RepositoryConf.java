@@ -15,7 +15,12 @@ import org.springframework.context.annotation.Configuration;
 public class RepositoryConf {
 
     /**
-     * URL of the main application repository.
+     * URL of the release SPARQL endpoint.
+     */
+    private String releaseSparqlEndpointUrl;
+
+    /**
+     * URL of the workspace repository.
      */
     private String url;
 
