@@ -3,14 +3,21 @@ package com.github.sgov.server.dao;
 import com.github.sgov.server.Validator;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.Workspace;
+import com.github.sgov.server.model.util.DescriptorFactory;
 import com.github.sgov.server.util.Vocabulary;
 import com.google.gson.JsonObject;
 import cz.cvut.kbss.jopa.model.EntityManager;
+import cz.cvut.kbss.ontodriver.Connection;
+import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import kong.unirest.HttpResponse;
@@ -48,6 +55,59 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         super(Workspace.class, em);
         this.config = config;
         this.properties = properties;
+    }
+
+    @Override
+    public Optional<Workspace> find(URI id) {
+        Objects.requireNonNull(id);
+        try {
+            return Optional.ofNullable(
+                em.find(type, id, DescriptorFactory.workspaceDescriptor(id))
+            );
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
+    @Override
+    public Optional<Workspace> getReference(URI id) {
+        Objects.requireNonNull(id);
+        try {
+            return Optional.ofNullable(
+                em.getReference(type, id, DescriptorFactory.workspaceDescriptor(id))
+            );
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
+    //@ModifiesData
+    @Override
+    public Workspace update(Workspace entity) {
+        Objects.requireNonNull(entity);
+        try {
+            // Evict possibly cached instance loaded from default context
+            em.getEntityManagerFactory().getCache().evict(Workspace.class, entity.getUri(), null);
+            return em.merge(entity, DescriptorFactory.workspaceDescriptor(entity));
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
+    //@ModifiesData
+    @Override
+    public void persist(Workspace entity) {
+        Objects.requireNonNull(entity);
+        try {
+            Connection connection = em.unwrap(Connection.class);
+            URI entityUri = connection.generateIdentifier(
+                getEntityType(entity)
+            );
+            entity.setUri(entityUri);
+            em.persist(entity, DescriptorFactory.workspaceDescriptor(entity));
+        } catch (RuntimeException | OntoDriverException e) {
+            throw new PersistenceException(e);
+        }
     }
 
 
@@ -130,12 +190,18 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         r.results().forEach(result -> {
             if (log.isDebugEnabled()) {
                 log.debug(MessageFormat
-                        .format("    - [{0}] Node {1} failing for value {2} with message: {3} ",
-                                result.getSeverity().getLocalName(), result.getFocusNode(),
-                                result.getValue(),
-                                result.getMessage()));
+                    .format("    - [{0}] Node {1} failing for value {2} with message: {3} ",
+                        result.getSeverity().getLocalName(), result.getFocusNode(),
+                        result.getValue(),
+                        result.getMessage()));
             }
         });
         return r;
+    }
+
+    private URI getEntityType(Object entity) {
+        return em.getMetamodel().getEntities().stream()
+            .filter(et -> et.getJavaType().equals(entity.getClass()))
+            .map(et -> et.getIRI().toURI()).findFirst().orElse(null);
     }
 }
