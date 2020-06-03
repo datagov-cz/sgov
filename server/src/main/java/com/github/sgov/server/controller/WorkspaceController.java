@@ -186,11 +186,15 @@ public class WorkspaceController extends BaseController {
     ) {
         final URI workspaceUri = resolveIdentifier(
                 namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        VocabularyContext vocabularyContext =
-                workspaceService.createVocabularyContext(workspaceUri, vocabularyUri, readOnly);
-        LOG.debug("Vocabulary context {} created.", vocabularyContext);
+        final URI vocabularyContextUri =
+                workspaceService.ensureVocabularyExistsInWorkspace(
+                    workspaceUri,
+                    vocabularyUri,
+                    readOnly
+                );
+        LOG.debug("Vocabulary context {} created.", vocabularyContextUri);
         return ResponseEntity.created(
-                generateLocation(vocabularyContext.getUri(), Vocabulary.s_c_slovnikovy_kontext)
+                generateLocation(vocabularyContextUri, Vocabulary.s_c_slovnikovy_kontext)
         ).build();
     }
 
