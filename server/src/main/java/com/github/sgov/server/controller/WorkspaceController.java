@@ -192,7 +192,6 @@ public class WorkspaceController extends BaseController {
                     vocabularyUri,
                     readOnly
                 );
-        LOG.debug("Vocabulary context {} created.", vocabularyContextUri);
         return ResponseEntity.created(
                 generateLocation(vocabularyContextUri, Vocabulary.s_c_slovnikovy_kontext)
         ).build();

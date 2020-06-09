@@ -16,6 +16,8 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
@@ -116,11 +118,11 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
     /**
      * Reloads the given vocabulary context from the source endpoint.
      *
-     * @param vocabularyContext the vocabulary context to be loaded.
+     * @param vocabularyContextUri the vocabulary context to be loaded.
+     * @return version of the loaded vocabulary
      */
     @Transactional
-    public void loadContext(final VocabularyContext vocabularyContext) {
-        URI vocabularyVersion = vocabularyContext.getBasedOnVocabularyVersion();
+    public URI loadContext(final URI vocabularyContextUri, final URI namedGraphUri) {
         try {
             SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
@@ -129,19 +131,32 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
             RepositoryConnection connection  = repo.getConnection();
             GraphQuery query = connection
                 .prepareGraphQuery("CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} }");
-            query.setBinding("g", f.createIRI(vocabularyVersion.toString()));
+            query.setBinding("g", f.createIRI(namedGraphUri.toString()));
             GraphQueryResult result = query.evaluate();
 
             HTTPRepository workspaceRepository = new HTTPRepository(
                 repositoryConf.getUrl());
             RepositoryConnection connection2 = workspaceRepository.getConnection();
             connection2.add((Iterable<Statement>) result,
-                f.createIRI(vocabularyContext.getUri().toString()));
+                f.createIRI(vocabularyContextUri.toString()));
+
+            URI realVocabularyVersion = getVocabularyVersion(connection, namedGraphUri);
 
             connection.close();
             connection2.close();
+
+            return realVocabularyVersion;
         } catch (URISyntaxException e) {
             e.printStackTrace();
+            return null;
         }
+    }
+
+    private URI getVocabularyVersion(RepositoryConnection connection, final URI namedGraphUri) {
+        TupleQuery query = connection
+            .prepareTupleQuery("SELECT ?versionIri WHERE { GRAPH ?graph {?s ?p ?o} }");
+        query.setBinding("graph", connection.getValueFactory().createIRI(namedGraphUri.toString()));
+        TupleQueryResult result = query.evaluate();
+        return URI.create(result.next().getValue("versionIri").stringValue());
     }
 }

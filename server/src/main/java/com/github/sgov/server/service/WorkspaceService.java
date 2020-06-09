@@ -8,6 +8,8 @@ import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.service.security.SecurityUtils;
 import java.net.URI;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.validation.ValidationReport;
@@ -17,6 +19,7 @@ import org.topbraid.shacl.validation.ValidationReport;
  */
 @Service
 public class WorkspaceService {
+    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceService.class);
 
     private final WorkspaceRepositoryService repositoryService;
     private final UserRepositoryService userRepositoryService;
@@ -88,9 +91,15 @@ public class WorkspaceService {
         URI vocabularyContextUri =
             repositoryService.getVocabularyContextReference(workspaceUri, vocabularyUri);
         if (vocabularyContextUri == null) {
-            VocabularyContext vocabularyContext =
+            LOG.debug("Creating vocabulary context for vocabulary {}", vocabularyUri);
+            final VocabularyContext vocabularyContext =
                 repositoryService.createVocabularyContext(workspaceUri, vocabularyUri, isReadOnly);
-            repositoryService.loadContext(vocabularyContext);
+            LOG.debug(" - done, with uri {}", vocabularyContext.getUri());
+
+            LOG.debug("Loading vocabulary context {}", vocabularyContext.getUri());
+            repositoryService.loadContext(vocabularyContext.getUri(),vocabularyUri);
+            LOG.debug(" - done.");
+
             vocabularyContextUri = vocabularyContext.getUri();
         }
 
