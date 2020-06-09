@@ -29,18 +29,17 @@ public final class Vocabulary {
     public static final String s_p_ma_kontext_sledovani_zmen = WORKSPACE_NAMESPACE
             + "má-kontext-sledování-změn";
 
-
-    public static final String s_c_administrator = DATA_DESCRIPTION_NAMESPACE
-            + "administrátor";
     public static final String s_c_uzivatel = DATA_DESCRIPTION_NAMESPACE
             + "uživatel";
-    public static final String s_c_omezeny_uzivatel = DATA_DESCRIPTION_NAMESPACE
-            + "omezený-uživatel";
-    public static final String s_c_uzamceny_uzivatel = DATA_DESCRIPTION_NAMESPACE
-            + "uzamčený-uživatel";
-    public static final String s_c_zablokovany_uzivatel = DATA_DESCRIPTION_NAMESPACE
-            + "zablokovaný-uživatel";
-    public static final String s_p_ma_puvodni_heslo = DATA_DESCRIPTION_NAMESPACE
+    public static final String s_c_administrator = WORKSPACE_NAMESPACE
+        + "administrátor";
+    public static final String s_c_omezeny_uzivatel = WORKSPACE_NAMESPACE
+        + "omezený-uživatel";
+    public static final String s_c_uzamceny_uzivatel = WORKSPACE_NAMESPACE
+        + "uzamčený-uživatel";
+    public static final String s_c_zablokovany_uzivatel = WORKSPACE_NAMESPACE
+        + "zablokovaný-uživatel";
+    public static final String s_p_ma_puvodni_heslo = WORKSPACE_NAMESPACE
             + "má-původní-heslo";
 
     public static final String s_p_ma_heslo = DATA_DESCRIPTION_NAMESPACE
