@@ -10,7 +10,7 @@ public final class Vocabulary {
     private static final String DATA_DESCRIPTION_NAMESPACE = "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/";
 
     public static final String s_c_metadatovy_kontext = WORKSPACE_NAMESPACE + "metadatový-kontext";
-    public static final String s_c_slovnikovy_kontext = WORKSPACE_NAMESPACE + "slovníkovy-kontext";
+    public static final String s_c_slovnikovy_kontext = WORKSPACE_NAMESPACE + "slovníkový-kontext";
     public static final String s_c_slovnikovy_kontext_pouze_pro_cteni =
             WORKSPACE_NAMESPACE + "slovníkový-kontext-pouze-pro-čtení";
     public static final String s_c_kontext_sledovani_zmen = WORKSPACE_NAMESPACE

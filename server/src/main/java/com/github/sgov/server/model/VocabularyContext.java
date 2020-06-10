@@ -31,6 +31,12 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
             fetch = FetchType.EAGER)
     private ChangeTrackingContext changeTrackingContext;
 
+    @ParticipationConstraints(nonEmpty = true)
+    @OWLObjectProperty(iri = Vocabulary.s_p_obsahuje_slovnik,
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+        fetch = FetchType.EAGER)
+    private URI containsVocabulary;
+
     public URI getBasedOnVocabularyVersion() {
         return basedOnVocabularyVersion;
     }
@@ -45,6 +51,14 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
 
     public void setChangeTrackingContext(ChangeTrackingContext changeTrackingContext) {
         this.changeTrackingContext = changeTrackingContext;
+    }
+
+    public void setContainsVocabulary(URI uri) {
+        this.containsVocabulary = uri;
+    }
+
+    public URI getContainsVocabulary() {
+        return containsVocabulary;
     }
 
     /**
