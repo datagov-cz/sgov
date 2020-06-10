@@ -11,6 +11,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.Set;
 import javax.validation.constraints.NotBlank;
 
 @OWLClass(iri = Vocabulary.s_c_uzivatel)
@@ -133,6 +134,11 @@ public class UserAccount extends AbstractUser {
         final User user = new User();
         copyAttributes(user);
         return user;
+    }
+
+    @JsonIgnore
+    public Set<String> getTypes() {
+        return types;
     }
 
     public Workspace getCurrentWorkspace() {
