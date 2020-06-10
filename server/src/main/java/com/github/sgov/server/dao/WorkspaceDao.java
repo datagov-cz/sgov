@@ -101,7 +101,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         try {
             Connection connection = em.unwrap(Connection.class);
             URI entityUri = connection.generateIdentifier(
-                getEntityType(entity)
+                em.getMetamodel().entity(Workspace.class).getIRI().toURI()
             );
             entity.setUri(entityUri);
             em.persist(entity, DescriptorFactory.workspaceDescriptor(entity));
@@ -197,11 +197,5 @@ public class WorkspaceDao extends BaseDao<Workspace> {
             }
         });
         return r;
-    }
-
-    private URI getEntityType(Object entity) {
-        return em.getMetamodel().getEntities().stream()
-            .filter(et -> et.getJavaType().equals(entity.getClass()))
-            .map(et -> et.getIRI().toURI()).findFirst().orElse(null);
     }
 }

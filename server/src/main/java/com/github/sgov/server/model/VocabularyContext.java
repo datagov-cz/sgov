@@ -1,6 +1,7 @@
 package com.github.sgov.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.util.HasTypes;
 import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.annotations.CascadeType;
@@ -10,6 +11,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.cvut.kbss.jopa.model.annotations.Types;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.Objects;
 import java.util.Set;
@@ -77,6 +79,19 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
     @Override
     public void setTypes(Set<String> types) {
         this.types = types;
+    }
+
+    /**
+     * Returns field changeTrackingContext.
+     */
+    public static Field getChangeTrackingContextField() {
+        try {
+            return VocabularyContext.class.getDeclaredField("changeTrackingContext");
+        } catch (NoSuchFieldException e) {
+            throw new SGoVException(
+                "Fatal error! Unable to retrieve \"changeTrackingContext\" field.", e
+            );
+        }
     }
 
     @Override

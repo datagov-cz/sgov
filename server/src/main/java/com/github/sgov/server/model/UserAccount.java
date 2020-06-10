@@ -40,6 +40,20 @@ public class UserAccount extends AbstractUser {
         }
     }
 
+    /**
+     * Returns field currentWorkspace.
+     */
+    public static Field getCurrentWorkspaceField() {
+        try {
+            return UserAccount.class.getDeclaredField("currentWorkspace");
+        } catch (NoSuchFieldException e) {
+            throw new SGoVException(
+                "Fatal error! Unable to retrieve \"currentWorkspace\" field.", e
+            );
+        }
+    }
+
+
     public String getPassword() {
         return password;
     }

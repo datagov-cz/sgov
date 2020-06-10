@@ -34,6 +34,11 @@ public final class DescriptorFactory {
         descriptor
             .addAttributeDescriptor(UserAccount.getPasswordField(),
                 new EntityDescriptor(null));
+        if (userAccount.getCurrentWorkspace() != null) {
+            descriptor
+                .addAttributeDescriptor(UserAccount.getCurrentWorkspaceField(),
+                    workspaceDescriptor(userAccount.getCurrentWorkspace()));
+        }
         return descriptor;
     }
 
@@ -55,7 +60,7 @@ public final class DescriptorFactory {
      * Creates a JOPA descriptor for a workspace with the specified identifier.
      *
      * <p>The descriptor specifies that the instance context will correspond to the given IRI.
-     * It also initializes otherrequired attribute descriptors.
+     * It also initializes other required attribute descriptors.
      *
      * <p>Note that default context is used for asset author.
      *
@@ -65,12 +70,29 @@ public final class DescriptorFactory {
     public static Descriptor workspaceDescriptor(URI workspaceUri) {
         Objects.requireNonNull(workspaceUri);
         EntityDescriptor descriptor = new EntityDescriptor(workspaceUri);
+        descriptor.addAttributeDescriptor(Workspace.getVocabularyContextsField(),
+            vocabularyDescriptor(workspaceUri));
         descriptor.addAttributeDescriptor(
             HasProvenanceData.getAuthorField(), new EntityDescriptor(null)
         );
         descriptor.addAttributeDescriptor(
             HasProvenanceData.getLastEditorField(), new EntityDescriptor(null)
         );
+        return descriptor;
+    }
+
+    /**
+     * Creates a JOPA descriptor for a vocabulary with the specified identifier.
+     *
+     * <p>The descriptor specifies that the instance context will correspond to the given IRI.
+     * It also initializes other required attribute descriptors.
+     *
+     * @param workspaceUri Workspace identifier for which the descriptor should be created
+     * @return Vocabulary descriptor
+     */
+    public static Descriptor vocabularyDescriptor(URI workspaceUri) {
+        Objects.requireNonNull(workspaceUri);
+        EntityDescriptor descriptor = new EntityDescriptor(workspaceUri);
         return descriptor;
     }
 }

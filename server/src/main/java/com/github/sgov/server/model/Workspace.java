@@ -1,5 +1,6 @@
 package com.github.sgov.server.model;
 
+import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.provenance.ProvenanceManager;
 import com.github.sgov.server.util.Vocabulary;
@@ -12,6 +13,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.cvut.kbss.jopa.vocabulary.RDFS;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -77,6 +79,19 @@ public class Workspace extends Asset implements Context {
         }
 
         vocabularyContexts.add(context);
+    }
+
+    /**
+     * Returns field vocabularyContexts.
+     */
+    public static Field getVocabularyContextsField() {
+        try {
+            return Workspace.class.getDeclaredField("vocabularyContexts");
+        } catch (NoSuchFieldException e) {
+            throw new SGoVException(
+                "Fatal error! Unable to retrieve \"vocabularyContexts\" field.", e
+            );
+        }
     }
 
     @Override
