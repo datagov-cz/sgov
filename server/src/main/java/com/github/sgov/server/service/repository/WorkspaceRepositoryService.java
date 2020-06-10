@@ -80,7 +80,6 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
 
         VocabularyContext vocabularyContext = new VocabularyContext();
         vocabularyContext.setBasedOnVocabularyVersion(vocabularyUri);
-        vocabularyContext.setContainsVocabulary(vocabularyUri);
         vocabularyContext.setReadonly(isReadOnly);
         em.persist(vocabularyContext);
 
