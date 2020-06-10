@@ -3,6 +3,7 @@ package com.github.sgov.server.controller;
 import static com.github.sgov.server.environment.Generator.generateUserAccount;
 import static com.github.sgov.server.service.IdentifierResolver.extractIdentifierFragment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -19,9 +20,13 @@ import com.github.sgov.server.environment.Environment;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.UserService;
+import com.github.sgov.server.util.Vocabulary;
+import com.google.gson.JsonObject;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -50,6 +55,7 @@ class UserControllerTest extends BaseControllerTestRunner {
         MockitoAnnotations.initMocks(this);
         super.setUp(sut);
         this.user = generateUserAccount();
+        this.user.setTypes(Collections.singleton(Vocabulary.s_c_administrator));
         Environment.setCurrentUser(user);
     }
 
@@ -129,5 +135,17 @@ class UserControllerTest extends BaseControllerTestRunner {
                 .andReturn();
         final Boolean result = readValue(mvcResult, Boolean.class);
         assertTrue(result);
+    }
+
+    @Test
+    void getCurrentReturnsUserWithoutTypes() throws Exception {
+        when(userService.getCurrent()).thenReturn(user);
+        final MvcResult mvcResult =
+            mockMvc.perform(get(BASE_URL + "/current"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final JSONObject o = new JSONObject(mvcResult.getResponse().getContentAsString());
+        assertFalse(o.has("types"));
     }
 }
