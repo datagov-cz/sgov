@@ -6,7 +6,6 @@ import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.util.IdnUtils;
-import cz.cvut.kbss.jopa.model.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -32,21 +31,17 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
 
     WorkspaceDao workspaceDao;
 
-    EntityManager em;
-
     RepositoryConf repositoryConf;
 
     /**
      * Creates a new repository service.
      */
     @Autowired
-    public WorkspaceRepositoryService(EntityManager em,
-                                      Validator validator,
+    public WorkspaceRepositoryService(Validator validator,
                                       WorkspaceDao workspaceDao,
                                       RepositoryConf repositoryConf) {
         super(validator);
         this.workspaceDao = workspaceDao;
-        this.em = em;
         this.repositoryConf = repositoryConf;
     }
 
@@ -74,20 +69,15 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
     public VocabularyContext createVocabularyContext(
             URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
 
-        ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
-        changeTrackingContext.setChangesVocabularyVersion(vocabularyUri);
-        em.persist(changeTrackingContext);
-
         VocabularyContext vocabularyContext = new VocabularyContext();
         vocabularyContext.setBasedOnVocabularyVersion(vocabularyUri);
         vocabularyContext.setReadonly(isReadOnly);
-        em.persist(vocabularyContext);
-
+        ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
+        changeTrackingContext.setChangesVocabularyVersion(vocabularyUri);
         vocabularyContext.setChangeTrackingContext(changeTrackingContext);
 
         Workspace workspace = getRequiredReference(workspaceUri);
-        workspace.addRefersToVocabularyContexts(em.find(VocabularyContext.class,
-            vocabularyContext.getUri()));
+        workspace.addRefersToVocabularyContexts(vocabularyContext);
         workspaceDao.update(workspace);
         return vocabularyContext;
     }

@@ -2,6 +2,7 @@ package com.github.sgov.server.environment;
 
 import com.github.sgov.server.model.User;
 import com.github.sgov.server.model.UserAccount;
+import com.github.sgov.server.model.Workspace;
 import java.net.URI;
 import java.util.Random;
 
@@ -106,5 +107,18 @@ public class Generator {
         final UserAccount account = generateUserAccount();
         account.setPassword("Pass" + randomInt(0, 10000));
         return account;
+    }
+
+    /**
+     * Generates a random {@link Workspace} instance, initialized with
+     * label and identifier.
+     *
+     * @return A new {@code Workspace} instance
+     */
+    public static Workspace generateWorkspace() {
+        final Workspace workspace = new Workspace();
+        workspace.setUri(Generator.generateUri());
+        workspace.setLabel("Label" + randomInt());
+        return workspace;
     }
 }
