@@ -56,7 +56,7 @@ public class WorkspaceController extends BaseController {
     }
 
     @GetMapping(produces = {
-            MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
+        MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Retrieve all workspaces.")
     public List<Workspace> getAllWorkspaces() {
         return workspaceService.findAllInferred();
@@ -70,11 +70,11 @@ public class WorkspaceController extends BaseController {
     @PostMapping
     @ApiOperation(value = "Create new workspace.")
     public ResponseEntity<Void> createWorkspace(
-            @RequestBody Workspace workspace) {
+        @RequestBody Workspace workspace) {
         Workspace ws = workspaceService.persist(workspace);
         LOG.debug("Workspace {} created.", ws);
         return ResponseEntity.created(
-                generateLocation(ws.getUri(), Vocabulary.s_c_metadatovy_kontext)
+            generateLocation(ws.getUri(), Vocabulary.s_c_metadatovy_kontext)
         ).build();
     }
 
@@ -87,15 +87,15 @@ public class WorkspaceController extends BaseController {
      * @return Workspace specified by workspaceFragment and optionally namespace.
      */
     @GetMapping(value = "/{workspaceFragment}",
-            produces = {
-                    MediaType.APPLICATION_JSON_VALUE,
-                    JsonLd.MEDIA_TYPE})
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Retrieve existing workspace.")
     public Workspace getWorkspace(
-            @PathVariable String workspaceFragment,
-            @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
+        @PathVariable String workspaceFragment,
+        @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
         final URI identifier = resolveIdentifier(
-                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         return workspaceService.findInferred(identifier);
     }
 
@@ -108,15 +108,15 @@ public class WorkspaceController extends BaseController {
      *                          Optional, if not specified, the configured namespace is used.
      */
     @PutMapping(value = "/{workspaceFragment}", consumes = {
-            MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
+        MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Update existing workspace.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateWorkspace(@PathVariable String workspaceFragment,
                                 @RequestParam(name = QueryParams.NAMESPACE, required = false)
-                                        String namespace,
+                                    String namespace,
                                 @RequestBody Workspace workspace) {
         final URI identifier = resolveIdentifier(
-                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         verifyRequestAndEntityIdentifier(workspace, identifier);
         workspaceService.update(workspace);
         LOG.debug("Workspace {} updated.", workspace);
@@ -134,9 +134,9 @@ public class WorkspaceController extends BaseController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWorkspace(@PathVariable String workspaceFragment,
                                 @RequestParam(name = QueryParams.NAMESPACE, required = false)
-                                        String namespace) {
+                                    String namespace) {
         final URI identifier = resolveIdentifier(
-                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace toRemove = workspaceService.getRequiredReference(identifier);
         workspaceService.remove(identifier);
         LOG.debug("Workspace {} deleted.", toRemove);
@@ -151,15 +151,15 @@ public class WorkspaceController extends BaseController {
      * @return Set of vocabulary contexts.
      */
     @GetMapping(value = "/{workspaceFragment}/vocabularies",
-            produces = {
-                    MediaType.APPLICATION_JSON_VALUE,
-                    JsonLd.MEDIA_TYPE})
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Retrieve all vocabulary contexts stored within workspace.")
     public Set<VocabularyContext> getAllVocabularyContexts(
-            @PathVariable String workspaceFragment,
-            @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
+        @PathVariable String workspaceFragment,
+        @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
         final URI identifier = resolveIdentifier(
-                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace workspace = workspaceService.findInferred(identifier);
         return workspace.getVocabularyContexts();
     }
@@ -176,42 +176,66 @@ public class WorkspaceController extends BaseController {
     @PostMapping(value = "/{workspaceFragment}/vocabularies")
     @ApiOperation(value = "Create vocabulary context within workspace.")
     public ResponseEntity<String> createVocabularyContext(
-            @PathVariable String workspaceFragment,
-            @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
-            @RequestParam(name = "vocabularyUri") URI vocabularyUri,
-            @RequestParam(name = "readOnly", required = false) boolean readOnly
+        @PathVariable String workspaceFragment,
+        @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
+        @RequestParam(name = "vocabularyUri") URI vocabularyUri,
+        @RequestParam(name = "readOnly", required = false) boolean readOnly
     ) {
         final URI workspaceUri = resolveIdentifier(
-                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final URI vocabularyContextUri =
-                workspaceService.ensureVocabularyExistsInWorkspace(
-                    workspaceUri,
-                    vocabularyUri,
-                    readOnly
-                );
+            workspaceService.ensureVocabularyExistsInWorkspace(
+                workspaceUri,
+                vocabularyUri,
+                readOnly
+            );
         LOG.debug("Vocabulary context {} created.", vocabularyContextUri);
         return ResponseEntity.created(
-                generateLocation(vocabularyContextUri, Vocabulary.s_c_slovnikovy_kontext)
+            generateLocation(vocabularyContextUri, Vocabulary.s_c_slovnikovy_kontext)
         ).build();
+    }
+
+    /**
+     * Delete vocabulary from a workspace.
+     *
+     * @param workspaceFragment  Localname of workspace id.
+     * @param vocabularyFragment Localname of vocabulary context id.
+     * @param namespace          Namespace used for resource identifier resolution.
+     *                           Optional, if not specified, the configured namespace is used.
+     */
+    @DeleteMapping(value = "/{workspaceFragment}/vocabularies/{vocabularyFragment}")
+    @ApiOperation(value = "Delete vocabulary form a workspace.")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteWorkspaceVocabulary(
+        @PathVariable String workspaceFragment,
+        @PathVariable String vocabularyFragment,
+        @RequestParam(name = QueryParams.NAMESPACE, required = false)
+            String namespace) {
+        final URI workspaceId = resolveIdentifier(
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final URI vocabularyId = resolveIdentifier(
+            namespace, vocabularyFragment, Vocabulary.s_c_slovnikovy_kontext);
+        VocabularyContext toRemove = workspaceService.removeVocabulary(workspaceId, vocabularyId);
+        LOG.debug("Vocabulary context {} deleted from workspace {}.", toRemove, workspaceId);
     }
 
     @GetMapping(value = "/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Validates workspace using predefined rules. This involves "
-            + "e.g. checking that each term has a skos:prefLabel, or that each Role-typed "
-            + "term has a super term typed as Kind.")
+        + "e.g. checking that each term has a skos:prefLabel, or that each Role-typed "
+        + "term has a super term typed as Kind.")
     @ResponseBody
     @ApiImplicitParam(name = "Accept-language",
-            value = "cs",
-            required = true,
-            paramType = "header",
-            dataTypeClass = String.class,
-            example = "cs"
+        value = "cs",
+        required = true,
+        paramType = "header",
+        dataTypeClass = String.class,
+        example = "cs"
     )
     public ValidationReport validate(
-            @ApiParam(value = "http://example.org/mc",
-                    required = true,
-                    example = "http://example.org/mc"
-            ) @RequestParam String iri
+        @ApiParam(value = "http://example.org/mc",
+            required = true,
+            example = "http://example.org/mc"
+        ) @RequestParam String iri
     ) {
         return workspaceService.validateWorkspace(iri);
     }

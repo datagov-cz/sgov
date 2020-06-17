@@ -1,6 +1,7 @@
 package com.github.sgov.server.service;
 
 
+import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.UserRepositoryService;
@@ -57,6 +58,7 @@ public class WorkspaceService {
 
     /**
      * Updates only direct attributes of the workspace.
+     *
      * @param workspace Workspace that holds updated attributes.
      */
     public void update(Workspace workspace) {
@@ -99,5 +101,24 @@ public class WorkspaceService {
 
     public List<Workspace> findAllInferred() {
         return repositoryService.findAllInferred();
+    }
+
+    /**
+     * Removes vocabulary context from given workspace.
+     * @param workspaceId Uri of a workspace.
+     * @param vocabularyContextId Uri of a vocabulary context.
+     */
+    public VocabularyContext removeVocabulary(URI workspaceId, URI vocabularyContextId) {
+        Workspace workspace = repositoryService.findRequired(workspaceId);
+        VocabularyContext vocabularyContext = workspace.getVocabularyContexts().stream()
+            .filter(vc -> vc.getUri().equals(vocabularyContextId))
+            .findFirst().orElseThrow(
+                () -> NotFoundException.create(
+                    VocabularyContext.class.getSimpleName(), vocabularyContextId
+                )
+            );
+        workspace.getVocabularyContexts().remove(vocabularyContext);
+        repositoryService.update(workspace);
+        return vocabularyContext;
     }
 }
