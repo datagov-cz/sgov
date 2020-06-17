@@ -59,7 +59,7 @@ public class WorkspaceController extends BaseController {
             MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Retrieve all workspaces.")
     public List<Workspace> getAllWorkspaces() {
-        return workspaceService.findAll();
+        return workspaceService.findAllInferred();
     }
 
     /**
@@ -96,7 +96,7 @@ public class WorkspaceController extends BaseController {
             @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
         final URI identifier = resolveIdentifier(
                 namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        return workspaceService.findRequired(identifier);
+        return workspaceService.findInferred(identifier);
     }
 
     /**
@@ -160,7 +160,7 @@ public class WorkspaceController extends BaseController {
             @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
         final URI identifier = resolveIdentifier(
                 namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        final Workspace workspace = workspaceService.findRequired(identifier);
+        final Workspace workspace = workspaceService.findInferred(identifier);
         return workspace.getVocabularyContexts();
     }
 

@@ -59,6 +59,8 @@ public final class Vocabulary {
             + "má-datum-a-čas-vytvoření";
     public static final String s_p_ma_autora = DATA_DESCRIPTION_NAMESPACE + "má-autora";
 
+    public static final String s_c_slovnik = DATA_DESCRIPTION_NAMESPACE + "slovník";
+
     private Vocabulary() {
     }
 }
