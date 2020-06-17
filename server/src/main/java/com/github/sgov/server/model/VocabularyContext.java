@@ -6,10 +6,13 @@ import com.github.sgov.server.model.util.HasTypes;
 import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.annotations.CascadeType;
 import cz.cvut.kbss.jopa.model.annotations.FetchType;
+import cz.cvut.kbss.jopa.model.annotations.Inferred;
+import cz.cvut.kbss.jopa.model.annotations.OWLAnnotationProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.cvut.kbss.jopa.model.annotations.Types;
+import cz.cvut.kbss.jopa.vocabulary.RDFS;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -22,6 +25,18 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
 
     @Types
     Set<String> types;
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    @Inferred
+    @OWLAnnotationProperty(iri = RDFS.LABEL)
+    private String label;
 
     @ParticipationConstraints(nonEmpty = true)
     @OWLObjectProperty(iri = Vocabulary.s_p_vychazi_z_verze)

@@ -2,14 +2,18 @@ package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.dao.WorkspaceDao;
+import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.util.IdnUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.Validator;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -59,15 +63,39 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
     }
 
     /**
+     * Finds workspace with the specified id and returns it with all its inferred properties.
+     *
+     * <p>This method guarantees to return a matching
+     * instance. If no such object isfound, a {@link NotFoundException} is thrown.
+     *
+     * @param id Identifier of the workspace to load
+     * @return The matching workspace
+     * @throws NotFoundException If no matching instance is found
+     * @see #find(URI)
+     */
+    public Workspace findInferred(URI id) {
+        Workspace workspace = this.findRequired(id);
+
+        // compute inferences
+        workspaceDao.setVocabularyLabels(
+            new LinkedList<>(workspace.getVocabularyContexts()),
+            "cs"
+        );
+        return workspace;
+    }
+
+
+    /**
      * Creates vocabulary context.
-     * @param workspaceUri Id of the workspace.
+     *
+     * @param workspaceUri  Id of the workspace.
      * @param vocabularyUri Vocabulary for which context is created.
-     * @param isReadOnly True, if vocabulary should be readonly which the workspace.
+     * @param isReadOnly    True, if vocabulary should be readonly which the workspace.
      * @return
      */
     @Transactional
     public VocabularyContext createVocabularyContext(
-            URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
+        URI workspaceUri, URI vocabularyUri, boolean isReadOnly) {
 
         VocabularyContext vocabularyContext = new VocabularyContext();
         vocabularyContext.setBasedOnVocabularyVersion(vocabularyUri);
@@ -86,7 +114,7 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
      * Gets the context for the given vocabulary URI in the given workspace, or null if no such
      * context exists.
      *
-     * @param workspaceUri URI of the workspace.
+     * @param workspaceUri  URI of the workspace.
      * @param vocabularyUri URI of the vocabulary for which the context is created.
      * @return true if the vocabulary is already present in the workspace
      */
@@ -116,7 +144,7 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
                     repositoryConf.getReleaseSparqlEndpointUrl()));
             ValueFactory f = repo.getValueFactory();
-            RepositoryConnection connection  = repo.getConnection();
+            RepositoryConnection connection = repo.getConnection();
             GraphQuery query = connection
                 .prepareGraphQuery("CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} }");
             query.setBinding("g", f.createIRI(vocabularyVersion.toString()));
@@ -133,5 +161,20 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Loads all workspaces including all its inferred properties.
+     *
+     * @return List of all workspaces
+     */
+    public List<Workspace> findAllInferred() {
+        List<Workspace> workspaces = findAll();
+        List<VocabularyContext> vocabularyContexts = workspaces.stream()
+            .map(Workspace::getVocabularyContexts)
+            .flatMap(Set::stream)
+            .collect(Collectors.toList());
+        workspaceDao.setVocabularyLabels(vocabularyContexts, "cs");
+        return workspaces;
     }
 }

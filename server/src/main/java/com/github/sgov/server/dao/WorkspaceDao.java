@@ -4,6 +4,7 @@ import com.github.sgov.server.Validator;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.exception.PersistenceException;
+import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.model.util.DescriptorFactory;
 import com.github.sgov.server.util.Vocabulary;
@@ -14,8 +15,10 @@ import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -33,6 +36,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDFS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.topbraid.shacl.validation.ValidationReport;
@@ -119,34 +123,35 @@ public class WorkspaceDao extends BaseDao<Workspace> {
     public List<String> getAllWorkspaceIris() {
         final String uri = properties.getUrl();
         final HttpResponse<JsonObject> response =
-                Unirest.post(uri).header("Content-type", "application/sparql-query")
-                        .header("Accept", "application/sparql-results+json")
-                        .body("SELECT ?iri WHERE { ?iri  a <" + Vocabulary.s_c_metadatovy_kontext
-                                + "> }")
-                        .asObject(JsonObject.class);
+            Unirest.post(uri).header("Content-type", "application/sparql-query")
+                .header("Accept", "application/sparql-results+json")
+                .body("SELECT ?iri WHERE { ?iri  a <" + Vocabulary.s_c_metadatovy_kontext
+                    + "> }")
+                .asObject(JsonObject.class);
 
         final List<String> list = new ArrayList<>();
         response.getBody().getAsJsonObject("results").getAsJsonArray("bindings")
-                .forEach(b -> list.add(
-                        ((JsonObject) b).getAsJsonObject("iri").getAsJsonPrimitive("value")
-                                .getAsString()));
+            .forEach(b -> list.add(
+                ((JsonObject) b).getAsJsonObject("iri").getAsJsonPrimitive("value")
+                    .getAsString()));
         return list;
     }
+
 
     private List<String> getVocabularySnapshotContextsForWorkspace(final String workspace) {
         final String endpointUlozistePracovnichProstoru = properties.getUrl();
         final QuerySolutionMap map = new QuerySolutionMap();
         map.add("workspace", ResourceFactory.createResource(workspace));
         map.add("odkazujeNaKontext",
-                ResourceFactory.createResource(Vocabulary.s_p_odkazuje_na_kontext));
+            ResourceFactory.createResource(Vocabulary.s_p_odkazuje_na_kontext));
         map.add("slovnikovyKontext",
-                ResourceFactory.createResource(Vocabulary.s_c_slovnikovy_kontext));
+            ResourceFactory.createResource(Vocabulary.s_c_slovnikovy_kontext));
         final ParameterizedSparqlString query = new ParameterizedSparqlString(
-                "SELECT ?kontext WHERE { ?workspace ?odkazujeNaKontext ?kontext . ?kontext a "
-                        + "?slovnikovyKontext }", map);
+            "SELECT ?kontext WHERE { ?workspace ?odkazujeNaKontext ?kontext . ?kontext a "
+                + "?slovnikovyKontext }", map);
         final ResultSet rs = QueryExecutionFactory
-                        .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery())
-                        .execSelect();
+            .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery())
+            .execSelect();
 
         final List<String> list = new ArrayList<>();
         while (rs.hasNext()) {
@@ -165,21 +170,21 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         log.info("Validating workspace {}", workspaceIri);
         final String endpointUlozistePracovnichProstoru = properties.getUrl();
         final List<String> vocabulariesForWorkspace =
-                getVocabularySnapshotContextsForWorkspace(workspaceIri);
+            getVocabularySnapshotContextsForWorkspace(workspaceIri);
         log.debug("- found vocabularies {}", vocabulariesForWorkspace);
         final String bindings = vocabulariesForWorkspace.stream().map(v -> "<" + v + ">")
-                .collect(Collectors.joining(" "));
+            .collect(Collectors.joining(" "));
         final ParameterizedSparqlString query = new ParameterizedSparqlString(
-                "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
+            "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
         log.debug("- getting all statements for the vocabularies using query {}", query.toString());
         final QueryExecution e = QueryExecutionFactory
-                .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery());
+            .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery());
         final Model m = e.execConstruct();
         log.info("- found {} statements. Now validating", m.listStatements().toSet().size());
         final Validator validator = new Validator();
         OntDocumentManager.getInstance().setProcessImports(false);
         final Model dataModel =
-                ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF, m);
+            ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF, m);
         final Set<String> rules = new HashSet<>();
         rules.addAll(Validator.getGlossaryRules());
         rules.addAll(Validator.getModelRules());
@@ -197,5 +202,57 @@ public class WorkspaceDao extends BaseDao<Workspace> {
             }
         });
         return r;
+    }
+
+    /**
+     * Sets labels of vocabularyContexts retrieved from actual labels of vocabularies.
+     *
+     * @param vocabularyContexts Vocabulary context that should be extended with labels.
+     * @param language           Language for which labels should be retrieved.
+     */
+    public void setVocabularyLabels(List<VocabularyContext> vocabularyContexts, String language) {
+
+        if (vocabularyContexts.isEmpty()) {
+            return;
+        }
+
+        String values = vocabularyContexts.stream()
+            .map(vc -> vc.getUri().toString())
+            .collect(Collectors.joining(">)\n  (<", "  (<", ">)\n"));
+
+        final String uri = properties.getUrl();
+        final HttpResponse<JsonObject> response =
+            Unirest.post(uri).header("Content-type", "application/sparql-query")
+                .header("Accept", "application/sparql-results+json")
+                .body("SELECT ?vc ?label\n"
+                    + "WHERE {\n"
+                    + "    GRAPH ?vc { \n"
+                    + "        ?s a <" + Vocabulary.s_c_slovnik + "> .\n"
+                    + "        ?s <" + RDFS.label + "> ?label .\n"
+                    + "        FILTER langMatches( lang(?label), \"" + language + "\" )\n"
+                    + "    }    \n"
+                    + "} VALUES (?vc) {\n"
+                    + values
+                    + "}")
+                .asObject(JsonObject.class);
+
+        final Map<URI, String> uri2Labels = new HashMap<>();
+        response.getBody().getAsJsonObject("results").getAsJsonArray("bindings")
+            .forEach(b -> {
+                URI vc = URI.create(b.getAsJsonObject()
+                    .getAsJsonObject("vc").getAsJsonPrimitive("value").getAsString()
+                );
+                String label = b.getAsJsonObject()
+                    .getAsJsonObject("label").getAsJsonPrimitive("value").getAsString();
+
+                String previousValue = uri2Labels.putIfAbsent(vc, label);
+                if (previousValue != null) {
+                    log.warn("Found multiple labels of a vocabulary "
+                        + "within vocabulary context {}. Ignoring label {}.", vc, label);
+                }
+            });
+        vocabularyContexts.forEach(
+            vc -> vc.setLabel(uri2Labels.get(vc.getUri()))
+        );
     }
 }

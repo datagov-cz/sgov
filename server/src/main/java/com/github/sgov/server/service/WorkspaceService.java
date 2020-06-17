@@ -51,8 +51,8 @@ public class WorkspaceService {
         return instance;
     }
 
-    public Workspace findRequired(URI id) {
-        return repositoryService.findRequired(id);
+    public Workspace findInferred(URI id) {
+        return repositoryService.findInferred(id);
     }
 
     /**
@@ -97,7 +97,7 @@ public class WorkspaceService {
         return vocabularyContextUri;
     }
 
-    public List<Workspace> findAll() {
-        return repositoryService.findAll();
+    public List<Workspace> findAllInferred() {
+        return repositoryService.findAllInferred();
     }
 }

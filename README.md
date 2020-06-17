@@ -42,7 +42,9 @@ Now you can run the server like
 
 ### Intellij Idea
 
-To manage source code it is recommended to install [lombok plugin](https://plugins.jetbrains.com/plugin/6317-lombok). 
+To manage source code it is recommended to install plugins:
+ - [Lombok](https://plugins.jetbrains.com/plugin/6317-lombok) 
+ - [CheckStyle](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea)
  
 Static code analysis rules are defined in file `./config/checkstyle/checkstyle.xml`. In order to set up this checkstyle
 in Intellij Idea IDE following steps are recommended:
