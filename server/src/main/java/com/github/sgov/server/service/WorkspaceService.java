@@ -5,6 +5,7 @@ import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.UserRepositoryService;
+import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.service.security.SecurityUtils;
 import java.net.URI;
@@ -20,6 +21,7 @@ import org.topbraid.shacl.validation.ValidationReport;
 public class WorkspaceService {
 
     private final WorkspaceRepositoryService repositoryService;
+    private final VocabularyService vocabularyService;
     private final UserRepositoryService userRepositoryService;
     private final UserService userService;
     private final SecurityUtils securityUtils;
@@ -31,11 +33,13 @@ public class WorkspaceService {
     public WorkspaceService(WorkspaceRepositoryService repositoryService,
                             UserRepositoryService userRepositoryService,
                             UserService userService,
+                            VocabularyService vocabularyService,
                             SecurityUtils securityUtils) {
         this.repositoryService = repositoryService;
         this.userRepositoryService = userRepositoryService;
         this.userService = userService;
         this.securityUtils = securityUtils;
+        this.vocabularyService = vocabularyService;
     }
 
 
@@ -92,7 +96,7 @@ public class WorkspaceService {
         if (vocabularyContextUri == null) {
             VocabularyContext vocabularyContext =
                 repositoryService.createVocabularyContext(workspaceUri, vocabularyUri, isReadOnly);
-            repositoryService.loadContext(vocabularyContext);
+            vocabularyService.loadContext(vocabularyContext);
             vocabularyContextUri = vocabularyContext.getUri();
         }
 

@@ -6,22 +6,13 @@ import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
-import com.github.sgov.server.util.IdnUtils;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.query.GraphQuery;
-import org.eclipse.rdf4j.query.GraphQueryResult;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.http.HTTPRepository;
-import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,38 +120,6 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
             .map(vc -> vc.getUri())
             .findFirst();
         return vocabularyContextUri.orElse(null);
-    }
-
-    /**
-     * Reloads the given vocabulary context from the source endpoint.
-     *
-     * @param vocabularyContext the vocabulary context to be loaded.
-     */
-    @Transactional
-    public void loadContext(final VocabularyContext vocabularyContext) {
-        URI vocabularyVersion = vocabularyContext.getBasedOnVocabularyVersion();
-        try {
-            SPARQLRepository repo =
-                new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
-                    repositoryConf.getReleaseSparqlEndpointUrl()));
-            ValueFactory f = repo.getValueFactory();
-            RepositoryConnection connection = repo.getConnection();
-            GraphQuery query = connection
-                .prepareGraphQuery("CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} }");
-            query.setBinding("g", f.createIRI(vocabularyVersion.toString()));
-            GraphQueryResult result = query.evaluate();
-
-            HTTPRepository workspaceRepository = new HTTPRepository(
-                repositoryConf.getUrl());
-            RepositoryConnection connection2 = workspaceRepository.getConnection();
-            connection2.add((Iterable<Statement>) result,
-                f.createIRI(vocabularyContext.getUri().toString()));
-
-            connection.close();
-            connection2.close();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
