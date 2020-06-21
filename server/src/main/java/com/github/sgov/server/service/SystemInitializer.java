@@ -26,7 +26,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class SystemInitializer {
 
     public static final String SYSTEM_ADMIN_USER_URI =
-        "https://slovník.gov.cz/aplikační/výrobní-linka/slovník/system-admin-user";
+        Vocabulary.WORKSPACE_NAMESPACE + "uživatel/system-admin-user";
 
     private static final String SEPARATOR = "----------------------------------------------";
     private static final Logger LOG = LoggerFactory.getLogger(SystemInitializer.class);
