@@ -12,6 +12,8 @@ import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
+import org.eclipse.rdf4j.rio.ParserConfig;
+import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,30 +41,37 @@ public class VocabularyService {
      */
     @Transactional
     public void loadContext(final VocabularyContext vocabularyContext) {
-        URI vocabularyVersion = vocabularyContext.getBasedOnVocabularyVersion();
         try {
-            SPARQLRepository repo =
+            final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
                     repositoryConf.getReleaseSparqlEndpointUrl()));
-            ValueFactory f = repo.getValueFactory();
-            RepositoryConnection connection = repo.getConnection();
-            GraphQuery query = connection
-                .prepareGraphQuery("PREFIX : <"
-                    + vocabularyVersion
-                    + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} FILTER(?g IN (<"
-                    + vocabularyVersion
-                    + ">,:glosář,:model))}");
-            GraphQueryResult result = query.evaluate();
-            HTTPRepository workspaceRepository = new HTTPRepository(
+            final RepositoryConnection connection = repo.getConnection();
+            final GraphQueryResult result = loadContext(vocabularyContext, connection);
+            final HTTPRepository workspaceRepository = new HTTPRepository(
                 repositoryConf.getUrl());
-            RepositoryConnection connection2 = workspaceRepository.getConnection();
+            final RepositoryConnection connection2 = workspaceRepository.getConnection();
+            connection2.setParserConfig(
+                new ParserConfig().set(BasicParserSettings.PRESERVE_BNODE_IDS, true));
+            final ValueFactory f = connection2.getValueFactory();
             connection2.add((Iterable<Statement>) result,
                 f.createIRI(vocabularyContext.getUri().toString()));
-
             connection.close();
             connection2.close();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    GraphQueryResult loadContext(
+        final VocabularyContext vocabularyContext,
+        final RepositoryConnection connection) {
+        URI vocabularyVersion = vocabularyContext.getBasedOnVocabularyVersion();
+        GraphQuery query = connection
+            .prepareGraphQuery("PREFIX : <"
+                + vocabularyVersion
+                + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} FILTER(?g IN (<"
+                + vocabularyVersion
+                + ">,:glosář,:model))}");
+        return query.evaluate();
     }
 }
