@@ -34,5 +34,5 @@ public class UserConf {
     /**
      * Namespace for users.
      */
-    private String namespace = Vocabulary.DATA_DESCRIPTION_NAMESPACE + "/uživatel";
+    private String namespace = Vocabulary.DATA_DESCRIPTION_NAMESPACE + "uživatel";
 }
