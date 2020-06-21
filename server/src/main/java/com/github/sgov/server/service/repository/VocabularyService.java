@@ -52,9 +52,15 @@ public class VocabularyService {
             final RepositoryConnection connection2 = workspaceRepository.getConnection();
             connection2.setParserConfig(
                 new ParserConfig().set(BasicParserSettings.PRESERVE_BNODE_IDS, true));
+
+            connection2.begin();
+
             final ValueFactory f = connection2.getValueFactory();
             connection2.add((Iterable<Statement>) result,
                 f.createIRI(vocabularyContext.getUri().toString()));
+
+            connection.commit();
+
             connection.close();
             connection2.close();
         } catch (URISyntaxException e) {
