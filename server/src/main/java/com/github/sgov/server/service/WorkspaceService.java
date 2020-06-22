@@ -1,13 +1,10 @@
 package com.github.sgov.server.service;
 
-
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
-import com.github.sgov.server.service.repository.UserRepositoryService;
 import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
-import com.github.sgov.server.service.security.SecurityUtils;
 import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +19,14 @@ public class WorkspaceService {
 
     private final WorkspaceRepositoryService repositoryService;
     private final VocabularyService vocabularyService;
-    private final UserRepositoryService userRepositoryService;
-    private final UserService userService;
-    private final SecurityUtils securityUtils;
 
     /**
      * Constructor.
      */
     @Autowired
     public WorkspaceService(WorkspaceRepositoryService repositoryService,
-                            UserRepositoryService userRepositoryService,
-                            UserService userService,
-                            VocabularyService vocabularyService,
-                            SecurityUtils securityUtils) {
+                            VocabularyService vocabularyService) {
         this.repositoryService = repositoryService;
-        this.userRepositoryService = userRepositoryService;
-        this.userService = userService;
-        this.securityUtils = securityUtils;
         this.vocabularyService = vocabularyService;
     }
 
@@ -52,7 +40,7 @@ public class WorkspaceService {
      *
      * @param identifier Workspace that should be created.
      */
-    public ValidationReport validateWorkspace(URI identifier) {
+    public ValidationReport validate(URI identifier) {
         if (findInferred(identifier) == null) {
             throw new NotFoundException("Vocabulary context " + identifier + " does not exist.");
         }
