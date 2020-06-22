@@ -47,6 +47,11 @@ public class WorkspaceService {
         return repositoryService.getAllWorkspaceIris();
     }
 
+    /**
+     * Validates the workspace with the given IRI.
+     *
+     * @param identifier Workspace that should be created.
+     */
     public ValidationReport validateWorkspace(URI identifier) {
         if (findInferred(identifier) == null) {
             throw new NotFoundException("Vocabulary context " + identifier + " does not exist.");

@@ -219,6 +219,14 @@ public class WorkspaceController extends BaseController {
         LOG.debug("Vocabulary context {} deleted from workspace {}.", toRemove, workspaceId);
     }
 
+    /**
+     * Validates a workspace.
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace Namespace used for resource identifier resolution. Optional, if not
+     *                  specified, the configured namespace is used.
+     * @return set of validation results
+     */
     @GetMapping(value = "/{workspaceFragment}/validate",
         produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Validates workspace using predefined rules. This involves "
