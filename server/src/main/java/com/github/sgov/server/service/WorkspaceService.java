@@ -47,8 +47,12 @@ public class WorkspaceService {
         return repositoryService.getAllWorkspaceIris();
     }
 
-    public ValidationReport validateWorkspace(String workspaceIri) {
-        return repositoryService.validateWorkspace(workspaceIri);
+    public ValidationReport validateWorkspace(URI identifier) {
+        if (findInferred(identifier) == null) {
+            throw new NotFoundException("Vocabulary context " + identifier + " does not exist.");
+        }
+
+        return repositoryService.validateWorkspace(identifier.toString());
     }
 
     public Workspace persist(Workspace instance) {
@@ -109,7 +113,8 @@ public class WorkspaceService {
 
     /**
      * Removes vocabulary context from given workspace.
-     * @param workspaceId Uri of a workspace.
+     *
+     * @param workspaceId         Uri of a workspace.
      * @param vocabularyContextId Uri of a vocabulary context.
      */
     public VocabularyContext removeVocabulary(URI workspaceId, URI vocabularyContextId) {

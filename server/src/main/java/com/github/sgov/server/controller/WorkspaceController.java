@@ -82,8 +82,8 @@ public class WorkspaceController extends BaseController {
      * Retrieve existing workspace.
      *
      * @param workspaceFragment Localname of workspace id.
-     * @param namespace         Namespace used for resource identifier resolution.
-     *                          Optional, if not specified, the configured namespace is used.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
      * @return Workspace specified by workspaceFragment and optionally namespace.
      */
     @GetMapping(value = "/{workspaceFragment}",
@@ -104,8 +104,8 @@ public class WorkspaceController extends BaseController {
      *
      * @param workspace         Workspace that will be updated.
      * @param workspaceFragment Localname of workspace id.
-     * @param namespace         Namespace used for resource identifier resolution.
-     *                          Optional, if not specified, the configured namespace is used.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
      */
     @PutMapping(value = "/{workspaceFragment}", consumes = {
         MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
@@ -126,8 +126,8 @@ public class WorkspaceController extends BaseController {
      * Delete existing workspace.
      *
      * @param workspaceFragment Localname of workspace id.
-     * @param namespace         Namespace used for resource identifier resolution.
-     *                          Optional, if not specified, the configured namespace is used.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
      */
     @DeleteMapping(value = "/{workspaceFragment}")
     @ApiOperation(value = "Delete existing workspace.")
@@ -146,8 +146,8 @@ public class WorkspaceController extends BaseController {
      * Retrieve all vocabulary contexts stored within workspace.
      *
      * @param workspaceFragment Localname of workspace id.
-     * @param namespace         Namespace used for resource identifier resolution.
-     *                          Optional, if not specified, the configured namespace is used.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
      * @return Set of vocabulary contexts.
      */
     @GetMapping(value = "/{workspaceFragment}/vocabularies",
@@ -168,8 +168,8 @@ public class WorkspaceController extends BaseController {
      * Create vocabulary context within workspace and its relevant context for changes.
      *
      * @param workspaceFragment Localname of workspace id.
-     * @param namespace         Namespace used for resource identifier resolution.
-     *                          Optional, if not specified, the configured namespace is used.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
      * @param vocabularyUri     Uri of a vocabulary for which context should be created.
      * @param readOnly          True if vocabulary should be readonly, false otherwise.
      */
@@ -200,8 +200,8 @@ public class WorkspaceController extends BaseController {
      *
      * @param workspaceFragment  Localname of workspace id.
      * @param vocabularyFragment Localname of vocabulary context id.
-     * @param namespace          Namespace used for resource identifier resolution.
-     *                           Optional, if not specified, the configured namespace is used.
+     * @param namespace          Namespace used for resource identifier resolution. Optional, if not
+     *                           specified, the configured namespace is used.
      */
     @DeleteMapping(value = "/{workspaceFragment}/vocabularies/{vocabularyFragment}")
     @ApiOperation(value = "Delete vocabulary form a workspace.")
@@ -219,7 +219,8 @@ public class WorkspaceController extends BaseController {
         LOG.debug("Vocabulary context {} deleted from workspace {}.", toRemove, workspaceId);
     }
 
-    @GetMapping(value = "/validate", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{workspaceFragment}/validate",
+        produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Validates workspace using predefined rules. This involves "
         + "e.g. checking that each term has a skos:prefLabel, or that each Role-typed "
         + "term has a super term typed as Kind.")
@@ -232,11 +233,18 @@ public class WorkspaceController extends BaseController {
         example = "cs"
     )
     public ValidationReport validate(
-        @ApiParam(value = "http://example.org/mc",
+        @ApiParam(value = "instance-1775747014",
             required = true,
-            example = "http://example.org/mc"
-        ) @RequestParam String iri
+            example = "instance-1775747014"
+        )
+        @PathVariable String workspaceFragment,
+        @ApiParam(value = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext",
+            example = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext"
+        )
+        @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace
     ) {
-        return workspaceService.validateWorkspace(iri);
+        final URI identifier = resolveIdentifier(
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        return workspaceService.validateWorkspace(identifier);
     }
 }
