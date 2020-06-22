@@ -61,11 +61,13 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
     }
 
     @Test
-    void validateWithoutIriThrows400() throws Exception {
+    void validateWithIriSucceeds() throws Exception {
         BDDMockito.given(workspaceService.validateWorkspace(any()))
             .willReturn(report);
 
-        mockMvc.perform(get("/workspaces/abc/validate"))
-            .andExpect(status().is4xxClientError());
+        mockMvc.perform(get("/workspaces/test/validate")
+            .param("namespace", "http://example.org/")
+            .header("Accept-language", "cs"))
+            .andExpect(status().isOk());
     }
 }
