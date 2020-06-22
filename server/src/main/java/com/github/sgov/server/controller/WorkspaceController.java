@@ -238,8 +238,8 @@ public class WorkspaceController extends BaseController {
             example = "instance-1775747014"
         )
         @PathVariable String workspaceFragment,
-        @ApiParam(value = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext",
-            example = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext"
+        @ApiParam(value = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/",
+            example = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/"
         )
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace
     ) {
