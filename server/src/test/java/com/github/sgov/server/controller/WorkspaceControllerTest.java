@@ -1,13 +1,17 @@
 package com.github.sgov.server.controller;
 
+import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.WorkspaceService;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,9 +34,13 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
     @Mock
     private ValidationReport report;
 
+    @Mock
+    private IdentifierResolver resolver;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(resolver.resolveIdentifier(any(),any())).thenReturn(URI.create(""));
         super.setUp(sut);
     }
 
@@ -53,21 +61,12 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
     }
 
     @Test
-    void validateWithoutIriThrows400() throws Exception {
-        BDDMockito.given(workspaceService.validateWorkspace(anyString()))
-            .willReturn(report);
-
-        mockMvc.perform(get("/workspace/validate"))
-            .andExpect(status().is4xxClientError());
-    }
-
-    @Test
     void validateWithIriSucceeds() throws Exception {
-        BDDMockito.given(workspaceService.validateWorkspace(anyString()))
+        BDDMockito.given(workspaceService.validateWorkspace(any()))
             .willReturn(report);
 
-        mockMvc.perform(get("/workspaces/validate")
-            .param("iri", "http://example.org/test")
+        mockMvc.perform(get("/workspaces/test/validate")
+            .param("namespace", "http://example.org/")
             .header("Accept-language", "cs"))
             .andExpect(status().isOk());
     }
