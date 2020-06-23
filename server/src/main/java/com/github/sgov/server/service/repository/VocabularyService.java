@@ -59,7 +59,7 @@ public class VocabularyService {
             connection2.add((Iterable<Statement>) result,
                 f.createIRI(vocabularyContext.getUri().toString()));
 
-            connection.commit();
+            connection2.commit();
 
             connection.close();
             connection2.close();
