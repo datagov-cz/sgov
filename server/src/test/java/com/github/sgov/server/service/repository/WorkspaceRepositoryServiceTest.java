@@ -68,13 +68,4 @@ class WorkspaceRepositoryServiceTest extends BaseServiceTestRunner {
         assertEquals(1, result.getVocabularyContexts().size());
         assertNotNull(result.getVocabularyContexts().iterator().next().getChangeTrackingContext());
     }
-
-    //TODO
-    void getAllWorkspaceIrisReturnsAllIris() {
-        final List<String> iris = new ArrayList<>();
-        iris.add("http://example.org");
-        iris.add("http://example2.org");
-        Mockito.when(workspaceDao.getAllWorkspaceIris()).thenReturn(iris);
-        Assert.assertEquals(iris, sut.getAllWorkspaceIris());
-    }
 }

@@ -1,12 +1,21 @@
 package com.github.sgov.server.service;
 
 import com.github.sgov.server.exception.NotFoundException;
+import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
+import com.github.sgov.server.service.security.SecurityUtils;
+import com.github.sgov.server.util.VocabularyFolder;
+import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.validation.ValidationReport;
@@ -18,16 +27,21 @@ import org.topbraid.shacl.validation.ValidationReport;
 public class WorkspaceService {
 
     private final WorkspaceRepositoryService repositoryService;
+
     private final VocabularyService vocabularyService;
+
+    private final SecurityUtils securityUtils;
 
     /**
      * Constructor.
      */
     @Autowired
     public WorkspaceService(WorkspaceRepositoryService repositoryService,
-                            VocabularyService vocabularyService) {
+                            VocabularyService vocabularyService,
+                            SecurityUtils securityUtils) {
         this.repositoryService = repositoryService;
         this.vocabularyService = vocabularyService;
+        this.securityUtils = securityUtils;
     }
 
 
@@ -38,14 +52,70 @@ public class WorkspaceService {
     /**
      * Validates the workspace with the given IRI.
      *
-     * @param identifier Workspace that should be created.
+     * @param workspaceUri Workspace that should be created.
      */
-    public ValidationReport validate(URI identifier) {
-        if (findInferred(identifier) == null) {
-            throw new NotFoundException("Vocabulary context " + identifier + " does not exist.");
+    public ValidationReport validate(URI workspaceUri) {
+        final Workspace workspace = repositoryService.findRequired(workspaceUri);
+        if (workspace == null) {
+            throw new NotFoundException("Vocabulary context " + workspaceUri + " does not exist.");
         }
 
-        return repositoryService.validateWorkspace(identifier.toString());
+        return repositoryService.validateWorkspace(workspace);
+    }
+
+    /**
+     * Validates the workspace with the given IRI.
+     *
+     * @param workspaceUri Workspace that should be created.
+     * @return GitHub PR URL
+     */
+    public URL publish(URI workspaceUri) {
+        final Workspace workspace = repositoryService.findRequired(workspaceUri);
+        if (workspace == null) {
+            throw new NotFoundException("Vocabulary context " + workspaceUri + " does not exist.");
+        }
+
+        final String workspaceUriString = workspaceUri.toString();
+
+        try {
+            File dir = Files.createTempDir();
+            Git git = Git.cloneRepository()
+                .setURI("https://github.com/opendata-mvcr/ssp")
+                .setDirectory(dir)
+                .call();
+
+            final String branchName =
+                "PL-publish-" + workspaceUriString
+                    .substring(workspaceUriString.lastIndexOf("/") + 1);
+            git.branchCreate()
+                .setName(branchName)
+                .call();
+
+            git.checkout().setName(branchName).call();
+
+            for (final VocabularyContext c : workspace.getVocabularyContexts()) {
+                final URI iri = c.getBasedOnVocabularyVersion();
+                final VocabularyFolder f = VocabularyFolder.ofVocabularyIri(dir, iri);
+
+                vocabularyService.storeContext(c, f);
+
+                git.commit()
+                    .setAll(true)
+                    .setAuthor(securityUtils.getCurrentUser().getFirstName()
+                            + " " + securityUtils
+                            .getCurrentUser().getLastName(),
+                        securityUtils.getCurrentUser().getUsername())
+                    .setMessage("Publishing workspace " + workspaceUriString)
+                    .call();
+            }
+
+            git.push()
+                .call();
+
+            return new URL("https://github.com/opendata-mvcr/ssp/pull/1");
+        } catch (IOException | GitAPIException e) {
+            throw new PublicationException("An exception occurred during publishing workspace.", e);
+        }
     }
 
     public Workspace persist(Workspace instance) {

@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.topbraid.shacl.validation.ValidationReport;
@@ -32,9 +33,10 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
      * Creates a new repository service.
      */
     @Autowired
-    public WorkspaceRepositoryService(Validator validator,
-                                      WorkspaceDao workspaceDao,
-                                      RepositoryConf repositoryConf) {
+    public WorkspaceRepositoryService(
+        @Qualifier("validatorFactoryBean") Validator validator,
+        WorkspaceDao workspaceDao,
+        RepositoryConf repositoryConf) {
         super(validator);
         this.workspaceDao = workspaceDao;
         this.repositoryConf = repositoryConf;
@@ -49,9 +51,10 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         return workspaceDao;
     }
 
-    public ValidationReport validateWorkspace(String workspaceIri) {
-        return workspaceDao.validateWorkspace(workspaceIri);
+    public ValidationReport validateWorkspace(Workspace workspace) {
+        return workspaceDao.validateWorkspace(workspace);
     }
+
 
     /**
      * Finds workspace with the specified id and returns it with all its inferred properties.

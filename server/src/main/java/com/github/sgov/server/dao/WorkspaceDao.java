@@ -31,12 +31,9 @@ import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolutionMap;
-import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.topbraid.shacl.validation.ValidationReport;
@@ -137,40 +134,18 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         return list;
     }
 
-
-    private List<String> getVocabularySnapshotContextsForWorkspace(final String workspace) {
-        final String endpointUlozistePracovnichProstoru = properties.getUrl();
-        final QuerySolutionMap map = new QuerySolutionMap();
-        map.add("workspace", ResourceFactory.createResource(workspace));
-        map.add("odkazujeNaKontext",
-            ResourceFactory.createResource(Vocabulary.s_p_odkazuje_na_kontext));
-        map.add("slovnikovyKontext",
-            ResourceFactory.createResource(Vocabulary.s_c_slovnikovy_kontext));
-        final ParameterizedSparqlString query = new ParameterizedSparqlString(
-            "SELECT ?kontext WHERE { ?workspace ?odkazujeNaKontext ?kontext . ?kontext a "
-                + "?slovnikovyKontext }", map);
-        final ResultSet rs = QueryExecutionFactory
-            .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery())
-            .execSelect();
-
-        final List<String> list = new ArrayList<>();
-        while (rs.hasNext()) {
-            list.add(rs.nextSolution().getResource("kontext").getURI());
-        }
-        return list;
-    }
-
     /**
      * Validates workspace.
      *
-     * @param workspaceIri workspace IRI
+     * @param workspace workspace to be validated
      * @return ValidationReport
      */
-    public ValidationReport validateWorkspace(final String workspaceIri) {
-        log.info("Validating workspace {}", workspaceIri);
+    public ValidationReport validateWorkspace(final Workspace workspace) {
+        log.info("Validating workspace {}", workspace.getUri());
         final String endpointUlozistePracovnichProstoru = properties.getUrl();
-        final List<String> vocabulariesForWorkspace =
-            getVocabularySnapshotContextsForWorkspace(workspaceIri);
+        final List<String> vocabulariesForWorkspace = workspace
+            .getVocabularyContexts().stream().map(c -> c.getUri().toString()).collect(
+            Collectors.toList());
         log.debug("- found vocabularies {}", vocabulariesForWorkspace);
         final String bindings = vocabulariesForWorkspace.stream().map(v -> "<" + v + ">")
             .collect(Collectors.joining(" "));
@@ -228,7 +203,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
                     + "WHERE {\n"
                     + "    GRAPH ?vc { \n"
                     + "        ?s a <" + Vocabulary.s_c_slovnik + "> .\n"
-                    + "        ?s <" + RDFS.label + "> ?label .\n"
+                    + "        ?s <" + RDFS.LABEL.toString() + "> ?label .\n"
                     + "        FILTER langMatches( lang(?label), \"" + language + "\" )\n"
                     + "    }    \n"
                     + "} VALUES (?vc) {\n"
