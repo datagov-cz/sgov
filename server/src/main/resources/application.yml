@@ -10,6 +10,9 @@ jwt.secretKey: SecretKey
 repository:
   url: https://onto.fel.cvut.cz:7200/repositories/kodi-uloziste-dev
   releaseSparqlEndpointUrl: https://slovník.gov.cz/sparql
+  githubRepo: ssp
+  githubOrganization: opendata-mvcr
+  githubUserToken: ${GITHUB_USER_TOKEN}
 
 persistence:
   driver: cz.cvut.kbss.ontodriver.sesame.SesameDataSource

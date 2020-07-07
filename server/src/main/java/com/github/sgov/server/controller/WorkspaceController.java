@@ -224,8 +224,8 @@ public class WorkspaceController extends BaseController {
      * Validates a workspace.
      *
      * @param workspaceFragment Localname of workspace id.
-     * @param namespace Namespace used for resource identifier resolution. Optional, if not
-     *                  specified, the configured namespace is used.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
      * @return set of validation results
      */
     @GetMapping(value = "/{workspaceFragment}/validate",
@@ -248,13 +248,43 @@ public class WorkspaceController extends BaseController {
             example = "instance-1775747014"
         )
         @PathVariable String workspaceFragment,
-        @ApiParam(value = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/",
+        @ApiParam(
+            value = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/",
             example = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/"
         )
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace
     ) {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        return workspaceService.validateWorkspace(identifier);
+        return workspaceService.validate(identifier);
+    }
+
+    /**
+     * Publishes a workspace.
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
+     */
+    @PostMapping(value = "/{workspaceFragment}/publish",
+        produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Publishes workspace to GitHub.")
+    public ResponseEntity<String> publish(
+        @ApiParam(value = "instance-1775747014",
+            required = true,
+            example = "instance-1775747014"
+        )
+        @PathVariable String workspaceFragment,
+        @ApiParam(
+            value = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/",
+            example = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/"
+        )
+        @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace
+    ) {
+        final URI identifier = resolveIdentifier(
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        return ResponseEntity.created(
+            workspaceService.publish(identifier)
+        ).build();
     }
 }

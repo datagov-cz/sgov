@@ -4,6 +4,7 @@ import com.github.sgov.server.controller.dto.ErrorInfo;
 import com.github.sgov.server.exception.AuthorizationException;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.PersistenceException;
+import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.exception.ValidationException;
 import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
@@ -138,5 +139,15 @@ public class RestExceptionHandler {
         UnsupportedOperationException e) {
         logException(e);
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
+    }
+
+    /**
+     * Publication Exception.
+     */
+    @ExceptionHandler(PublicationException.class)
+    public ResponseEntity<ErrorInfo> publicationException(HttpServletRequest request,
+                                                          PublicationException e) {
+        logException("Publication exception caught.", e);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

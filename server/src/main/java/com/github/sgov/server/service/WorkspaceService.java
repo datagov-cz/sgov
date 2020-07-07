@@ -1,15 +1,23 @@
 package com.github.sgov.server.service;
 
-
 import com.github.sgov.server.exception.NotFoundException;
+import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
-import com.github.sgov.server.service.repository.UserRepositoryService;
+import com.github.sgov.server.service.repository.GithubRepositoryService;
 import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
-import com.github.sgov.server.service.security.SecurityUtils;
+import com.github.sgov.server.util.VocabularyFolder;
+import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.List;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.Git;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.topbraid.shacl.validation.ValidationReport;
@@ -18,28 +26,25 @@ import org.topbraid.shacl.validation.ValidationReport;
  * Workspace-related business logic.
  */
 @Service
+@Slf4j
 public class WorkspaceService {
 
     private final WorkspaceRepositoryService repositoryService;
+
     private final VocabularyService vocabularyService;
-    private final UserRepositoryService userRepositoryService;
-    private final UserService userService;
-    private final SecurityUtils securityUtils;
+
+    private final GithubRepositoryService githubService;
 
     /**
      * Constructor.
      */
     @Autowired
     public WorkspaceService(WorkspaceRepositoryService repositoryService,
-                            UserRepositoryService userRepositoryService,
-                            UserService userService,
                             VocabularyService vocabularyService,
-                            SecurityUtils securityUtils) {
+                            GithubRepositoryService githubService) {
         this.repositoryService = repositoryService;
-        this.userRepositoryService = userRepositoryService;
-        this.userService = userService;
-        this.securityUtils = securityUtils;
         this.vocabularyService = vocabularyService;
+        this.githubService = githubService;
     }
 
 
@@ -50,14 +55,74 @@ public class WorkspaceService {
     /**
      * Validates the workspace with the given IRI.
      *
-     * @param identifier Workspace that should be created.
+     * @param workspaceUri Workspace that should be created.
      */
-    public ValidationReport validateWorkspace(URI identifier) {
-        if (findInferred(identifier) == null) {
-            throw new NotFoundException("Vocabulary context " + identifier + " does not exist.");
-        }
+    public ValidationReport validate(URI workspaceUri) {
+        final Workspace workspace = getWorkspace(workspaceUri);
+        return repositoryService.validateWorkspace(workspace);
+    }
 
-        return repositoryService.validateWorkspace(identifier.toString());
+    private Workspace getWorkspace(URI workspaceUri) {
+        final Workspace workspace = repositoryService.findRequired(workspaceUri);
+        if (workspace == null) {
+            throw new NotFoundException("Vocabulary context " + workspaceUri + " does not exist.");
+        }
+        return workspace;
+    }
+
+    private String createPullRequestBody(final Workspace workspace) {
+        return MessageFormat.format("Changed vocabularies: \n - {0}", workspace
+            .getVocabularyContexts()
+            .stream()
+            .map(c -> c.getBasedOnVocabularyVersion().toString() + " (kontext " + c.getUri() + ")")
+            .collect(Collectors.joining("\n - "))
+        );
+    }
+
+    private String createBranchName(final String workspaceUriString) {
+        return
+            "PL-publish-" + workspaceUriString
+                .substring(workspaceUriString.lastIndexOf("/") + 1);
+    }
+
+    /**
+     * Validates the workspace with the given IRI.
+     *
+     * @param workspaceUri Workspace that should be created.
+     * @return GitHub PR URL
+     */
+    public URI publish(URI workspaceUri) {
+        final Workspace workspace = getWorkspace(workspaceUri);
+
+        final String workspaceUriString = workspaceUri.toString();
+        final String branchName = createBranchName(workspaceUriString);
+
+        final File dir = Files.createTempDir();
+
+        try (final Git git = githubService.checkout(branchName, dir)) {
+            for (final VocabularyContext c : workspace.getVocabularyContexts()) {
+                final URI iri = c.getBasedOnVocabularyVersion();
+                final VocabularyFolder f = VocabularyFolder.ofVocabularyIri(dir, iri);
+
+                if (f == null) {
+                    throw new PublicationException("Invalid vocabulary IRI " + iri);
+                }
+                vocabularyService.storeContext(c, f);
+                githubService.commit(git, MessageFormat.format(
+                    "Publishing vocabulary {0} in workspace {1}", iri, workspaceUriString));
+            }
+
+            githubService.push(git);
+
+            FileUtils.deleteDirectory(dir);
+
+            String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
+                MessageFormat.format("Publishing workspace {0}", workspaceUriString),
+                createPullRequestBody(workspace));
+            return URI.create(prUrl);
+        } catch (IOException e) {
+            throw new PublicationException("An exception occurred during publishing workspace.", e);
+        }
     }
 
     public Workspace persist(Workspace instance) {

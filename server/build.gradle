@@ -32,7 +32,6 @@ dependencies {
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
     implementation 'com.konghq:unirest-java:3.7.00'
-    implementation 'org.apache.jena:apache-jena-libs:3.14.0'
     implementation project(':validator')
     implementation 'org.topbraid:shacl:1.3.1'
     implementation 'cz.cvut.kbss.jopa:jopa-impl:0.14.4'
@@ -43,8 +42,8 @@ dependencies {
     implementation 'org.mitre.dsmiley.httpproxy:smiley-http-proxy-servlet:1.11'
     implementation 'net.bull.javamelody:javamelody-core:1.82.0'
     annotationProcessor "org.projectlombok:lombok:1.18.10"
-
-    providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: '2.2.6.RELEASE'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:4.6.0.201612231935-r'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat:2.2.6.RELEASE'
 
     aspect 'cz.cvut.kbss.jopa:jopa-impl:0.14.4'
 
@@ -53,7 +52,6 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation 'org.apache.jena:jena-core:3.14.0'
 }
 
 bootJar {
