@@ -27,4 +27,10 @@ public class RepositoryConf {
     private String username;
 
     private String password;
+
+    private String githubRepo;
+
+    private String githubOrganization;
+
+    private String githubUserToken;
 }

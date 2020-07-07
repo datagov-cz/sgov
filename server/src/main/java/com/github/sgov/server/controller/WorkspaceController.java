@@ -266,10 +266,10 @@ public class WorkspaceController extends BaseController {
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      */
-    @GetMapping(value = "/{workspaceFragment}/publish",
+    @PostMapping(value = "/{workspaceFragment}/publish",
         produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Publishes workspace to GitHub.")
-    public void publish(
+    public ResponseEntity<String> publish(
         @ApiParam(value = "instance-1775747014",
             required = true,
             example = "instance-1775747014"
@@ -283,6 +283,8 @@ public class WorkspaceController extends BaseController {
     ) {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        workspaceService.publish(identifier);
+        return ResponseEntity.created(
+            workspaceService.publish(identifier)
+        ).build();
     }
 }

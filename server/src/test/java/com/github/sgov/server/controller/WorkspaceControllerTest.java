@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -87,7 +88,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         BDDMockito.given(workspaceService.publish(workspaceUri))
             .willThrow(new NotFoundException(""));
 
-        mockMvc.perform(get("/workspaces/test/publish")
+        mockMvc.perform(post("/workspaces/test/publish")
             .param("namespace", "http://example.org/"))
             .andExpect(status().is4xxClientError());
     }
@@ -95,10 +96,10 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
     @Test
     void publishWithExistingIriSuceeds() throws Exception {
         BDDMockito.given(workspaceService.publish(workspaceUri))
-            .willReturn(workspaceUri.toURL());
+            .willReturn(workspaceUri);
 
-        mockMvc.perform(get("/workspaces/test/publish")
+        mockMvc.perform(post("/workspaces/test/publish")
             .param("namespace", "http://example.org/"))
-            .andExpect(status().isOk());
+            .andExpect(status().isCreated());
     }
 }
