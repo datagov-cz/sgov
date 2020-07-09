@@ -4,6 +4,7 @@
 
 j-sgov-obecný:g10
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message     "IRI pojmu má chybný tvar, musí začínat https://slovník.gov.cz."@cs,
                    "Concept IRI has incorrect shape, must begin with https://slovník.gov.cz."@en ;
     sh:targetClass skos:Concept ;

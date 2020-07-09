@@ -4,6 +4,7 @@
 
 j-sgov-obecný:g9
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message     "Pojem má stejný identifikační název jako jiný ze stejného glosáře."@cs,
                    "The concept has the same identification label as another one from the same glossary."@en ;
     sh:targetClass skos:Concept ;

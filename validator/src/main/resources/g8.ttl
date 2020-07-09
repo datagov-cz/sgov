@@ -4,6 +4,7 @@
 
 j-sgov-obecný:g8
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message     "Identifikátor pojmu má chybný jmenný prostor."@cs,
                    "Concept identifier has incorrect namespace."@en ;
     sh:targetClass skos:Concept ;

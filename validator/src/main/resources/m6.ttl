@@ -5,6 +5,7 @@
 
 j-sgov-obecný:m6
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message
                    "Druh, kategorie, mixin ani poddruh nesmí specializovat od typů Role, Fáze, Mixin rolí, ani Mixin fází."@cs,
                    "Neither of Kind, Category, Mixin, Subkind can be specialized from Role, Phase, Role mixin, or Phase mixin."@en ;

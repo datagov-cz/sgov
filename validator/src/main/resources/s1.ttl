@@ -4,8 +4,9 @@
 
 j-sgov-obecný:s1
     a              sh:NodeShape ;
-    sh:message     "Pojem z glosáře není použit v modelu."@cs, "A glossary concept is not used in the model."@en ;
     sh:severity    sh:Warning ;
+    sh:message     "Pojem z glosáře není použit v modelu."@cs,
+                   "A glossary concept is not used in the model."@en ;
     sh:targetClass skos:Concept ;
     sh:sparql      [ a         sh:SPARQLConstraint ;
                      sh:select """

@@ -4,6 +4,7 @@
 
 j-sgov-obecný:g3
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message     "Pojem má více definic v jednom jazyce (povolená je pouze jedna)."@cs,
                    "The concept has more definitions in a single language (only one is allowed)."@en ;
     sh:targetClass skos:Concept ;

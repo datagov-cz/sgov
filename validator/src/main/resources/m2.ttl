@@ -6,6 +6,7 @@
 
 j-sgov-obecný:m2a
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message
                    "Pojem je nejvýše jedním z následujících typů Typ objektu, Typ vztahu, Typ vlastnosti, Typ události."@cs,
                    "A concept is of exactly one type out of Object type, Relator type, Intrinsic Trope type, Event type."@en ;
@@ -25,6 +26,7 @@ j-sgov-obecný:m2a
 
 j-sgov-obecný:m2b
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message
                    "Pojem musí být buď typem události nebo typem proměnného prvku (objektu, vlastnosti, vztahu), nikoliv však obojí současně."@cs,
                    "A concept is either an event type or an endurant type (object, property, relationship), not both."@en ;

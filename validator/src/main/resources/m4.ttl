@@ -5,6 +5,7 @@
 
 j-sgov-obecný:m4
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message     "Pojem typu Role, Fáze, Poddruh musí být specializován od pojmu typu Druh."@cs,
                    "The concept of type Role, Phase or Subkind must be specialized from a concept of type Kind."@en ;
     sh:targetClass z-sgov-pojem:role, z-sgov-pojem:poddruh, z-sgov-pojem:fáze ;

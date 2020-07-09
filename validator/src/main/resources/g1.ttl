@@ -4,6 +4,7 @@
 
 j-sgov-obecný:g1
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message     "Pojem má více identifikačních názvů v jednom jazyce (povolený je pouze jeden)."@cs,
                    "The concept has more identification labels in a single language (only one is allowed)."@en ;
     sh:targetClass skos:Concept ;

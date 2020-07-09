@@ -5,6 +5,7 @@
 
 j-sgov-obecný:m5a
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message     "Typ proměnného prvku nesmí být specializován od více pojmů typu Druh."@cs,
                    "Endurant type must not be specialized from multiple concepts of type Kind."@en ;
     sh:targetClass z-sgov-pojem:typ-proměnného-prvku ;

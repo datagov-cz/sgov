@@ -4,11 +4,11 @@
 
 j-sgov-obecný:m3
     a              sh:NodeShape ;
+    sh:severity    sh:Warning ;
     sh:message     "Proměnný prvek nemá definován ontologický typ."@cs,
                    "Endurant type does not have defined an ontological type."@en ;
     sh:targetClass z-sgov-pojem:typ-objektu, z-sgov-pojem:typ-vztahu, z-sgov-pojem:typ-vlastnosti,
                    z-sgov-pojem:typ-proměnného-prvku ;
-    sh:severity    sh:Warning ;
     sh:or          ( [ sh:class z-sgov-pojem:druh ]
                      [ sh:class z-sgov-pojem:poddruh ]
                      [ sh:class z-sgov-pojem:role ]

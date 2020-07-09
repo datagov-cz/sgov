@@ -5,6 +5,7 @@
 
 j-sgov-obecný:m1
     a              sh:NodeShape ;
+    sh:severity    sh:Violation ;
     sh:message
                    "Pojem nemá definován obsahový stereotyp (Objekt, Vlastnost, Vztah, Událost), ani není odvozen od pojmu, který jej definován má."@cs,
                    "The concept has not defined the type (Object, Aspect, Relation, Event)."@en ;

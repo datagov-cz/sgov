@@ -4,6 +4,7 @@
 
 j-sgov-obecný:g2
     a                      sh:NodeShape ;
+    sh:severity            sh:Violation ;
     sh:message             "Pojem nemá identifikační název v češtině."@cs,
                            "The concept does not have an identification label in Czech."@en ;
     sh:targetClass         skos:Concept ;
