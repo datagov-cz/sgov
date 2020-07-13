@@ -4,22 +4,17 @@ import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.provenance.ProvenanceManager;
 import com.github.sgov.server.util.Vocabulary;
-import cz.cvut.kbss.jopa.model.annotations.CascadeType;
-import cz.cvut.kbss.jopa.model.annotations.EntityListeners;
-import cz.cvut.kbss.jopa.model.annotations.FetchType;
-import cz.cvut.kbss.jopa.model.annotations.OWLAnnotationProperty;
-import cz.cvut.kbss.jopa.model.annotations.OWLClass;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
-import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
-import cz.cvut.kbss.jopa.vocabulary.RDFS;
+import cz.cvut.kbss.jopa.model.annotations.*;
+import cz.cvut.kbss.jopa.vocabulary.DC;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
+
+import javax.validation.constraints.NotBlank;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotBlank;
 
 @OWLClass(iri = Vocabulary.s_c_metadatovy_kontext)
 @JsonLdAttributeOrder({"uri", "label", "author", "lastEditor"})
@@ -28,7 +23,7 @@ public class Workspace extends Asset implements Context {
 
     @NotBlank
     @ParticipationConstraints(nonEmpty = true)
-    @OWLAnnotationProperty(iri = RDFS.LABEL)
+    @OWLAnnotationProperty(iri = DC.Terms.TITLE)
     private String label;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_kontext,
@@ -57,6 +52,7 @@ public class Workspace extends Asset implements Context {
 
     /**
      * Add new vocabulary context to this workspace. Each vocabulary can be added only once.
+     *
      * @param context Vocabulary context to be added.
      */
     public void addRefersToVocabularyContexts(VocabularyContext context) {
@@ -64,10 +60,11 @@ public class Workspace extends Asset implements Context {
             this.vocabularyContexts = new HashSet<>();
         }
         Optional<VocabularyContext> duplicateContext = vocabularyContexts.stream()
-                .filter(vc -> vc.getBasedOnVocabularyVersion()
-                        .equals(context.getBasedOnVocabularyVersion())
-                )
-                .findFirst();
+                                                                         .filter(vc -> vc.getBasedOnVocabularyVersion()
+                                                                                         .equals(context
+                                                                                                 .getBasedOnVocabularyVersion())
+                                                                         )
+                                                                         .findFirst();
 
         if (duplicateContext.isPresent()) {
             throw new ValidationException(String.format(
@@ -89,7 +86,7 @@ public class Workspace extends Asset implements Context {
             return Workspace.class.getDeclaredField("vocabularyContexts");
         } catch (NoSuchFieldException e) {
             throw new SGoVException(
-                "Fatal error! Unable to retrieve \"vocabularyContexts\" field.", e
+                    "Fatal error! Unable to retrieve \"vocabularyContexts\" field.", e
             );
         }
     }
@@ -117,9 +114,9 @@ public class Workspace extends Asset implements Context {
                 + getLabel()
                 + " <" + getUri() + '>'
                 + (getVocabularyContexts().isEmpty() ? "" :
-                ", vocabularies = [" + getVocabularyContexts().stream()
-                        .map(p -> "<" + p.getBasedOnVocabularyVersion() + ">")
-                        .collect(Collectors.joining(", ")) + "]")
+                   ", vocabularies = [" + getVocabularyContexts().stream()
+                                                                 .map(p -> "<" + p.getBasedOnVocabularyVersion() + ">")
+                                                                 .collect(Collectors.joining(", ")) + "]")
                 + '}';
     }
 

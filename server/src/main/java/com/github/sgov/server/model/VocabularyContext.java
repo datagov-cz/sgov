@@ -12,6 +12,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.cvut.kbss.jopa.model.annotations.Types;
+import cz.cvut.kbss.jopa.vocabulary.DC;
 import cz.cvut.kbss.jopa.vocabulary.RDFS;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
 import java.lang.reflect.Field;
@@ -35,7 +36,7 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
     }
 
     @Inferred
-    @OWLAnnotationProperty(iri = RDFS.LABEL)
+    @OWLAnnotationProperty(iri = DC.Terms.TITLE)
     private String label;
 
     @ParticipationConstraints(nonEmpty = true)
