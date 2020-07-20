@@ -11,7 +11,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLAnnotationProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
-import cz.cvut.kbss.jopa.vocabulary.RDFS;
+import cz.cvut.kbss.jopa.vocabulary.DC;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -28,7 +28,7 @@ public class Workspace extends Asset implements Context {
 
     @NotBlank
     @ParticipationConstraints(nonEmpty = true)
-    @OWLAnnotationProperty(iri = RDFS.LABEL)
+    @OWLAnnotationProperty(iri = DC.Terms.TITLE)
     private String label;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_kontext,
