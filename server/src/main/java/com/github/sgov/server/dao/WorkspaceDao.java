@@ -33,7 +33,7 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.topbraid.shacl.validation.ValidationReport;
@@ -203,7 +203,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
                     + "WHERE {\n"
                     + "    GRAPH ?vc { \n"
                     + "        ?s a <" + Vocabulary.s_c_slovnik + "> .\n"
-                    + "        ?s <" + RDFS.LABEL.toString() + "> ?label .\n"
+                    + "        ?s <" + DCTERMS.TITLE.toString() + "> ?label .\n"
                     + "        FILTER langMatches( lang(?label), \"" + language + "\" )\n"
                     + "    }    \n"
                     + "} VALUES (?vc) {\n"
