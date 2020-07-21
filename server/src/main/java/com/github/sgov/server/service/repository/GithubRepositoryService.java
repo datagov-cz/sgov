@@ -176,7 +176,7 @@ public class GithubRepositoryService {
                 )
                 .asJson();
         if (prResponse.isSuccess()) {
-            return prResponse.getBody().getArray().getJSONObject(0).get("url").toString();
+            return prResponse.getBody().getArray().getJSONObject(0).get("html_url").toString();
         } else {
             throw new PublicationException(
                 "An error occured during opening PR: " + prResponse.getStatus(), null);
