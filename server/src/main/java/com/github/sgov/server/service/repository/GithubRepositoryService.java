@@ -157,7 +157,7 @@ public class GithubRepositoryService {
                 .queryString("direction", "desc")
                 .asJson();
         if (prGet.isSuccess() && prGet.getBody().getArray().length() > 0) {
-            return prGet.getBody().getArray().getJSONObject(0).get("url").toString();
+            return prGet.getBody().getArray().getJSONObject(0).get("html_url").toString();
         } else {
             return null;
         }
