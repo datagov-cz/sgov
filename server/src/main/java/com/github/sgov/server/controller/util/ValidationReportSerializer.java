@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.topbraid.shacl.validation.ValidationReport;
 
 /**
@@ -11,10 +13,12 @@ import org.topbraid.shacl.validation.ValidationReport;
  */
 public class ValidationReportSerializer extends JsonSerializer<ValidationReport> {
 
-    private final String lang;
+    public ValidationReportSerializer() {
+    }
 
-    public ValidationReportSerializer(String lang) {
-        this.lang = lang;
+    private String getLang() {
+        return ((ServletRequestAttributes) RequestContextHolder
+            .getRequestAttributes()).getRequest().getLocale().toLanguageTag();
     }
 
     @Override
@@ -28,7 +32,7 @@ public class ValidationReportSerializer extends JsonSerializer<ValidationReport>
             try {
                 final StringBuilder sb = new StringBuilder();
                 r.getMessages().forEach(n -> {
-                    if (lang.startsWith(n.asLiteral().getLanguage())) {
+                    if (getLang().startsWith(n.asLiteral().getLanguage())) {
                         sb.append(n);
                     }
                 });
