@@ -253,4 +253,11 @@ class UserServiceTest {
         assertThat(captor.getValue().getTypes(), hasItem(Vocabulary.s_c_administrator));
         assertThat(captor.getValue().getTypes(), not(hasItem(Vocabulary.s_c_omezeny_uzivatel)));
     }
+
+    @Test
+    void persistFailsForUsernameWhichIsNotAnEmailAddress() {
+        final UserAccount user = Generator.generateUserAccountWithPassword();
+        user.setUsername("non-email-username");
+        assertThrows(ValidationException.class, () -> sut.persist(user));
+    }
 }

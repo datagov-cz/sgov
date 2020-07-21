@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
-
+    private final static Pattern emailRegex =
+        Pattern.compile(
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
     private final UserRepositoryService repositoryService;
-
     private final WorkspaceRepositoryService workspaceRepositoryService;
-
     private final SecurityUtils securityUtils;
 
     /**
@@ -99,6 +100,16 @@ public class UserService {
     public void persist(UserAccount account) {
         Objects.requireNonNull(account);
         LOG.trace("Persisting user account {}.", account);
+        if (this.exists(account.getUsername())) {
+            throw new ValidationException(
+                MessageFormat.format("User with username {0} already exists.",
+                    account.getUsername()));
+        }
+        if (!emailRegex.matcher(account.getUsername()).matches()) {
+            throw new ValidationException(
+                MessageFormat.format("Invalid username {0} -- email address expected.",
+                    account.getUsername()));
+        }
         if (this.exists(account.getUsername())) {
             throw new ValidationException(
                 MessageFormat.format("User with username {0} already exists.",
@@ -230,8 +241,8 @@ public class UserService {
     public Workspace getCurrentWorkspace() {
         UserAccount uc = getCurrent();
         return Optional.ofNullable(uc.getCurrentWorkspace())
-                .orElseThrow(() -> new NotFoundException(
-                        "Current workspace of user " + uc + " not found."));
+            .orElseThrow(() -> new NotFoundException(
+                "Current workspace of user " + uc + " not found."));
     }
 
     /**

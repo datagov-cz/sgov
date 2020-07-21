@@ -63,7 +63,7 @@ public class Generator {
         final User user = new User();
         user.setFirstName("Firstname" + randomInt());
         user.setLastName("Lastname" + randomInt());
-        user.setUsername("user" + randomInt() + "@kbss.felk.cvut.cz");
+        user.setUsername("user" + randomInt() + "@example.cz");
         return user;
     }
 
@@ -91,7 +91,7 @@ public class Generator {
         final UserAccount account = new UserAccount();
         account.setFirstName("FirstName" + randomInt());
         account.setLastName("LastName" + randomInt());
-        account.setUsername("user" + randomInt() + "@kbss.felk.cvut.cz");
+        account.setUsername("user" + randomInt() + "@example.cz");
         account.setUri(Generator.generateUri());
         return account;
     }
