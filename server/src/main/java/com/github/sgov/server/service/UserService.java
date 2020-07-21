@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
-    private final static Pattern emailRegex =
+    private static final Pattern emailRegex =
         Pattern.compile(
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
     private final UserRepositoryService repositoryService;
