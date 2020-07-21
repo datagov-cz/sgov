@@ -1,10 +1,11 @@
 package com.github.sgov.server.config;
 
+import cz.cvut.kbss.jopa.sessions.UnitOfWorkImpl;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -13,20 +14,19 @@ import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.SecurityConfiguration;
 import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
-@EnableSwagger2
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class SpringFoxConfig {
 
     /**
-     * Returns Swagger_2 Docket.
+     * Returns Swagger Docket.
      */
     @Bean
     public Docket api() {
@@ -37,9 +37,16 @@ public class SpringFoxConfig {
             .paths(PathSelectors.any())
             .build()
             .enableUrlTemplating(true)
+            .genericModelSubstitutes(ResponseEntity.class)
+            .ignoredParameterTypes(UnitOfWorkImpl.class)
             .apiInfo(apiInfo())
-            .securitySchemes(Collections.singletonList(apiKey()))
-            .securityContexts(Arrays.asList(securityContext()));
+            .securityContexts(Arrays.asList(securityContext()))
+            .securitySchemes(Arrays.asList(securityScheme()));
+    }
+
+    @Bean
+    public SecurityScheme securityScheme() {
+        return new ApiKey("Bearer", "Authorization", "header");
     }
 
     @Bean
@@ -51,13 +58,9 @@ public class SpringFoxConfig {
             .build();
     }
 
-    private ApiKey apiKey() {
-        return new ApiKey("apiKey", "Authorization", "header");
-    }
-
     private SecurityContext securityContext() {
         return SecurityContext.builder().securityReferences(defaultAuth())
-            .forPaths(PathSelectors.any()).build();
+            .operationSelector((each) -> true).build();
     }
 
     private List<SecurityReference> defaultAuth() {
@@ -65,7 +68,7 @@ public class SpringFoxConfig {
             "global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("apiKey",
+        return Arrays.asList(new SecurityReference("Bearer",
             authorizationScopes));
     }
 

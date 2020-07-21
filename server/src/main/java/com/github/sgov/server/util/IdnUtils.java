@@ -23,7 +23,7 @@ public class IdnUtils {
         }
         url = url.trim();
         // Handle international domains by detecting non-ascii and converting them to punycode
-        boolean isAscii = CharMatcher.ascii().matchesAllOf(url);
+        boolean isAscii = CharMatcher.ASCII.matchesAllOf(url);
         if (!isAscii) {
             URI uri = new URI(url);
             boolean includeScheme = true;
