@@ -30,10 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-//import org.apache.jena.rdf.model.Model;
-//import org.apache.jena.rdf.model.ModelFactory;
-//import org.apache.jena.rdf.model.ResourceFactory;
-
 /**
  * Service to managed workspaces.
  */
@@ -98,68 +94,96 @@ public class VocabularyService {
     }
 
     /**
+     * Stores a vocabulary into the given vocabulary folder.
+     *
+     * @param conWorkspace           given workspace repository
+     * @param vocabularyVersionUrl   required vocabulary version
+     * @param ctxWorkspaceVocabulary context to export
+     * @param folder                 vocabulary folder
+     * @throws FileNotFoundException whenever the respective files cannot be found in the vocabulary
+     *                               folder
+     */
+    public void storeRepo(RepositoryConnection conWorkspace,
+                          String vocabularyVersionUrl,
+                          IRI ctxWorkspaceVocabulary,
+                          VocabularyFolder folder) throws FileNotFoundException {
+
+        final MemoryStore sspStore = new MemoryStore();
+        final Repository sspRepo = new SailRepository(sspStore);
+        final RepositoryConnection conGitSsp = sspRepo.getConnection();
+
+        ValueFactory fsspRepo = conGitSsp.getValueFactory();
+        IRI ctxVocabulary = fsspRepo.createIRI(vocabularyVersionUrl);
+        IRI ctxGlossary = fsspRepo.createIRI(vocabularyVersionUrl + "/glosář");
+        IRI ctxModel = fsspRepo.createIRI(vocabularyVersionUrl + "/model");
+
+        conWorkspace.getStatements(ctxVocabulary, null, null, ctxWorkspaceVocabulary)
+            .stream()
+            .forEach(
+                s -> conGitSsp.add(s, ctxVocabulary)
+            );
+
+        conWorkspace.getStatements(null, null, null, ctxWorkspaceVocabulary)
+            .stream()
+            .filter(s -> !s.getSubject().equals(ctxVocabulary))
+            .forEach(s -> {
+                if ((s.getPredicate().equals(RDF.TYPE)
+                    && s.getPredicate().getNamespace().equals(SKOS.NAMESPACE))
+                    || s.getPredicate().getNamespace().equals(SKOS.NAMESPACE)
+                ) {
+                    conGitSsp.add(s, ctxGlossary);
+                } else {
+                    conGitSsp.add(s, ctxModel);
+                }
+            });
+
+        File vocFile = folder.getVocabularyFile("");
+        conGitSsp.export(
+            Rio.createWriter(RDFFormat.TURTLE,
+                new FileOutputStream(vocFile)),
+            ctxVocabulary);
+
+        File gloFile = folder.getGlossaryFile("");
+        conGitSsp.export(
+            Rio.createWriter(RDFFormat.TURTLE,
+                new FileOutputStream(gloFile)),
+            ctxGlossary);
+
+        File modFile = folder.getModelFile("");
+        conGitSsp.export(
+            Rio.createWriter(RDFFormat.TURTLE,
+                new FileOutputStream(modFile)),
+            ctxModel);
+
+        conGitSsp.close();
+        conWorkspace.close();
+    }
+
+    /**
      * Reloads the given vocabulary context from the source endpoint.
      *
      * @param vocabularyContext the vocabulary context to be loaded.
      */
     @Transactional
-    public void storeContext(final VocabularyContext vocabularyContext, final VocabularyFolder f) {
+    public void storeContext(final VocabularyContext vocabularyContext,
+                             final VocabularyFolder vocabularyFolder) {
         try {
             final SPARQLRepository workspaceRepo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
                     repositoryConf.getUrl()));
             final RepositoryConnection cWorkspaceRepo = workspaceRepo.getConnection();
-            MemoryStore sspStore = new MemoryStore();
-            Repository sspRepo = new SailRepository(sspStore);
-            RepositoryConnection sspConnection = sspRepo.getConnection();
 
-            String url = vocabularyContext.getBasedOnVocabularyVersion().toString();
-            ValueFactory fsspRepo = sspRepo.getValueFactory();
-            IRI ctxVocabulary = fsspRepo.createIRI(url);
-            IRI ctxGlossary = fsspRepo.createIRI(url + "/glosář");
-            IRI ctxModel = fsspRepo.createIRI(url + "/model");
+
+            String vocabularyVersionUrl =
+                vocabularyContext.getBasedOnVocabularyVersion().toString();
+
             IRI ctxWorkspaceVocabulary =
                 cWorkspaceRepo.getValueFactory().createIRI(vocabularyContext.getUri().toString());
 
-            cWorkspaceRepo.getStatements(ctxVocabulary, null, null, ctxWorkspaceVocabulary)
-                .forEach(
-                    s -> sspConnection.add(s, ctxVocabulary)
-                );
-
-            cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceVocabulary)
-                .stream()
-                .filter(s -> !s.getSubject().equals(ctxVocabulary))
-                .forEach(s -> {
-                    if ((s.getPredicate().equals(RDF.TYPE)
-                        && s.getPredicate().getNamespace().equals(SKOS.NAMESPACE))
-                        || s.getPredicate().getNamespace().equals(SKOS.NAMESPACE)
-                    ) {
-                        sspConnection.add(s, ctxGlossary);
-                    } else {
-                        sspConnection.add(s, ctxModel);
-                    }
-                });
-
-            File vocFile = f.getVocabularyFile("");
-            sspConnection.export(
-                Rio.createWriter(RDFFormat.TURTLE,
-                    new FileOutputStream(vocFile)),
-                ctxVocabulary);
-
-            File gloFile = f.getGlossaryFile("");
-            sspConnection.export(
-                Rio.createWriter(RDFFormat.TURTLE,
-                    new FileOutputStream(gloFile)),
-                ctxGlossary);
-
-            File modFile = f.getModelFile("");
-            sspConnection.export(
-                Rio.createWriter(RDFFormat.TURTLE,
-                    new FileOutputStream(modFile)),
-                ctxModel);
-
-            sspConnection.close();
-            cWorkspaceRepo.close();
+            storeRepo(cWorkspaceRepo,
+                vocabularyVersionUrl,
+                ctxWorkspaceVocabulary,
+                vocabularyFolder);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
