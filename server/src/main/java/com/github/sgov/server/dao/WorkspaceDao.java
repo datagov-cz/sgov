@@ -1,5 +1,6 @@
 package com.github.sgov.server.dao;
 
+import com.github.sgov.server.ValidationResultSeverityComparator;
 import com.github.sgov.server.Validator;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
@@ -176,6 +177,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
                         result.getMessage()));
             }
         });
+        r.results().sort(new ValidationResultSeverityComparator());
         return r;
     }
 
