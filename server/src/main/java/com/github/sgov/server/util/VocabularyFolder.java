@@ -3,6 +3,7 @@ package com.github.sgov.server.util;
 import static com.github.sgov.server.util.Vocabulary.SLOVNIK_GOV_CZ;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -80,5 +81,16 @@ public class VocabularyFolder {
 
     public File getFolder() {
         return folder;
+    }
+
+    /**
+     * Return all non-compact vocabulary files - to be deleted upon update.
+     * @return array of files
+     */
+    public File[] toPruneAllExceptCompact() {
+        return folder.listFiles((file, s) -> (s.contains("-model")
+            || s.contains("-glosář")
+            || s.contains("-slovník")
+        ) && !s.endsWith("-compact.ttl"));
     }
 }

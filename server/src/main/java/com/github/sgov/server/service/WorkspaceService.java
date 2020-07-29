@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -107,6 +108,14 @@ public class WorkspaceService {
                 if (f == null) {
                     throw new PublicationException("Invalid vocabulary IRI " + iri);
                 }
+
+                // emptying the vocabulary
+                Arrays.stream(f.toPruneAllExceptCompact()).forEach(
+                    ff -> {
+                        githubService.delete(git, ff);
+                    }
+                );
+
                 vocabularyService.storeContext(c, f);
                 githubService.commit(git, MessageFormat.format(
                     "Publishing vocabulary {0} in workspace {1}", iri, workspaceUriString));

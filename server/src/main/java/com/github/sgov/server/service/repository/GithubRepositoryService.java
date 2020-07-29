@@ -77,6 +77,24 @@ public class GithubRepositoryService {
     }
 
     /**
+     * Deletes a file from Git repository.
+     *
+     * @param git GIT repository to commit into
+     * @param f File to delete
+     */
+    public void delete(Git git, File f) {
+        try {
+            git.rm()
+                .addFilepattern(f.getAbsolutePath()
+                    .substring(git.getRepository().getDirectory().getAbsolutePath().length()
+                        + 1 - "/.git".length()))
+                .call();
+        } catch (GitAPIException e) {
+            throw new PublicationException("Error during deleting SSP repo.", e);
+        }
+    }
+
+    /**
      * Creates a new commit for the given GIT repository with custom message.
      *
      * @param git GIT repository to commit into
@@ -86,6 +104,10 @@ public class GithubRepositoryService {
      */
     public void commit(Git git, String message) {
         try {
+            git.add()
+                .addFilepattern(".")
+                .call();
+
             git.commit()
                 .setAll(true)
                 .setAuthor(securityUtils.getCurrentUser().getFirstName()
