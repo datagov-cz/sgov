@@ -50,12 +50,6 @@ public class WorkspaceController extends BaseController {
         this.workspaceService = workspaceService;
     }
 
-    @GetMapping(value = "/iris", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Retrieves IRIs of all workspaces.")
-    public List<String> getAll() {
-        return workspaceService.getAllWorkspaceIris();
-    }
-
     @GetMapping(produces = {
         MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Retrieve all workspaces.")
