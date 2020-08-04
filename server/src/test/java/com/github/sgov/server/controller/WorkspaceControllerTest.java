@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 import com.github.sgov.server.exception.NotFoundException;
+import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.WorkspaceService;
 import java.net.URI;
@@ -47,18 +48,21 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
 
     @Test
     void getAllRetrievesAllWorkspaces() throws Exception {
-        List<String> workspaces =
-            Arrays.asList("http://example.org/test1", "http://example.org/test2");
+        final Workspace ws1 = new Workspace();
+        ws1.setUri(URI.create("http://example.org/test1"));
+        final Workspace ws2 = new Workspace();
+        ws2.setUri(URI.create("http://example.org/test2"));
+        final List<Workspace> workspaces = Arrays.asList(ws1,ws2);
 
-        BDDMockito.given(workspaceService.getAllWorkspaceIris())
+        BDDMockito.given(workspaceService.findAllInferred())
             .willReturn(workspaces);
 
-        mockMvc.perform(get("/workspaces/iris")
+        mockMvc.perform(get("/workspaces")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0]", is("http://example.org/test1")))
-            .andExpect(jsonPath("$[1]", is("http://example.org/test2")));
+            .andExpect(jsonPath("$[0].uri", is("http://example.org/test1")))
+            .andExpect(jsonPath("$[1].uri", is("http://example.org/test2")));
     }
 
     @Test

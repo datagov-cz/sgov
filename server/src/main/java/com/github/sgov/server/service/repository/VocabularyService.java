@@ -1,14 +1,18 @@
 package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
+import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyFolder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -16,6 +20,7 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
+import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
@@ -44,6 +49,38 @@ public class VocabularyService {
     @Autowired
     public VocabularyService(RepositoryConf repositoryConf) {
         this.repositoryConf = repositoryConf;
+    }
+
+    /**
+     * Finds all vocabularies which are published with optional label in the given language.
+     * @param lang language to fetch the label in
+     * @return vocabularies in the form of vocabulary context
+     */
+    public List<VocabularyContext> findAll(String lang) {
+        try {
+            List<VocabularyContext> contexts = new ArrayList<>();
+            final SPARQLRepository repo =
+                new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
+                    repositoryConf.getReleaseSparqlEndpointUrl()));
+            final RepositoryConnection connection = repo.getConnection();
+            TupleQuery query = connection
+                .prepareTupleQuery("SELECT ?g ?label WHERE "
+                    + "{ GRAPH ?g {?g a <" + Vocabulary.s_c_slovnik + "> . "
+                    + "OPTIONAL { ?g <http://purl.org/dc/terms/title> ?label . "
+                    + "FILTER (lang(?label)='" + lang + "') }}}");
+            query.evaluate().forEach(b -> {
+                final VocabularyContext c = new VocabularyContext();
+                c.setUri(URI.create(b.getValue("g").stringValue()));
+                if (b.hasBinding("label")) {
+                    c.setLabel(b.getValue("label").stringValue());
+                }
+                contexts.add(c);
+            });
+            connection.close();
+            return contexts;
+        } catch (URISyntaxException e) {
+            throw new SGoVException(e);
+        }
     }
 
     /**
@@ -76,7 +113,7 @@ public class VocabularyService {
             connection.close();
             connection2.close();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            throw new SGoVException(e);
         }
     }
 
@@ -185,9 +222,9 @@ public class VocabularyService {
                 ctxWorkspaceVocabulary,
                 vocabularyFolder);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            throw new SGoVException(e);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            throw new SGoVException(e);
         }
     }
 }
