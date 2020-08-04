@@ -28,11 +28,18 @@ public class VocabularyController extends BaseController {
     private final VocabularyService vocabularyService;
 
     @Autowired
-    public VocabularyController(VocabularyService vocabularyService, IdentifierResolver idResolver) {
+    public VocabularyController(VocabularyService vocabularyService,
+                                IdentifierResolver idResolver) {
         super(idResolver);
         this.vocabularyService = vocabularyService;
     }
 
+    /**
+     * Retrieves all vocabularies.
+     *
+     * @param headers Request headers to fetch the Accept-language header
+     * @return a list of vocabulary contexts
+     */
     @GetMapping(produces = {
         MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Retrieve all vocabularies.")

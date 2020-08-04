@@ -51,6 +51,11 @@ public class VocabularyService {
         this.repositoryConf = repositoryConf;
     }
 
+    /**
+     * Finds all vocabularies which are published with optional label in the given language.
+     * @param lang language to fetch the label in
+     * @return vocabularies in the form of vocabulary context
+     */
     public List<VocabularyContext> findAll(String lang) {
         try {
             List<VocabularyContext> contexts = new ArrayList<>();
@@ -60,20 +65,20 @@ public class VocabularyService {
             final RepositoryConnection connection = repo.getConnection();
             TupleQuery query = connection
                 .prepareTupleQuery("SELECT ?g ?label WHERE "
-                    + "{ GRAPH ?g {?g a <"+ Vocabulary.s_c_slovnik +"> . "
-                    + "OPTIONAL{?g <http://purl.org/dc/terms/title> ?label . "
-                    + "FILTER (lang(?label)='"+lang+"') }}}");
-            query.evaluate().forEach( b -> {
+                    + "{ GRAPH ?g {?g a <" + Vocabulary.s_c_slovnik + "> . "
+                    + "OPTIONAL { ?g <http://purl.org/dc/terms/title> ?label . "
+                    + "FILTER (lang(?label)='" + lang + "') }}}");
+            query.evaluate().forEach(b -> {
                 final VocabularyContext c = new VocabularyContext();
-                    c.setUri(URI.create(b.getValue("g").stringValue()));
-                    if (b.hasBinding("label")) {
-                        c.setLabel(b.getValue("label").stringValue());
-                    }
+                c.setUri(URI.create(b.getValue("g").stringValue()));
+                if (b.hasBinding("label")) {
+                    c.setLabel(b.getValue("label").stringValue());
+                }
                 contexts.add(c);
             });
             connection.close();
             return contexts;
-        } catch(URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new SGoVException(e);
         }
     }
