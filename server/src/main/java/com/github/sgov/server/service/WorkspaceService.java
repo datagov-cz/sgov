@@ -110,11 +110,14 @@ public class WorkspaceService {
                 }
 
                 // emptying the vocabulary
-                Arrays.stream(f.toPruneAllExceptCompact()).forEach(
-                    ff -> {
-                        githubService.delete(git, ff);
-                    }
-                );
+                final File[] files = f.toPruneAllExceptCompact();
+                if (files != null) {
+                    Arrays.stream(files).forEach(
+                        ff -> {
+                            githubService.delete(git, ff);
+                        }
+                    );
+                }
 
                 vocabularyService.storeContext(c, f);
                 githubService.commit(git, MessageFormat.format(
