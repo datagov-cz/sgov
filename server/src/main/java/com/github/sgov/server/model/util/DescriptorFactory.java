@@ -87,12 +87,12 @@ public final class DescriptorFactory {
      * <p>The descriptor specifies that the instance context will correspond to the given IRI.
      * It also initializes other required attribute descriptors.
      *
-     * @param workspaceUri Workspace identifier for which the descriptor should be created
+     * @param vocabularyContextUri Workspace identifier for which the descriptor should be created
      * @return Vocabulary descriptor
      */
-    public static Descriptor vocabularyDescriptor(URI workspaceUri) {
-        Objects.requireNonNull(workspaceUri);
-        EntityDescriptor descriptor = new EntityDescriptor(workspaceUri);
+    public static Descriptor vocabularyDescriptor(URI vocabularyContextUri) {
+        Objects.requireNonNull(vocabularyContextUri);
+        EntityDescriptor descriptor = new EntityDescriptor(vocabularyContextUri);
         return descriptor;
     }
 }

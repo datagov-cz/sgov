@@ -139,4 +139,13 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         workspaceDao.setVocabularyLabels(vocabularyContexts, "cs");
         return workspaces;
     }
+
+    /**
+     * Clears the given vocabulary context.
+     *
+     * @param vocabularyContext vocabularyContext
+     */
+    public void clearVocabularyContext(final URI vocabularyContext) {
+        workspaceDao.clearVocabularyContext(vocabularyContext);
+    }
 }

@@ -2,6 +2,7 @@ package com.github.sgov.server.service;
 
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.PublicationException;
+import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.GithubRepositoryService;
@@ -208,8 +209,15 @@ public class WorkspaceService {
                     VocabularyContext.class.getSimpleName(), vocabularyContextId
                 )
             );
+        ChangeTrackingContext changeTrackingContext = vocabularyContext.getChangeTrackingContext();
+        repositoryService.clearVocabularyContext(changeTrackingContext.getUri());
+        repositoryService.clearVocabularyContext(vocabularyContextId);
+
+        vocabularyService.remove(vocabularyContext);
+
         workspace.getVocabularyContexts().remove(vocabularyContext);
         repositoryService.update(workspace);
+
         return vocabularyContext;
     }
 }
