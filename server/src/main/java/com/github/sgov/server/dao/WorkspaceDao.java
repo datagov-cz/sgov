@@ -146,7 +146,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         final String endpointUlozistePracovnichProstoru = properties.getUrl();
         final List<String> vocabulariesForWorkspace = workspace
             .getVocabularyContexts().stream().map(c -> c.getUri().toString()).collect(
-            Collectors.toList());
+                Collectors.toList());
         log.debug("- found vocabularies {}", vocabulariesForWorkspace);
         final String bindings = vocabulariesForWorkspace.stream().map(v -> "<" + v + ">")
             .collect(Collectors.joining(" "));
@@ -231,5 +231,23 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         vocabularyContexts.forEach(
             vc -> vc.setLabel(uri2Labels.get(vc.getUri()))
         );
+    }
+
+    /**
+     * Clears the given vocabulary context.
+     *
+     * @param vocabularyContext vocabularyContext
+     */
+    public void clearVocabularyContext(final URI vocabularyContext) {
+        try {
+            em
+                .createNativeQuery(
+                    "DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } . }",
+                    type)
+                .setParameter("g", vocabularyContext)
+                .executeUpdate();
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
     }
 }

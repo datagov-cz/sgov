@@ -1,6 +1,7 @@
 package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
@@ -13,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.Validator;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -32,6 +34,7 @@ import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,16 +42,22 @@ import org.springframework.transaction.annotation.Transactional;
  * Service to managed workspaces.
  */
 @Service
-public class VocabularyService {
+public class VocabularyService extends BaseRepositoryService<VocabularyContext> {
 
     RepositoryConf repositoryConf;
+
+    VocabularyDao vocabularyDao;
 
     /**
      * Creates a new repository service.
      */
     @Autowired
-    public VocabularyService(RepositoryConf repositoryConf) {
+    public VocabularyService(@Qualifier("validatorFactoryBean") Validator validator,
+                             RepositoryConf repositoryConf,
+                             VocabularyDao vocabularyDao) {
+        super(validator);
         this.repositoryConf = repositoryConf;
+        this.vocabularyDao = vocabularyDao;
     }
 
     /**
@@ -226,5 +235,10 @@ public class VocabularyService {
         } catch (FileNotFoundException e) {
             throw new SGoVException(e);
         }
+    }
+
+    @Override
+    protected VocabularyDao getPrimaryDao() {
+        return vocabularyDao;
     }
 }
