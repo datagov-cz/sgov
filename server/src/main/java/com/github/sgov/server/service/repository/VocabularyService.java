@@ -225,7 +225,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
             .filter(s -> !s.getSubject().equals(ctxVocabulary))
             .filter(s -> !s.getSubject().equals(ctxGlossary))
             .filter(s -> !s.getSubject().equals(ctxModel))
-            .filter(s -> s.getPredicate().stringValue()
+            .filter(s -> s.getSubject().stringValue()
                 .startsWith(Vocabulary.SLOVNIK_GOV_CZ))
             .forEach(s -> {
                 if (((s.getObject() instanceof IRI)
