@@ -55,7 +55,7 @@ public class VocabularyFolder {
         }
     }
 
-    private String getVocabularyId() {
+    public String getVocabularyId() {
         final String p = folder.getAbsolutePath();
         return p.substring(p.lastIndexOf("/") + 1);
     }
