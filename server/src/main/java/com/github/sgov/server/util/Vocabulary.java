@@ -6,6 +6,8 @@ package com.github.sgov.server.util;
 @SuppressWarnings("checkstyle:ConstantName")
 public final class Vocabulary {
 
+    public static final String ONTOGRAPHER_NAMESPACE = "http://onto.fel.cvut.cz/ontologies/application/ontoGrapher/";
+
     public static final String SLOVNIK_GOV_CZ = "https://slovník.gov.cz";
     public static final String WORKSPACE_NAMESPACE = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/";
     public static final String DATA_DESCRIPTION_NAMESPACE = "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/";
