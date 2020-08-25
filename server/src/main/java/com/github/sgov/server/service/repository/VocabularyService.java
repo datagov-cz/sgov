@@ -225,6 +225,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
             .filter(s -> !s.getSubject().equals(ctxVocabulary))
             .filter(s -> !s.getSubject().equals(ctxGlossary))
             .filter(s -> !s.getSubject().equals(ctxModel))
+            .filter(s -> !s.getSubject().stringValue().startsWith(Vocabulary.ONTOGRAPHER_NAMESPACE))
             .forEach(s -> {
                 if (((s.getObject() instanceof IRI)
                     && ((IRI) s.getObject()).getNamespace().equals(SKOS.NAMESPACE))
