@@ -229,6 +229,10 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                 .startsWith(Vocabulary.ONTOGRAPHER_NAMESPACE))
             .filter(s -> !s.getObject().stringValue()
                 .startsWith(Vocabulary.ONTOGRAPHER_NAMESPACE))
+            .filter(s -> !s.getPredicate().stringValue()
+                .startsWith(Vocabulary.DATA_DESCRIPTION_NAMESPACE))
+            .filter(s -> !s.getObject().stringValue()
+                .startsWith(Vocabulary.DATA_DESCRIPTION_NAMESPACE))
             .forEach(s -> {
                 if (((s.getObject() instanceof IRI)
                     && ((IRI) s.getObject()).getNamespace().equals(SKOS.NAMESPACE))
