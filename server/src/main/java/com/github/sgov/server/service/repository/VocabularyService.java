@@ -207,10 +207,24 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
             );
 
         IRI ctxGlossary = fsspRepo.createIRI(vocabularyVersionUrl + "/glosář");
+        conWorkspace.getStatements(ctxGlossary, null, null, ctxWorkspaceVocabulary)
+            .stream()
+            .forEach(
+                s -> conGitSsp.add(s, ctxGlossary)
+            );
+
         IRI ctxModel = fsspRepo.createIRI(vocabularyVersionUrl + "/model");
+        conWorkspace.getStatements(ctxModel, null, null, ctxWorkspaceVocabulary)
+            .stream()
+            .forEach(
+                s -> conGitSsp.add(s, ctxModel)
+            );
+
         conWorkspace.getStatements(null, null, null, ctxWorkspaceVocabulary)
             .stream()
             .filter(s -> !s.getSubject().equals(ctxVocabulary))
+            .filter(s -> !s.getSubject().equals(ctxGlossary))
+            .filter(s -> !s.getSubject().equals(ctxModel))
             .forEach(s -> {
                 if (((s.getObject() instanceof IRI)
                     && ((IRI) s.getObject()).getNamespace().equals(SKOS.NAMESPACE))
