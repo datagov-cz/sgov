@@ -18,8 +18,12 @@ import javax.validation.Validator;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -30,8 +34,11 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import org.eclipse.rdf4j.rio.ParserConfig;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.WriterConfig;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
+import org.eclipse.rdf4j.rio.helpers.BasicWriterSettings;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -139,6 +146,32 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         return query.evaluate();
     }
 
+    private RDFWriter getWriter(File file) throws FileNotFoundException {
+        RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE,
+            new FileOutputStream(file));
+        writer.setWriterConfig(new WriterConfig()
+            .set(BasicWriterSettings.PRETTY_PRINT, true)
+            .set(BasicWriterSettings.INLINE_BLANK_NODES, true));
+        return writer;
+    }
+
+    private void addNamespaces(RepositoryConnection conGitSsp) {
+        conGitSsp.setNamespace("rdf", RDF.NAMESPACE);
+        conGitSsp.setNamespace("owl", OWL.NAMESPACE);
+        conGitSsp.setNamespace("rdfs", RDFS.NAMESPACE);
+        conGitSsp.setNamespace("dcterms", DCTERMS.NAMESPACE);
+        conGitSsp.setNamespace("xsd", XMLSchema.NAMESPACE);
+        conGitSsp.setNamespace("bibo", "http://purl.org/ontology/bibo/");
+        conGitSsp.setNamespace("vann", "http://purl.org/vocab/vann/");
+        conGitSsp.setNamespace("z-sgov",  "https://slovník.gov.cz/základní/");
+        conGitSsp.setNamespace("z-sgov-pojem",  "https://slovník.gov.cz/základní/pojem/");
+        conGitSsp.setNamespace("vann", "http://purl.org/vocab/vann/");
+        conGitSsp.setNamespace("a-popis-dat-pojem",
+            "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/");
+        conGitSsp.setNamespace("skos",
+            "http://www.w3.org/2004/02/skos/core#");
+    }
+
     /**
      * Stores a vocabulary into the given vocabulary folder.
      *
@@ -158,10 +191,14 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         final Repository sspRepo = new SailRepository(sspStore);
         final RepositoryConnection conGitSsp = sspRepo.getConnection();
 
+        addNamespaces(conGitSsp);
+
         ValueFactory fsspRepo = conGitSsp.getValueFactory();
         IRI ctxVocabulary = fsspRepo.createIRI(vocabularyVersionUrl);
-        IRI ctxGlossary = fsspRepo.createIRI(vocabularyVersionUrl + "/glosář");
-        IRI ctxModel = fsspRepo.createIRI(vocabularyVersionUrl + "/model");
+
+        conGitSsp.setNamespace(folder.getVocabularyId() + "-pojem",
+            ctxVocabulary.toString() + "/pojem/");
+        conGitSsp.setNamespace(folder.getVocabularyId(), ctxVocabulary.toString() + "/");
 
         conWorkspace.getStatements(ctxVocabulary, null, null, ctxWorkspaceVocabulary)
             .stream()
@@ -169,12 +206,14 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                 s -> conGitSsp.add(s, ctxVocabulary)
             );
 
+        IRI ctxGlossary = fsspRepo.createIRI(vocabularyVersionUrl + "/glosář");
+        IRI ctxModel = fsspRepo.createIRI(vocabularyVersionUrl + "/model");
         conWorkspace.getStatements(null, null, null, ctxWorkspaceVocabulary)
             .stream()
             .filter(s -> !s.getSubject().equals(ctxVocabulary))
             .forEach(s -> {
-                if ((s.getPredicate().equals(RDF.TYPE)
-                    && s.getPredicate().getNamespace().equals(SKOS.NAMESPACE))
+                if (((s.getObject() instanceof IRI)
+                    && ((IRI) s.getObject()).getNamespace().equals(SKOS.NAMESPACE))
                     || s.getPredicate().getNamespace().equals(SKOS.NAMESPACE)
                 ) {
                     conGitSsp.add(s, ctxGlossary);
@@ -184,22 +223,13 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
             });
 
         File vocFile = folder.getVocabularyFile("");
-        conGitSsp.export(
-            Rio.createWriter(RDFFormat.TURTLE,
-                new FileOutputStream(vocFile)),
-            ctxVocabulary);
+        conGitSsp.export(getWriter(vocFile), ctxVocabulary);
 
         File gloFile = folder.getGlossaryFile("");
-        conGitSsp.export(
-            Rio.createWriter(RDFFormat.TURTLE,
-                new FileOutputStream(gloFile)),
-            ctxGlossary);
+        conGitSsp.export(getWriter(gloFile), ctxGlossary);
 
         File modFile = folder.getModelFile("");
-        conGitSsp.export(
-            Rio.createWriter(RDFFormat.TURTLE,
-                new FileOutputStream(modFile)),
-            ctxModel);
+        conGitSsp.export(getWriter(modFile), ctxModel);
 
         conGitSsp.close();
         conWorkspace.close();
