@@ -169,11 +169,14 @@ public class WorkspaceController extends BaseController {
      * @param readOnly          True if vocabulary should be readonly, false otherwise.
      */
     @PostMapping(value = "/{workspaceFragment}/vocabularies")
-    @ApiOperation(value = "Create vocabulary context within workspace.")
+    @ApiOperation(value =
+        "Create vocabulary context within workspace. If label is provided, a new vocabulary is "
+            + "created if not found.")
     public ResponseEntity<String> createVocabularyContext(
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
-        @RequestParam(name = "vocabularyUri") URI vocabularyUri,
+        @RequestParam(name = "vocabularyUri", required = false) URI vocabularyUri,
+        @RequestParam(name = "label", required = false) String label,
         @RequestParam(name = "readOnly", required = false) boolean readOnly
     ) {
         final URI workspaceUri = resolveIdentifier(
@@ -182,9 +185,10 @@ public class WorkspaceController extends BaseController {
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,
                 vocabularyUri,
-                readOnly
+                readOnly,
+                label
             );
-        LOG.debug("Vocabulary context {} created.", vocabularyContextUri);
+        LOG.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
         return ResponseEntity.created(
             generateLocation(vocabularyContextUri, Vocabulary.s_c_slovnikovy_kontext)
         ).build();

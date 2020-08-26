@@ -51,6 +51,6 @@ public class VocabularyController extends BaseController {
         } else {
             lang = "cs";
         }
-        return vocabularyService.findAll(lang);
+        return vocabularyService.getVocabulariesAsContextDtos(lang);
     }
 }

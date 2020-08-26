@@ -48,24 +48,4 @@ class WorkspaceRepositoryServiceTest extends BaseServiceTestRunner {
         transactional(() -> em.persist(user));
         Environment.setCurrentUser(user);
     }
-
-    @Test
-    void createVocabularyContextUpdatesWorkspace() {
-        final Workspace workspace = Generator.generateWorkspace();
-        Descriptor descriptor =
-            DescriptorFactory.workspaceDescriptor(workspace);
-        transactional(() -> em.persist(workspace, descriptor));
-
-        sut.createVocabularyContext(
-            workspace.getUri(),
-            URI.create("http://example.org/test-vocabulary-1.0.0"),
-            true);
-
-        final Workspace result = em.find(Workspace.class, workspace.getUri(), descriptor);
-        assertNotNull(result);
-        assertEquals(user.toUser(), result.getAuthor());
-        assertNotNull(result.getCreated());
-        assertEquals(1, result.getVocabularyContexts().size());
-        assertNotNull(result.getVocabularyContexts().iterator().next().getChangeTrackingContext());
-    }
 }

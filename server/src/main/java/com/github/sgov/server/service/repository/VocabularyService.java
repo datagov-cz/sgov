@@ -7,17 +7,22 @@ import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyFolder;
+import com.github.sgov.server.util.VocabularyHelper;
+import com.github.sgov.server.util.VocabularyType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.validation.Validator;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.DC;
 import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -67,12 +72,17 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         this.vocabularyDao = vocabularyDao;
     }
 
+    public List<VocabularyContext> getVocabulariesAsContextDtos() {
+        return getVocabulariesAsContextDtos(null);
+    }
+
     /**
      * Finds all vocabularies which are published with optional label in the given language.
+     *
      * @param lang language to fetch the label in
      * @return vocabularies in the form of vocabulary context
      */
-    public List<VocabularyContext> findAll(String lang) {
+    public List<VocabularyContext> getVocabulariesAsContextDtos(String lang) {
         try {
             List<VocabularyContext> contexts = new ArrayList<>();
             final SPARQLRepository repo =
@@ -83,10 +93,11 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                 .prepareTupleQuery("SELECT DISTINCT ?g ?label WHERE "
                     + "{ GRAPH ?g {?g a <" + Vocabulary.s_c_slovnik + "> . "
                     + " ?g <http://purl.org/dc/terms/title> ?label . "
-                    + "FILTER (lang(?label)='" + lang + "') }} ORDER BY ?label");
+                    + ((lang != null) ? "FILTER (lang(?label)='" + lang + "')" : "")
+                    + " }} ORDER BY ?label");
             query.evaluate().forEach(b -> {
                 final VocabularyContext c = new VocabularyContext();
-                c.setUri(URI.create(b.getValue("g").stringValue()));
+                c.setBasedOnVocabularyVersion(URI.create(b.getValue("g").stringValue()));
                 if (b.hasBinding("label")) {
                     c.setLabel(b.getValue("label").stringValue());
                 }
@@ -104,6 +115,55 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      *
      * @param vocabularyContext the vocabulary context to be loaded.
      */
+    private void populateContext(final VocabularyContext vocabularyContext,
+                                 final Iterable<? extends Statement> statements) {
+        final HTTPRepository workspaceRepository = new HTTPRepository(
+            repositoryConf.getUrl());
+        final RepositoryConnection connection2 = workspaceRepository.getConnection();
+        connection2.setParserConfig(
+            new ParserConfig().set(BasicParserSettings.PRESERVE_BNODE_IDS, true));
+
+        connection2.begin();
+        final ValueFactory f = connection2.getValueFactory();
+        connection2.add(statements,
+            f.createIRI(vocabularyContext.getUri().toString()));
+        connection2.commit();
+        connection2.close();
+    }
+
+    /**
+     * Reloads the given vocabulary context from the source endpoint.
+     *
+     * @param vocabularyContext the vocabulary context to be loaded.
+     */
+    @Transactional
+    public void createContext(final VocabularyContext vocabularyContext, final String label) {
+        final Set<Statement> statements = new HashSet<>();
+        final HTTPRepository workspaceRepository = new HTTPRepository(
+            repositoryConf.getUrl());
+        final RepositoryConnection connection2 = workspaceRepository.getConnection();
+
+        final ValueFactory f = connection2.getValueFactory();
+        final IRI vocabulary = f.createIRI(vocabularyContext
+            .getBasedOnVocabularyVersion().toString());
+
+        VocabularyHelper.createVocabulary(
+            f,
+            vocabulary,
+            label,
+            statements,
+            VocabularyHelper.getPrefix(vocabulary.toString())
+        );
+
+        populateContext(vocabularyContext, statements);
+        connection2.close();
+    }
+
+    /**
+     * Reloads the given vocabulary context from the source endpoint.
+     *
+     * @param vocabularyContext the vocabulary context to be loaded.
+     */
     @Transactional
     public void loadContext(final VocabularyContext vocabularyContext) {
         try {
@@ -112,22 +172,8 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                     repositoryConf.getReleaseSparqlEndpointUrl()));
             final RepositoryConnection connection = repo.getConnection();
             final GraphQueryResult result = loadContext(vocabularyContext, connection);
-            final HTTPRepository workspaceRepository = new HTTPRepository(
-                repositoryConf.getUrl());
-            final RepositoryConnection connection2 = workspaceRepository.getConnection();
-            connection2.setParserConfig(
-                new ParserConfig().set(BasicParserSettings.PRESERVE_BNODE_IDS, true));
-
-            connection2.begin();
-
-            final ValueFactory f = connection2.getValueFactory();
-            connection2.add((Iterable<Statement>) result,
-                f.createIRI(vocabularyContext.getUri().toString()));
-
-            connection2.commit();
-
+            populateContext(vocabularyContext, result);
             connection.close();
-            connection2.close();
         } catch (URISyntaxException e) {
             throw new SGoVException(e);
         }
@@ -163,8 +209,9 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         conGitSsp.setNamespace("xsd", XMLSchema.NAMESPACE);
         conGitSsp.setNamespace("bibo", "http://purl.org/ontology/bibo/");
         conGitSsp.setNamespace("vann", "http://purl.org/vocab/vann/");
-        conGitSsp.setNamespace("z-sgov",  "https://slovník.gov.cz/základní/");
-        conGitSsp.setNamespace("z-sgov-pojem",  "https://slovník.gov.cz/základní/pojem/");
+        conGitSsp.setNamespace("z-sgov", "https://slovník.gov.cz/základní/");
+        conGitSsp.setNamespace("z-sgov-pojem",
+            "https://slovník.gov.cz/základní/pojem/");
         conGitSsp.setNamespace("vann", "http://purl.org/vocab/vann/");
         conGitSsp.setNamespace("a-popis-dat-pojem",
             "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/");
