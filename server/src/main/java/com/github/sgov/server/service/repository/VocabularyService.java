@@ -80,10 +80,10 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                     repositoryConf.getReleaseSparqlEndpointUrl()));
             final RepositoryConnection connection = repo.getConnection();
             TupleQuery query = connection
-                .prepareTupleQuery("SELECT ?g ?label WHERE "
+                .prepareTupleQuery("SELECT DISTINCT ?g ?label WHERE "
                     + "{ GRAPH ?g {?g a <" + Vocabulary.s_c_slovnik + "> . "
-                    + "OPTIONAL { ?g <http://purl.org/dc/terms/title> ?label . "
-                    + "FILTER (lang(?label)='" + lang + "') }}}");
+                    + " ?g <http://purl.org/dc/terms/title> ?label . "
+                    + "FILTER (lang(?label)='" + lang + "') }} ORDER BY ?label");
             query.evaluate().forEach(b -> {
                 final VocabularyContext c = new VocabularyContext();
                 c.setUri(URI.create(b.getValue("g").stringValue()));
