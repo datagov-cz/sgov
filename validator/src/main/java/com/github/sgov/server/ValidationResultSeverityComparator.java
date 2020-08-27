@@ -1,16 +1,40 @@
 package com.github.sgov.server;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.topbraid.shacl.validation.ValidationResult;
 
 @Slf4j
 public class ValidationResultSeverityComparator implements Comparator<ValidationResult> {
 
-    class Shacl {
-        private static final String VIOLATION = "http://www.w3.org/ns/shacl#Violation";
-        private static final String WARNING = "http://www.w3.org/ns/shacl#Warning";
-        private static final String INFO = "http://www.w3.org/ns/shacl#Info";
+    private static final String SHACL = "http://www.w3.org/ns/shacl#";
+
+    @Getter
+    enum ShaclSeverity {
+        VIOLATION(SHACL + "Violation"),
+        WARNING(SHACL + "Warning"),
+        INFO(SHACL + "Info");
+
+        private final String uri;
+
+        ShaclSeverity(final String uri) {
+            this.uri = uri;
+        }
+
+        public static ShaclSeverity of(final ValidationResult result) {
+            final Optional<ShaclSeverity> severity
+                = Arrays.stream(ShaclSeverity.values()).filter(s ->
+                s.uri.equals(result.getSeverity().getURI())
+            ).findAny();
+            if (severity.isPresent()) {
+                return severity.get();
+            } else {
+                return null;
+            }
+        }
     }
 
     /**
@@ -18,27 +42,9 @@ public class ValidationResultSeverityComparator implements Comparator<Validation
      *
      * @param res1 first validation result
      * @param res2 second validation result
-     * @return -1,0,1 as per comparison contract
+     * @return negative, 0, positive as per comparison contract
      */
     public int compare(ValidationResult res1, ValidationResult res2) {
-        if (res1.getSeverity().getURI().equals(res2.getSeverity().getURI())) {
-            return 0;
-        }
-        if (res1.getSeverity().getURI().equals(Shacl.VIOLATION)) {
-            return -1;
-        }
-        if (res2.getSeverity().getURI().equals(Shacl.VIOLATION)) {
-            return 1;
-        }
-        if (res1.getSeverity().getURI().equals(Shacl.WARNING)) {
-            return -1;
-        }
-        if (res2.getSeverity().getURI().equals(Shacl.WARNING)) {
-            return 1;
-        }
-        if (res1.getSeverity().getURI().equals(Shacl.INFO)) {
-            return -1;
-        }
-        return 1;
+        return ShaclSeverity.of(res1).compareTo(ShaclSeverity.of(res2));
     }
 }
