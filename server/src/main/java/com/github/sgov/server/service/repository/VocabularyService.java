@@ -6,9 +6,9 @@ import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Vocabulary;
+import com.github.sgov.server.util.VocabularyCreationHelper;
 import com.github.sgov.server.util.VocabularyFolder;
-import com.github.sgov.server.util.VocabularyHelper;
-import com.github.sgov.server.util.VocabularyType;
+import com.github.sgov.server.util.VocabularyInstance;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,7 +22,6 @@ import javax.validation.Validator;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.DC;
 import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -38,12 +37,12 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import org.eclipse.rdf4j.rio.ParserConfig;
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriter;
-import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.WriterConfig;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 import org.eclipse.rdf4j.rio.helpers.BasicWriterSettings;
+import org.eclipse.rdf4j.rio.turtle.ArrangedWriter;
+import org.eclipse.rdf4j.rio.turtle.TurtleWriter;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -147,12 +146,13 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         final IRI vocabulary = f.createIRI(vocabularyContext
             .getBasedOnVocabularyVersion().toString());
 
-        VocabularyHelper.createVocabulary(
+        final VocabularyInstance i = new VocabularyInstance(vocabulary.toString());
+
+        VocabularyCreationHelper.createVocabulary(
             f,
-            vocabulary,
+            i,
             label,
-            statements,
-            VocabularyHelper.getPrefix(vocabulary.toString())
+            statements
         );
 
         populateContext(vocabularyContext, statements);
@@ -193,8 +193,8 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
     }
 
     private RDFWriter getWriter(File file) throws FileNotFoundException {
-        RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE,
-            new FileOutputStream(file));
+        RDFWriter writer = new ArrangedWriter(
+            new TurtleWriter(new FileOutputStream(file)), 100);
         writer.setWriterConfig(new WriterConfig()
             .set(BasicWriterSettings.PRETTY_PRINT, true)
             .set(BasicWriterSettings.INLINE_BLANK_NODES, true));
@@ -290,6 +290,10 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                     conGitSsp.add(s, ctxModel);
                 }
             });
+
+        if (!folder.getFolder().exists()) {
+            folder.getFolder().mkdirs();
+        }
 
         File vocFile = folder.getVocabularyFile("");
         conGitSsp.export(getWriter(vocFile), ctxVocabulary);

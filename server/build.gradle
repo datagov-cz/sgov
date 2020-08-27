@@ -26,7 +26,7 @@ configurations {
 dependencies {
     implementation project(':validator')
 
-    implementation 'cz.cvut.kbss.jopa:jopa-impl:0.14.4'
+    implementation 'cz.cvut.kbss.jopa:jopa-impl:0.14.7'
     implementation 'cz.cvut.kbss.jopa:ontodriver-sesame:0.14.4'
     implementation 'cz.cvut.kbss.jsonld:jb4jsonld-jackson:0.5.1'
     implementation 'com.github.ledsoft:jopa-spring-transaction:0.0.7'

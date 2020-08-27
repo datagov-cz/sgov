@@ -1,15 +1,7 @@
 package com.github.sgov.server.util;
 
-import static com.github.sgov.server.util.Vocabulary.SLOVNIK_GOV_CZ;
-
 import java.io.File;
-import java.io.FilenameFilter;
-import java.net.URI;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class VocabularyFolder {
 
@@ -22,37 +14,15 @@ public class VocabularyFolder {
     /**
      * Creates a new vocabulary folder for the given vocabulary.
      *
-     * @param root Root folder for vocabularies (root of SSP repo)
-     * @param vocabularyIri IRI of the vocabulary
+     * @param root     Root folder for vocabularies (root of SSP repo)
+     * @param instance vocabulary
      * @return vocabulary folder for the given vocabulary
      */
-    public static VocabularyFolder ofVocabularyIri(final File root, final URI vocabularyIri) {
-        final Pattern regex = Pattern.compile("^" + SLOVNIK_GOV_CZ + "/("
-            + Arrays.stream(VocabularyType.values()).map(v -> v.fragment)
-                .collect(Collectors.joining("|"))
-            + ")(/(.*))?$");
-        Matcher m = regex.matcher(vocabularyIri.toString());
-        if (!m.matches()) {
-            return null;
-        } else {
-            final VocabularyType type = Arrays
-                .stream(VocabularyType.values())
-                .filter(v -> v.fragment.equals(m.group(1)))
-                .findAny().get();
-
-            final String vocabularyId;
-            if (m.group(3) != null) {
-                vocabularyId = m.group(3).replace("/", "-");
-            } else {
-                vocabularyId = null;
-            }
-
-            final VocabularyFolder folder =
-                new VocabularyFolder(
-                    Paths.get(root.getAbsolutePath() + "/" + type.getVocabularyFolder(vocabularyId))
-                        .toFile());
-            return folder;
-        }
+    public static VocabularyFolder ofVocabularyIri(final File root,
+                                                   final VocabularyInstance instance) {
+        return new VocabularyFolder(
+            Paths.get(root.getAbsolutePath() + "/" + instance.getFolder())
+                .toFile());
     }
 
     public String getVocabularyId() {
@@ -85,6 +55,7 @@ public class VocabularyFolder {
 
     /**
      * Return all non-compact vocabulary files - to be deleted upon update.
+     *
      * @return array of files
      */
     public File[] toPruneAllExceptCompact() {
