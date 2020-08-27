@@ -9,6 +9,7 @@ import com.github.sgov.server.service.repository.GithubRepositoryService;
 import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.util.VocabularyFolder;
+import com.github.sgov.server.util.VocabularyInstance;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
@@ -104,25 +105,26 @@ public class WorkspaceService {
         try (final Git git = githubService.checkout(branchName, dir)) {
             for (final VocabularyContext c : workspace.getVocabularyContexts()) {
                 final URI iri = c.getBasedOnVocabularyVersion();
-                final VocabularyFolder f = VocabularyFolder.ofVocabularyIri(dir, iri);
+                try {
+                    final VocabularyInstance instance = new VocabularyInstance(iri.toString());
+                    final VocabularyFolder f = VocabularyFolder.ofVocabularyIri(dir, instance);
 
-                if (f == null) {
+                    // emptying the vocabulary
+                    final File[] files = f.toPruneAllExceptCompact();
+                    if (files != null) {
+                        Arrays.stream(files).forEach(
+                            ff -> {
+                                githubService.delete(git, ff);
+                            }
+                        );
+                    }
+
+                    vocabularyService.storeContext(c, f);
+                    githubService.commit(git, MessageFormat.format(
+                        "Publishing vocabulary {0} in workspace {1}", iri, workspaceUriString));
+                } catch (IllegalArgumentException e) {
                     throw new PublicationException("Invalid vocabulary IRI " + iri);
                 }
-
-                // emptying the vocabulary
-                final File[] files = f.toPruneAllExceptCompact();
-                if (files != null) {
-                    Arrays.stream(files).forEach(
-                        ff -> {
-                            githubService.delete(git, ff);
-                        }
-                    );
-                }
-
-                vocabularyService.storeContext(c, f);
-                githubService.commit(git, MessageFormat.format(
-                    "Publishing vocabulary {0} in workspace {1}", iri, workspaceUriString));
             }
 
             githubService.push(git);

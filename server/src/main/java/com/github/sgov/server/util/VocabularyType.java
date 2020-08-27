@@ -1,35 +1,51 @@
 package com.github.sgov.server.util;
 
-import java.nio.file.Paths;
-import java.util.function.Function;
+import static com.github.sgov.server.util.Vocabulary.SLOVNIK_GOV_CZ;
+
+
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 
 public enum VocabularyType {
-    ZSGOV("základní", (String vocabularyId) -> "z-sgov"),
-    VSGOV("veřejný-sektor", (String vocabularyId) -> "v-sgov"),
-    GSGOV("generický",
-        (String vocabularyId) -> Paths.get("g-sgov", "g-sgov-" + vocabularyId).toString()),
-    LSGOV("legislativní",
-        (String vocabularyId) -> Paths.get("l-sgov", "l-sgov-" + vocabularyId).toString()),
-    ASGOV("agendový",
-        (String vocabularyId) -> Paths.get("a-sgov", "a-sgov-" + vocabularyId).toString()),
-    DSGOV("datový",
-        (String vocabularyId) -> Paths.get("d-sgov", "d-sgov-" + vocabularyId).toString());
+    ZSGOV("základní", "z-sgov",
+        ""),
+    VSGOV("veřejný-sektor", "v-sgov",
+        ""),
+    GSGOV("generický", "g-sgov",
+        "/([ěščřžýáíéóúůďťňaa-z0-9]+)"),
+    LSGOV("legislativní", "l-sgov",
+        "/sbírka/([0-9]+/[0-9]+)"),
+    ASGOV("agendový", "a-sgov",
+        "/([a-z0-9]+)"),
+    DSGOV("datový", "d-sgov",
+        "/([ěščřžýáíéóúůďťňa-z0-9]+)");
 
-    String fragment;
+    String iriLocalName;
+    String prefix;
+    String idRegex;
 
-    private Function<String, String> getVocabularyFolder;
-
-    VocabularyType(String fragment, Function<String, String> getVocabularyFolder) {
-        this.fragment = fragment;
-        this.getVocabularyFolder = getVocabularyFolder;
+    VocabularyType(String iriLocalName, String prefix, String idRegex) {
+        this.iriLocalName = iriLocalName;
+        this.prefix = prefix;
+        this.idRegex = idRegex;
     }
 
-    public String getVocabularyFolder(String vocabularyId) {
-        return getVocabularyFolder.apply(vocabularyId);
+    public String getIriLocalName() {
+        return iriLocalName;
     }
 
-    public String getFragment() {
-        return fragment;
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public Pattern getRegex() {
+        return Pattern.compile("^" + SLOVNIK_GOV_CZ + "/" + getIriLocalName()
+            + (idRegex.isEmpty() ? "" : ("(" + idRegex + ")?$")));
+    }
+
+    public static final VocabularyType getType(String iri) {
+        return Arrays.stream(values())
+            .filter(vt -> vt.getRegex().matcher(iri).matches()).findAny().orElse(null);
     }
 }

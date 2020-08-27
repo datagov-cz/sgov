@@ -7,8 +7,8 @@ import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyFolder;
-import com.github.sgov.server.util.VocabularyHelper;
-import com.github.sgov.server.util.VocabularyType;
+import com.github.sgov.server.util.VocabularyCreationHelper;
+import com.github.sgov.server.util.VocabularyInstance;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,7 +22,6 @@ import javax.validation.Validator;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.DC;
 import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -147,12 +146,13 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         final IRI vocabulary = f.createIRI(vocabularyContext
             .getBasedOnVocabularyVersion().toString());
 
-        VocabularyHelper.createVocabulary(
+        final VocabularyInstance i = new VocabularyInstance(vocabulary.toString());
+
+        VocabularyCreationHelper.createVocabulary(
             f,
-            vocabulary,
+            i,
             label,
-            statements,
-            VocabularyHelper.getPrefix(vocabulary.toString())
+            statements
         );
 
         populateContext(vocabularyContext, statements);
@@ -290,6 +290,10 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                     conGitSsp.add(s, ctxModel);
                 }
             });
+
+        if (!folder.getFolder().exists()) {
+            folder.getFolder().mkdirs();
+        }
 
         File vocFile = folder.getVocabularyFile("");
         conGitSsp.export(getWriter(vocFile), ctxVocabulary);
