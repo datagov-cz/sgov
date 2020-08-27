@@ -61,13 +61,13 @@ public final class VocabularyCreationHelper {
 
         // model
         IRI m = f.createIRI(iri + "/model");
-        addCommon(f, g, vocabulary, label + " - model", statements);
+        addCommon(f, m, vocabulary, label + " - model", statements);
         statements.add(f.createStatement(m, OWL.IMPORTS, g));
         statements.add(f.createStatement(m, RDF.TYPE, f.createIRI(Vocabulary.s_c_model)));
 
         // slovnik
-        IRI s = f.createIRI(iri.toString());
-        addCommon(f, g, vocabulary, label, statements);
+        IRI s = f.createIRI(iri);
+        addCommon(f, s, vocabulary, label, statements);
         statements.add(f.createStatement(s, RDF.TYPE, f.createIRI(Vocabulary.s_c_slovnik)));
         statements.add(f.createStatement(s, OWL.IMPORTS, g));
         statements.add(f.createStatement(s, OWL.IMPORTS, m));

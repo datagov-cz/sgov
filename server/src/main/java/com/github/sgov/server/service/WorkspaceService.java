@@ -88,6 +88,33 @@ public class WorkspaceService {
                 .substring(workspaceUriString.lastIndexOf("/") + 1);
     }
 
+    private void publishContexts(Git git, File dir, Workspace workspace) {
+        for (final VocabularyContext c : workspace.getVocabularyContexts()) {
+            final URI iri = c.getBasedOnVocabularyVersion();
+            try {
+                final VocabularyInstance instance = new VocabularyInstance(iri.toString());
+                final VocabularyFolder f = VocabularyFolder.ofVocabularyIri(dir, instance);
+
+                // emptying the vocabulary
+                final File[] files = f.toPruneAllExceptCompact();
+                if (files != null) {
+                    Arrays.stream(files).forEach(
+                        ff -> {
+                            githubService.delete(git, ff);
+                        }
+                    );
+                }
+
+                vocabularyService.storeContext(c, f);
+                githubService.commit(git, MessageFormat.format(
+                    "Publishing vocabulary {0} in workspace {1}", iri,
+                    workspace.getUri().toString()));
+            } catch (IllegalArgumentException e) {
+                throw new PublicationException("Invalid vocabulary IRI " + iri);
+            }
+        }
+    }
+
     /**
      * Validates the workspace with the given IRI.
      *
@@ -97,46 +124,28 @@ public class WorkspaceService {
     public URI publish(URI workspaceUri) {
         final Workspace workspace = getWorkspace(workspaceUri);
 
-        final String workspaceUriString = workspaceUri.toString();
+        final String workspaceUriString = workspace.getUri().toString();
         final String branchName = createBranchName(workspaceUriString);
 
         final File dir = Files.createTempDir();
 
         try (final Git git = githubService.checkout(branchName, dir)) {
-            for (final VocabularyContext c : workspace.getVocabularyContexts()) {
-                final URI iri = c.getBasedOnVocabularyVersion();
-                try {
-                    final VocabularyInstance instance = new VocabularyInstance(iri.toString());
-                    final VocabularyFolder f = VocabularyFolder.ofVocabularyIri(dir, instance);
-
-                    // emptying the vocabulary
-                    final File[] files = f.toPruneAllExceptCompact();
-                    if (files != null) {
-                        Arrays.stream(files).forEach(
-                            ff -> {
-                                githubService.delete(git, ff);
-                            }
-                        );
-                    }
-
-                    vocabularyService.storeContext(c, f);
-                    githubService.commit(git, MessageFormat.format(
-                        "Publishing vocabulary {0} in workspace {1}", iri, workspaceUriString));
-                } catch (IllegalArgumentException e) {
-                    throw new PublicationException("Invalid vocabulary IRI " + iri);
-                }
-            }
+            publishContexts(git, dir, workspace);
 
             githubService.push(git);
 
-            FileUtils.deleteDirectory(dir);
+            try {
+                FileUtils.deleteDirectory(dir);
+            } catch (IOException e) {
+                throw new PublicationException("An exception occurred during publishing workspace.",
+                    e);
+            }
 
             String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
                 MessageFormat.format("Publishing workspace {0}", workspaceUriString),
                 createPullRequestBody(workspace));
+
             return URI.create(prUrl);
-        } catch (IOException e) {
-            throw new PublicationException("An exception occurred during publishing workspace.", e);
         }
     }
 
@@ -180,7 +189,7 @@ public class WorkspaceService {
     /**
      * Ensures that a vocabulary with the given IRI is registered in the workspace.
      * - If the vocabulary does not exist, an error is thrown.
-     * - if the vocabulary exists, but is part of the workspace, nothing happens, and the content
+     * - if the vocabulary exists and is part of the workspace, nothing happens, and the content
      * is left intact.
      * - if the vocabulary exists and is NOT part of the workspace, it is added to the workspace and
      * its content is loaded.

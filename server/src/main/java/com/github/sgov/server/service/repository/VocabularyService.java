@@ -6,8 +6,8 @@ import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Vocabulary;
-import com.github.sgov.server.util.VocabularyFolder;
 import com.github.sgov.server.util.VocabularyCreationHelper;
+import com.github.sgov.server.util.VocabularyFolder;
 import com.github.sgov.server.util.VocabularyInstance;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,12 +37,12 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import org.eclipse.rdf4j.rio.ParserConfig;
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriter;
-import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.WriterConfig;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
 import org.eclipse.rdf4j.rio.helpers.BasicWriterSettings;
+import org.eclipse.rdf4j.rio.turtle.ArrangedWriter;
+import org.eclipse.rdf4j.rio.turtle.TurtleWriter;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -193,8 +193,8 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
     }
 
     private RDFWriter getWriter(File file) throws FileNotFoundException {
-        RDFWriter writer = Rio.createWriter(RDFFormat.TURTLE,
-            new FileOutputStream(file));
+        RDFWriter writer = new ArrangedWriter(
+            new TurtleWriter(new FileOutputStream(file)), 100);
         writer.setWriterConfig(new WriterConfig()
             .set(BasicWriterSettings.PRETTY_PRINT, true)
             .set(BasicWriterSettings.INLINE_BLANK_NODES, true));

@@ -15,40 +15,45 @@ public class VocabularyInstance {
 
     private String folder;
 
+    /**
+     * Creates a mew Vocabulary instance given its iri.
+     *
+     * @param iri IRI of the vocabulary
+     */
     public VocabularyInstance(String iri) {
         this.iri = iri;
         this.type = VocabularyType.getType(iri);
 
-        if ( type == null ) {
+        if (type == null) {
             throw new IllegalArgumentException("Unknown vocabulary type for IRI " + iri);
         }
 
         switch (type) {
-            case ZSGOV:
-            case VSGOV:
-                this.prefix = this.type.getPrefix() + "-pojem";
-                this.folder = this.type.getPrefix();
-                this.vocabularyId = null;
-                break;
+          case ZSGOV:
+          case VSGOV:
+              this.prefix = this.type.getPrefix() + "-pojem";
+              this.folder = this.type.getPrefix();
+              this.vocabularyId = null;
+              break;
 
-            case GSGOV:
-            case LSGOV:
-            case ASGOV:
-            case DSGOV:
-                final Matcher m = this.type.getRegex().matcher(iri);
-                m.matches();
-                final String id = m.group(2).replace("/", "-");
-                this.vocabularyId = new StringBuilder()
-                    .append(this.type.getPrefix())
-                    .append("-")
-                    .append(id)
-                    .toString();
-                this.prefix = this.vocabularyId + "-pojem";
-                this.folder = Paths.get(type.getPrefix(), vocabularyId).toString();
-                break;
+          case GSGOV:
+          case LSGOV:
+          case ASGOV:
+          case DSGOV:
+              final Matcher m = this.type.getRegex().matcher(iri);
+              m.matches();
+              final String id = m.group(2).replace("/", "-");
+              this.vocabularyId = new StringBuilder()
+                  .append(this.type.getPrefix())
+                  .append("-")
+                  .append(id)
+                  .toString();
+              this.prefix = this.vocabularyId + "-pojem";
+              this.folder = Paths.get(type.getPrefix(), vocabularyId).toString();
+              break;
 
-            default:
-                throw new AssertionError("Not covered vocabulary type: " + iri);
+          default:
+              throw new AssertionError("Not covered vocabulary type: " + iri);
         }
     }
 
