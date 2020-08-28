@@ -38,7 +38,7 @@ public class VocabularyInstanceTest {
             Arguments.of("z-sgov", "https://slovník.gov.cz/základní"),
             Arguments.of("v-sgov", "https://slovník.gov.cz/veřejný-sektor"),
             Arguments.of("g-sgov/g-sgov-a", "https://slovník.gov.cz/generický/a"),
-            Arguments.of("l-sgov/l-sgov-1-2", "https://slovník.gov.cz/legislativní/sbírka/1/2"),
+            Arguments.of("l-sgov/l-sgov-sbírka-1-2", "https://slovník.gov.cz/legislativní/sbírka/1/2"),
             Arguments.of("a-sgov/a-sgov-a", "https://slovník.gov.cz/agendový/a"),
             Arguments.of("d-sgov/d-sgov-a", "https://slovník.gov.cz/datový/a")
         );
