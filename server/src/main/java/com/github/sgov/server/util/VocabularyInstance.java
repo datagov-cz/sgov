@@ -37,6 +37,7 @@ public class VocabularyInstance {
               break;
 
           case GSGOV:
+          case LSGOV:
           case ASGOV:
           case DSGOV:
               final Matcher m = this.type.getRegex().matcher(iri);
