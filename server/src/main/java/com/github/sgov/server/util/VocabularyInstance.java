@@ -37,7 +37,6 @@ public class VocabularyInstance {
               break;
 
           case GSGOV:
-          case LSGOV:
           case ASGOV:
           case DSGOV:
               final Matcher m = this.type.getRegex().matcher(iri);
@@ -45,14 +44,14 @@ public class VocabularyInstance {
               final String id = m.group(2).replace("/", "-");
               this.vocabularyId = new StringBuilder()
                   .append(this.type.getPrefix())
-                  .append("-")
+                  .append(type.equals(VocabularyType.LSGOV) ? "-sbírka-" : "-")
                   .append(id)
                   .toString();
               this.prefix = this.vocabularyId + "-pojem";
               this.folder = Paths.get(type.getPrefix(), vocabularyId).toString();
               break;
 
-          default:
+            default:
               throw new AssertionError("Not covered vocabulary type: " + iri);
         }
     }
