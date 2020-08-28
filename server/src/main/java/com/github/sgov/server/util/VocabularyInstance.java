@@ -51,7 +51,7 @@ public class VocabularyInstance {
               this.folder = Paths.get(type.getPrefix(), vocabularyId).toString();
               break;
 
-            default:
+          default:
               throw new AssertionError("Not covered vocabulary type: " + iri);
         }
     }
