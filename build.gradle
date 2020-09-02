@@ -5,6 +5,7 @@ plugins {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'ru.vyarus.quality'
+    apply plugin: 'maven-publish'
 
     quality {
         checkstyleVersion = '8.32'
@@ -20,4 +21,22 @@ subprojects {
 
     group 'com.github.sgov'
     version = '1.0'
+
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/opendata-mvcr/sgov")
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+                }
+            }
+        }
+        publications {
+            gpr(MavenPublication) {
+                from(components.java)
+            }
+        }
+    }
 }

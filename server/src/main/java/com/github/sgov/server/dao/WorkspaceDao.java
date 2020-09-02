@@ -2,7 +2,6 @@ package com.github.sgov.server.dao;
 
 import com.github.sgov.server.ValidationResultSeverityComparator;
 import com.github.sgov.server.Validator;
-import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.VocabularyContext;
@@ -13,6 +12,7 @@ import com.google.gson.JsonObject;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.ontodriver.Connection;
 import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
+import java.io.File;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -46,16 +46,14 @@ import org.topbraid.shacl.validation.ValidationReport;
 @Repository
 public class WorkspaceDao extends BaseDao<Workspace> {
 
-    private final PersistenceConf config;
     private final RepositoryConf properties;
 
     /**
      * Constructor.
      */
     @Autowired
-    public WorkspaceDao(EntityManager em, PersistenceConf config, RepositoryConf properties) {
+    public WorkspaceDao(EntityManager em, RepositoryConf properties) {
         super(Workspace.class, em);
-        this.config = config;
         this.properties = properties;
     }
 
@@ -161,10 +159,10 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         OntDocumentManager.getInstance().setProcessImports(false);
         final Model dataModel =
             ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF, m);
-        final Set<String> rules = new HashSet<>();
-        rules.addAll(Validator.getGlossaryRules());
-        rules.addAll(Validator.getModelRules());
-        rules.addAll(Validator.getVocabularyRules());
+        final Set<File> rules = new HashSet<>();
+        rules.addAll(validator.getGlossaryRules());
+        rules.addAll(validator.getModelRules());
+        rules.addAll(validator.getVocabularyRules());
         final ValidationReport r = validator.validate(dataModel, rules);
         log.info("- done.");
         log.debug("- validation results:");

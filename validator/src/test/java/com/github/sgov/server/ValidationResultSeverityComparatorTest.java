@@ -37,51 +37,51 @@ public class ValidationResultSeverityComparatorTest {
     @Test
     public void compareComparesCorrectlySameValue() {
         testEquals(
-            ValidationResultSeverityComparator.ShaclSeverity.VIOLATION.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.VIOLATION.getUri());
+            ShaclSeverity.VIOLATION.getUri(),
+            ShaclSeverity.VIOLATION.getUri());
 
         testEquals(
-            ValidationResultSeverityComparator.ShaclSeverity.WARNING.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.WARNING.getUri());
+            ShaclSeverity.WARNING.getUri(),
+            ShaclSeverity.WARNING.getUri());
 
         testEquals(
-            ValidationResultSeverityComparator.ShaclSeverity.INFO.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.INFO.getUri());
+            ShaclSeverity.INFO.getUri(),
+            ShaclSeverity.INFO.getUri());
     }
 
     @Test
     public void compareComparesCorrectlyLessThanValue() {
         testGreater(
-            ValidationResultSeverityComparator.ShaclSeverity.WARNING.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.VIOLATION.getUri()
+            ShaclSeverity.WARNING.getUri(),
+            ShaclSeverity.VIOLATION.getUri()
         );
 
         testGreater(
-            ValidationResultSeverityComparator.ShaclSeverity.INFO.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.WARNING.getUri()
+            ShaclSeverity.INFO.getUri(),
+            ShaclSeverity.WARNING.getUri()
         );
 
         testGreater(
-            ValidationResultSeverityComparator.ShaclSeverity.INFO.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.VIOLATION.getUri()
+            ShaclSeverity.INFO.getUri(),
+            ShaclSeverity.VIOLATION.getUri()
         );
     }
 
     @Test
     public void compareComparesCorrectlyGreaterThanValue() {
         testGreater(
-            ValidationResultSeverityComparator.ShaclSeverity.WARNING.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.VIOLATION.getUri()
+            ShaclSeverity.WARNING.getUri(),
+            ShaclSeverity.VIOLATION.getUri()
         );
 
         testGreater(
-            ValidationResultSeverityComparator.ShaclSeverity.INFO.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.WARNING.getUri()
+            ShaclSeverity.INFO.getUri(),
+            ShaclSeverity.WARNING.getUri()
         );
 
         testGreater(
-            ValidationResultSeverityComparator.ShaclSeverity.INFO.getUri(),
-            ValidationResultSeverityComparator.ShaclSeverity.VIOLATION.getUri()
+            ShaclSeverity.INFO.getUri(),
+            ShaclSeverity.VIOLATION.getUri()
         );
     }
 }

@@ -1,7 +1,12 @@
 package com.github.sgov.server;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Model;
@@ -17,38 +22,50 @@ import org.topbraid.shacl.validation.ValidationUtil;
 @Slf4j
 public class Validator {
 
-    private static Set<String> glossaryRules = new HashSet<>();
-    private static Set<String> modelRules = new HashSet<>();
-    private static Set<String> vocabularyRules = new HashSet<>();
+    private final Set<File> glossaryRules = new HashSet<>();
+    private final Set<File> modelRules = new HashSet<>();
+    private final Set<File> vocabularyRules = new HashSet<>();
 
-    static {
-        for (int i = 1; i <= 10; i++) {
-            glossaryRules.add("g" + i + ".ttl");
-        }
-        for (int i = 1; i <= 7; i++) {
-            modelRules.add("m" + i + ".ttl");
-        }
-        for (int i = 1; i <= 1; i++) {
-            modelRules.add("s" + i + ".ttl");
+    /**
+     * Validator constructor.
+     */
+    public Validator() {
+        final URL url = getClass().getClassLoader().getResource("./rules");
+        for (final File f : Objects.requireNonNull(new File(url.getPath()).listFiles(f ->
+            f.getName().matches("([gsm])[0-9]+.ttl")))) {
+            final String name = f.getName();
+            if (name.startsWith("g")) {
+                glossaryRules.add(f);
+            } else if (name.startsWith("m")) {
+                glossaryRules.add(f);
+            } else {
+                vocabularyRules.add(f);
+            }
         }
     }
 
-    public static Set<String> getModelRules() {
+    public Set<File> getModelRules() {
         return modelRules;
     }
 
-    public static Set<String> getGlossaryRules() {
+    public Set<File> getGlossaryRules() {
         return glossaryRules;
     }
 
-    public static Set<String> getVocabularyRules() {
+    public Set<File> getVocabularyRules() {
         return vocabularyRules;
     }
 
-    private Model getRulesModel(final Collection<String> rules) {
+    private Model getRulesModel(final Collection<File> rules) {
         final Model shapesModel = JenaUtil.createMemoryModel();
-        rules.forEach(r -> shapesModel
-            .read(Validator.class.getResourceAsStream("/" + r), null, FileUtils.langTurtle));
+        try {
+            for (File r : rules) {
+                shapesModel
+                    .read(new FileReader(r), null, FileUtils.langTurtle);
+            }
+        } catch (FileNotFoundException e) {
+            log.error("An error occurred during rule model construction.", e);
+        }
         return shapesModel;
     }
 
@@ -60,14 +77,14 @@ public class Validator {
      * @param ruleSet   set of rules (see 'resources') used for validation
      * @return validation report
      */
-    public ValidationReport validate(final Model dataModel, final Set<String> ruleSet) {
-        log.trace("Validating model {}", dataModel);
+    public ValidationReport validate(final Model dataModel, final Set<File> ruleSet) {
+        log.info("Validating model of size {}", dataModel.size());
         final Model shapesModel = getRulesModel(ruleSet);
 
         shapesModel.read(Validator.class.getResourceAsStream("/inference-rules.ttl"), null,
             FileUtils.langTurtle);
 
-        Model inferredModel = RuleUtil
+        final Model inferredModel = RuleUtil
             .executeRules(dataModel, shapesModel, null, new SimpleProgressMonitor("inference"));
         dataModel.add(inferredModel);
 

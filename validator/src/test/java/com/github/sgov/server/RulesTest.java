@@ -1,5 +1,6 @@
 package com.github.sgov.server;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Set;
@@ -30,10 +31,10 @@ public class RulesTest {
     @CsvFileSource(resources = "/test-cases.csv", numLinesToSkip = 1)
     public void testShaclRule(String rule, String output, String outcome) {
         log.info("Rule {}", rule);
-        testModel(Collections.singleton(rule), output, Outcome.valueOf(outcome));
+        testModel(Collections.singleton(new File(getClass().getResource("/rules/"+rule).getPath())), output, Outcome.valueOf(outcome));
     }
 
-    private void testModel(Set<String> ruleSet, String data, Outcome outcome) {
+    private void testModel(Set<File> ruleSet, String data, Outcome outcome) {
         log.info("- expects {} for data {}", outcome, data);
 
         final Model dataModel =
