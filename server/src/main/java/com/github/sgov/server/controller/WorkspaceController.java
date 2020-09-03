@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiParam;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import org.topbraid.shacl.validation.ValidationReport;
 @RequestMapping("/workspaces")
 @Api(tags = "Workspace")
 @SuppressWarnings("checkstyle:MissingJavadocType")
+@Slf4j
 public class WorkspaceController extends BaseController {
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceController.class);
@@ -281,8 +283,10 @@ public class WorkspaceController extends BaseController {
     ) {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        URI id = workspaceService.publish(identifier);
+        log.info("Workspace published at {}",id);
         return ResponseEntity.created(
-            workspaceService.publish(identifier)
+            id
         ).build();
     }
 }
