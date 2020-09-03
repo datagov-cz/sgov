@@ -284,7 +284,7 @@ public class WorkspaceController extends BaseController {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         URI id = workspaceService.publish(identifier);
-        log.info("Workspace published at {}",id);
+        log.info("Workspace published at {}", id);
         return ResponseEntity.created(
             id
         ).build();
