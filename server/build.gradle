@@ -19,10 +19,6 @@ test {
     useJUnitPlatform()
 }
 
-configurations {
-    all*.exclude module: 'spring-boot-starter-logging'
-}
-
 dependencies {
     implementation project(':validator')
 

@@ -19,7 +19,10 @@ persistence:
   language: cs
 
 logging:
+  pattern:
+    console: "%d{dd-MM-yyyy HH:mm:ss.SSS} [%X{username}] [%thread] %-5level %logger{36} --- %msg%n"
+    file: "%d{dd-MM-yyyy HH:mm:ss.SSS} [%X{username}] [%thread] %-5level %logger{36} --- %msg%n"
   level:
     root: INFO
-    org.springframework.web: INFO
-    cz.cvut.kbss: INFO
+    com.github.sgov: TRACE
+    org.springframework.web: DEBUG
