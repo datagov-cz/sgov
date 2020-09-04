@@ -1,5 +1,8 @@
 spring:
-#  main.allow-bean-definition-overriding: true
+  output:
+    ansi:
+      enabled: DETECT
+
 server:
   port: 18189
   servlet:
@@ -20,9 +23,8 @@ persistence:
 
 logging:
   pattern:
-    console: "%d{dd-MM-yyyy HH:mm:ss.SSS} [%X{username}] [%thread] %-5level %logger{36} --- %msg%n"
-    file: "%d{dd-MM-yyyy HH:mm:ss.SSS} [%X{username}] [%thread] %-5level %logger{36} --- %msg%n"
+    console: "%black(%d{dd-MM-yyyy HH:mm:ss.SSS}) [%X{username}] [%blue(thread)] %highlight(%-5level) %logger{36} - %yellow(%msg) %n%throwable"
   level:
     root: INFO
-    com.github.sgov: TRACE
-    org.springframework.web: DEBUG
+    com.github.sgov: INFO
+    org.springframework.web: INFO
