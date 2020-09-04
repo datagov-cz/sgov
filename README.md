@@ -5,10 +5,8 @@ This repository contains web services for SGoV workspace tools:
 - workspace validation
 
 ## Workspace Validation
-There is a web service for validating Semantic Government Vocabulary (SGoV). It includes checking consistency and compliance of glossaries and models according to predefined rules. These rules check:
-- glossaries - e.g. "each glossary concept at least one skos:prefLabel"
-- models - e.g. OntoUML relationships like "each Role concept must (transitively) inherit from a Kind concept"
-- interplay between glossaries and models - e.g. "each glossary concept should be used in the model"
+There is a web service for validating Semantic Government Vocabulary (SGoV). It includes checking consistency and compliance of glossaries and models according to predefined rules, as defined in 
+https://github.com/opendata-mvcr/sgov-validator.
 
 The project consists of the following modules:
 - validator - the actual validation logic. It consists of SHACL rules and a simple wrapper to evaluate them over a Jena model.
@@ -25,6 +23,7 @@ The best way to propose validation rule changes is to:
 4. Once approved, merge PR into master
 
 ## Building
+You need to have Github token in order to build this project (as there is a Github Packages dependency). Check build.gradle for details.
 You can specify host/port of the validated RDF4J repository in `server/src/main/resources/application.yml`
 
     gradle bootRun
