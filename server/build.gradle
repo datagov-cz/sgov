@@ -20,7 +20,7 @@ test {
 }
 
 dependencies {
-    implementation 'com.github.sgov:sgov-validator:1.0'
+    implementation project(':validator')
 
     implementation 'cz.cvut.kbss.jopa:jopa-impl:0.14.7'
     implementation 'cz.cvut.kbss.jopa:ontodriver-sesame:0.14.4'

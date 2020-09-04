@@ -1,2 +1,3 @@
 rootProject.name = 'sgov'
+include('validator')
 include('server')

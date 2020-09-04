@@ -1,0 +1,96 @@
+@prefix :             <https://slovník.gov.cz/example/pojem/> .
+@prefix rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix z-sgov-pojem: <https://slovník.gov.cz/základní/pojem/> .
+@prefix skos:         <http://www.w3.org/2004/02/skos/core#> .
+@prefix owl:          <http://www.w3.org/2002/07/owl#> .
+
+# Platí
+
+z-sgov-pojem:má-vztažený-prvek-1
+    rdfs:subPropertyOf z-sgov-pojem:má-vztažený-prvek .
+
+z-sgov-pojem:má-vztažený-prvek-2
+    rdfs:subPropertyOf z-sgov-pojem:má-vztažený-prvek .
+
+z-sgov-pojem:má-vztažený-prvek
+    a owl:Class, z-sgov-pojem:typ-vztahu .
+
+z-sgov-pojem:má-vztažený-prvek
+    a                  owl:ObjectProperty, z-sgov-pojem:typ-vztahu ;
+    rdfs:domain        :vztah ;
+    rdfs:range         :proměnný-prvek ;
+    rdfs:subPropertyOf z-sgov-pojem:vztah .
+
+# Odvozujeme
+
+:obdivuje
+    a           z-sgov-pojem:typ-vztahu, owl:ObjectProperty ;
+    rdfs:domain :obdivovatel ;
+    rdfs:range  :obdivovaný-člověk .
+
+:obdivovatel
+# 1..*
+    rdfs:subClassOf [ a                  owl:Restriction ;
+                      owl:someValuesFrom :obdivovaný-člověk ;
+                      owl:onProperty     :obdivuje ] ;
+# 1..1
+    rdfs:subClassOf [ a                        owl:Restriction ;
+                      owl:qualifiedCardinality 1 ;
+                      owl:onClass              :obdivovaný-člověk ;
+                      owl:onProperty           :obdivuje ] ;
+# 0..1
+    rdfs:subClassOf [ a                           owl:Restriction ;
+                      owl:maxQualifiedCardinality 1 ;
+                      owl:onClass                 :obdivovaný-člověk ;
+                      owl:onProperty              :obdivuje ] ;
+.
+# Varianta 1 - jen domain/range
+# - bez kardinalit
+# - vytváříme neintuitivní object properties
+
+:obdivuje
+    a z-sgov-pojem:typ-vztahu, owl:Class .
+
+:obdivuje-má-obdivovatele
+    a                  owl:ObjectProperty ;
+    rdfs:subPropertyOf z-sgov-pojem:má-vztažený-prvek-1 ;
+    rdfs:domain        :obdivuje ;
+    rdfs:range         :obdivovatel .
+
+:obdivuje-má-obdivovaného-člověka
+    a                  owl:ObjectProperty ;
+    rdfs:subPropertyOf z-sgov-pojem:má-vztažený-prvek-2 ;
+    rdfs:domain        :obdivuje ;
+    rdfs:range         :obdivovaný-člověk .
+
+# 1..* + *..* => 1..*
+
+:obdivuje
+    rdfs:subClassOf [ a                  owl:Restriction ;
+                      owl:someValuesFrom :obdivuje-má-obdivovatele ;
+                      owl:onProperty     :obdivovatel ] .
+# 1..1 + 1..1 => 1..1
+
+:obdivuje
+    rdfs:subClassOf [ a                  owl:Restriction ;
+                      owl:someValuesFrom :obdivuje-má-obdivovaného-člověka ;
+                      owl:onProperty     :obdivovaný-člověk ] ;
+# TODO
+
+# Varianta 2 - jen domain/range
+# - bez kardinalit
+# - vytváříme blank node object properties
+
+        :obdivuje
+        a z-sgov-pojem:typ-vztahu, owl:Class .
+
+[ a                  owl:ObjectProperty ;
+  rdfs:subPropertyOf z-sgov-pojem:má-vztažený-prvek-1 ;
+  rdfs:domain        :slovník ;
+  rdfs:range         :má-glosář ] .
+
+[ a                  owl:ObjectProperty ;
+  rdfs:subPropertyOf z-sgov-pojem:má-vztažený-prvek-2 ;
+  rdfs:domain        :glosář ;
+  rdfs:range         :má-glosář ] .
