@@ -23,7 +23,8 @@ persistence:
 
 logging:
   pattern:
-    console: "%black(%d{dd-MM-yyyy HH:mm:ss.SSS}) [%X{username}] [%blue(thread)] %highlight(%-5level) %logger{36} - %yellow(%msg) %n%throwable"
+#    console: "%black(%d{dd-MM-yyyy HH:mm:ss.SSS}) [%X{username}] [%blue(thread)] %highlight(%-5level) %logger{36} - %yellow(%msg) %n%throwable"
+    console: "%d{dd-MM-yyyy HH:mm:ss.SSS} [%X{username}] [thread] %-5level %logger{36} - %msg %n%throwable"
   level:
     root: INFO
     com.github.sgov: INFO
