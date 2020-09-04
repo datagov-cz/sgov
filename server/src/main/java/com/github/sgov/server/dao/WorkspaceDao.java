@@ -13,7 +13,9 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.ontodriver.Connection;
 import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,7 +141,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
      * @param workspace workspace to be validated
      * @return ValidationReport
      */
-    public ValidationReport validateWorkspace(final Workspace workspace) {
+    public ValidationReport validateWorkspace(final Workspace workspace) throws IOException {
         log.info("Validating workspace {}", workspace.getUri());
         final String endpointUlozistePracovnichProstoru = properties.getUrl();
         final List<String> vocabulariesForWorkspace = workspace
@@ -159,7 +161,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         OntDocumentManager.getInstance().setProcessImports(false);
         final Model dataModel =
             ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF, m);
-        final Set<File> rules = new HashSet<>();
+        final Set<URL> rules = new HashSet<>();
         rules.addAll(validator.getGlossaryRules());
         rules.addAll(validator.getModelRules());
         rules.addAll(validator.getVocabularyRules());

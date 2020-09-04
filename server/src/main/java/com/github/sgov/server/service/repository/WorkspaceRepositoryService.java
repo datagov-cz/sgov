@@ -3,8 +3,10 @@ package com.github.sgov.server.service.repository;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.NotFoundException;
+import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import java.io.IOException;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,8 +52,18 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         return workspaceDao;
     }
 
+    /**
+     * Validates workspace.
+     *
+     * @param workspace workspace to validate
+     * @return report of validation
+     */
     public ValidationReport validateWorkspace(Workspace workspace) {
-        return workspaceDao.validateWorkspace(workspace);
+        try {
+            return workspaceDao.validateWorkspace(workspace);
+        } catch (IOException e) {
+            throw new SGoVException(e);
+        }
     }
 
 
