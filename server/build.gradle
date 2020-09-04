@@ -15,12 +15,17 @@ plugins {
     id 'war'
 }
 
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
 test {
     useJUnitPlatform()
 }
 
 dependencies {
-    implementation 'com.github.sgov:sgov-validator:1.0'
+    implementation 'com.github.sgov:sgov-validator:1.1'
 
     implementation 'cz.cvut.kbss.jopa:jopa-impl:0.14.7'
     implementation 'cz.cvut.kbss.jopa:ontodriver-sesame:0.14.4'
