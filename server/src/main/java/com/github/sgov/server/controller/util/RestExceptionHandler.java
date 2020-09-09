@@ -7,6 +7,7 @@ import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.exception.ValidationException;
+import com.github.sgov.server.exception.VocabularyRegisteredinReadWriteException;
 import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
 import cz.cvut.kbss.jsonld.exception.JsonLdException;
 import javax.servlet.http.HttpServletRequest;
@@ -111,8 +112,8 @@ public class RestExceptionHandler {
      * SGoVException.
      */
     @ExceptionHandler(SGoVException.class)
-    public ResponseEntity<ErrorInfo> termItException(HttpServletRequest request,
-                                                     SGoVException e) {
+    public ResponseEntity<ErrorInfo> sgovException(HttpServletRequest request,
+                                                   SGoVException e) {
         logException(e);
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -149,5 +150,15 @@ public class RestExceptionHandler {
                                                           PublicationException e) {
         logException("Publication exception caught.", e);
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Publication Exception.
+     */
+    @ExceptionHandler(VocabularyRegisteredinReadWriteException.class)
+    public ResponseEntity<ErrorInfo> vocabularyAlreadyRegisteredinReadWriteException(
+        HttpServletRequest request,
+        VocabularyRegisteredinReadWriteException e) {
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
     }
 }
