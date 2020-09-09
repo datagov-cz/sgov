@@ -1,5 +1,6 @@
 package com.github.sgov.server.controller;
 
+import com.github.sgov.server.exception.VocabularyRegisteredinReadWriteException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.IdentifierResolver;
@@ -12,8 +13,10 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,7 +165,12 @@ public class WorkspaceController extends BaseController {
     }
 
     /**
-     * Create vocabulary context within workspace and its relevant context for changes.
+     * Adds a vocabulary to a workspace.
+     *
+     * <p>
+     * This creates a new vocabulary context within a workspace and its relevant change context. If
+     * the label is provided, a new vocabulary is created, otherwise an existing one is loaded.
+     * </p>
      *
      * @param workspaceFragment Localname of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
@@ -174,7 +182,7 @@ public class WorkspaceController extends BaseController {
     @ApiOperation(value =
         "Create vocabulary context within workspace. If label is provided, a new vocabulary is "
             + "created if not found.")
-    public ResponseEntity<String> createVocabularyContext(
+    public ResponseEntity<String> addVocabularyToWorkspace(
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
         @RequestParam(name = "vocabularyUri", required = false) URI vocabularyUri,
@@ -183,6 +191,20 @@ public class WorkspaceController extends BaseController {
     ) {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+
+        final Collection<Workspace> wss = workspaceService
+            .getWorkspacesWithReadWriteVocabulary(vocabularyUri)
+            .stream()
+            .filter(ws -> !ws.getUri().equals(workspaceUri))
+            .collect(Collectors.toSet());
+
+        if (!wss.isEmpty()) {
+            throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
+                wss.stream()
+                    .map(ws -> ws.getUri()).collect(Collectors.toList())
+            );
+        }
+
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,

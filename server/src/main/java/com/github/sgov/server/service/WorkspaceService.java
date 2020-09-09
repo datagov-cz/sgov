@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -191,6 +192,8 @@ public class WorkspaceService {
      * - If the vocabulary does not exist, an error is thrown.
      * - if the vocabulary exists and is part of the workspace, nothing happens, and the content
      * is left intact.
+     * - if the vocabulary exists, is NOT part of the workspace, and should be added as R/W it is
+     * only added to the workspace if no other workspace is registering the vocabulary in R/W.
      * - if the vocabulary exists and is NOT part of the workspace, it is added to the workspace and
      * its content is loaded.
      *
@@ -238,6 +241,23 @@ public class WorkspaceService {
         }
 
         return vocabularyContextUri;
+    }
+
+    /**
+     * Collects workspaces which have the given vocabulary attached in R/W mode.
+     *
+     * @param vocabularyIri IRI of the vocabulary to be checked
+     * @return list of workspaces
+     */
+    public Collection<Workspace> getWorkspacesWithReadWriteVocabulary(final URI vocabularyIri) {
+        return repositoryService.findAll().stream()
+            .filter(ws -> ws.getVocabularyContexts()
+                .stream()
+                .filter(vc -> vc.getBasedOnVocabularyVersion().equals(vocabularyIri))
+                .filter(vc -> !vc.isReadonly())
+                .findAny()
+                .isPresent()
+            ).collect(Collectors.toList());
     }
 
     public List<Workspace> findAllInferred() {
