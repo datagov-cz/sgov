@@ -192,17 +192,19 @@ public class WorkspaceController extends BaseController {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
 
-        final Collection<Workspace> wss = workspaceService
-            .getWorkspacesWithReadWriteVocabulary(vocabularyUri)
-            .stream()
-            .filter(ws -> !ws.getUri().equals(workspaceUri))
-            .collect(Collectors.toSet());
+        if (!readOnly) {
+            final Collection<Workspace> wss = workspaceService
+                .getWorkspacesWithReadWriteVocabulary(vocabularyUri)
+                .stream()
+                .filter(ws -> !ws.getUri().equals(workspaceUri))
+                .collect(Collectors.toSet());
 
-        if (!wss.isEmpty()) {
-            throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
-                wss.stream()
-                    .map(ws -> ws.getUri()).collect(Collectors.toList())
-            );
+            if (!wss.isEmpty()) {
+                throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
+                    wss.stream()
+                        .map(ws -> ws.getUri()).collect(Collectors.toList())
+                );
+            }
         }
 
         final URI vocabularyContextUri =
