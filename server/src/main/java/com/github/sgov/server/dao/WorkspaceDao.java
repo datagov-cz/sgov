@@ -12,7 +12,6 @@ import com.google.gson.JsonObject;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.ontodriver.Connection;
 import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
