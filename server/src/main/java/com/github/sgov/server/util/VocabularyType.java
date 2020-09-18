@@ -38,9 +38,13 @@ public enum VocabularyType {
         return prefix;
     }
 
+    public String getVocabularyPattern() {
+        return SLOVNIK_GOV_CZ + "/" + getIriLocalName()
+            + (idRegex.isEmpty() ? "" : ("(" + idRegex + ")?"));
+    }
+
     public Pattern getRegex() {
-        return Pattern.compile("^" + SLOVNIK_GOV_CZ + "/" + getIriLocalName()
-            + (idRegex.isEmpty() ? "" : ("(" + idRegex + ")?$")));
+        return Pattern.compile("^" + getVocabularyPattern() + "$");
     }
 
     public static final VocabularyType getType(String iri) {
