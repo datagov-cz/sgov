@@ -9,6 +9,7 @@ import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyCreationHelper;
 import com.github.sgov.server.util.VocabularyFolder;
 import com.github.sgov.server.util.VocabularyInstance;
+import com.github.sgov.server.util.VocabularyType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -91,7 +92,8 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
             TupleQuery query = connection
                 .prepareTupleQuery("SELECT DISTINCT ?g ?label WHERE "
                     + "{ GRAPH ?g {?g a <" + Vocabulary.s_c_slovnik + "> . "
-                    + " ?g <http://purl.org/dc/terms/title> ?label . "
+                    + " ?g <" + DCTERMS.TITLE + "> ?label . "
+                    + "FILTER (?g!=<" + VocabularyType.ZSGOV.getVocabularyPattern() + ">)"
                     + ((lang != null) ? "FILTER (lang(?label)='" + lang + "')" : "")
                     + " }} ORDER BY ?label");
             query.evaluate().forEach(b -> {
