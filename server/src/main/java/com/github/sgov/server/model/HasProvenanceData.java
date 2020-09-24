@@ -75,7 +75,7 @@ public abstract class HasProvenanceData {
     }
 
     public Date getLastModified() {
-        System.out.println(created.getTime());
+        System.out.println(created == null ?  null : created.getTime());
         return lastModified;
     }
 
