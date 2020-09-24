@@ -2,6 +2,7 @@ package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.dao.VocabularyDao;
+import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
@@ -60,16 +61,20 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
 
     VocabularyDao vocabularyDao;
 
+    WorkspaceDao workspaceDao;
+
     /**
      * Creates a new repository service.
      */
     @Autowired
     public VocabularyService(@Qualifier("validatorFactoryBean") Validator validator,
                              RepositoryConf repositoryConf,
-                             VocabularyDao vocabularyDao) {
+                             VocabularyDao vocabularyDao,
+                             WorkspaceDao workspaceDao) {
         super(validator);
         this.repositoryConf = repositoryConf;
         this.vocabularyDao = vocabularyDao;
+        this.workspaceDao = workspaceDao;
     }
 
     public List<VocabularyContext> getVocabulariesAsContextDtos() {
@@ -96,9 +101,12 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                     + "FILTER (?g!=<" + VocabularyType.ZSGOV.getVocabularyPattern() + ">)"
                     + ((lang != null) ? "FILTER (lang(?label)='" + lang + "')" : "")
                     + " }} ORDER BY ?label");
+            final List<URI> uris = getWriteLockedVocabularies();
             query.evaluate().forEach(b -> {
                 final VocabularyContext c = new VocabularyContext();
-                c.setBasedOnVocabularyVersion(URI.create(b.getValue("g").stringValue()));
+                final URI uri = URI.create(b.getValue("g").stringValue());
+                c.setBasedOnVocabularyVersion(uri);
+                c.setReadonly(uris.contains(uri));
                 if (b.hasBinding("label")) {
                     c.setLabel(b.getValue("label").stringValue());
                 }
@@ -109,6 +117,20 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         } catch (URISyntaxException e) {
             throw new SGoVException(e);
         }
+    }
+
+    /**
+     * Returns the list of vocabularies which are write-locked (i.e. they are writable in some
+     * workspace).
+     */
+    private List<URI> getWriteLockedVocabularies() {
+        final List<URI> result = new ArrayList<>();
+        workspaceDao.findAll().stream().forEach(w -> {
+            w.getVocabularyContexts().stream()
+                .filter(vc -> !vc.isReadonly())
+                .forEach(vc -> result.add(vc.getBasedOnVocabularyVersion()));
+        });
+        return result;
     }
 
     /**
