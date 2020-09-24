@@ -97,7 +97,8 @@ public class WorkspaceController extends BaseController {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace workspace = workspaceService.findInferred(identifier);
-        LOG.info("Workspace {} "+ workspace.getLastModified().getTime() + " : " + workspace.getLastModifiedOrCreated().getTime());
+        LOG.info("Workspace {} "+ workspace.getLastModified().getTime() + " : "
+            + workspace.getLastModifiedOrCreated().getTime());
         return workspace;
     }
 
