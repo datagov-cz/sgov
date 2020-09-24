@@ -96,7 +96,9 @@ public class WorkspaceController extends BaseController {
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        return workspaceService.findInferred(identifier);
+        final Workspace workspace = workspaceService.findInferred(identifier);
+        LOG.info("Workspace {} "+ workspace.getLastModified().getTime() + " : " + workspace.getLastModifiedOrCreated().getTime());
+        return workspace;
     }
 
     /**
