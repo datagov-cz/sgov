@@ -2,10 +2,13 @@ package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.dao.VocabularyDao;
+import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.model.VocabularyContext;
+import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.BaseServiceTestRunner;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyType;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +24,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
@@ -38,6 +42,9 @@ class VocabularyRepositoryServiceTest extends BaseServiceTestRunner {
 
     @Mock
     private VocabularyDao vocabularyDao;
+
+    @Mock
+    private WorkspaceDao workspaceDao;
 
     private FusekiServer server;
 
