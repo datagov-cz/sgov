@@ -98,7 +98,6 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                 .prepareTupleQuery("SELECT DISTINCT ?g ?label WHERE "
                     + "{ GRAPH ?g {?g a <" + Vocabulary.s_c_slovnik + "> . "
                     + " ?g <" + DCTERMS.TITLE + "> ?label . "
-//                    + "FILTER (?g!=<" + VocabularyType.ZSGOV.getVocabularyPattern() + ">)"
                     + ((lang != null) ? "FILTER (lang(?label)='" + lang + "')" : "")
                     + " }} ORDER BY ?label");
             final List<URI> uris = getWriteLockedVocabularies();
