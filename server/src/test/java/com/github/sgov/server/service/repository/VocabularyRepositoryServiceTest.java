@@ -11,6 +11,7 @@ import com.github.sgov.server.util.VocabularyType;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.jena.fuseki.main.FusekiServer;
@@ -77,14 +78,16 @@ class VocabularyRepositoryServiceTest extends BaseServiceTestRunner {
 
     @Test
     void getVocabulariesAsContextDtosReturnsAllIncludingZSGoV() {
+        final String[] vocabularies = new String[]{VocabularyType.ZSGOV.getVocabularyPattern(),
+            VocabularyType.VSGOV.getVocabularyPattern()};
         final Dataset ds =
-            createDatasetOfVocabularyStubs(VocabularyType.ZSGOV.getVocabularyPattern(),
-                VocabularyType.VSGOV.getVocabularyPattern());
+            createDatasetOfVocabularyStubs(vocabularies);
         setUp(ds);
 
         final List<VocabularyContext> contexts = sut.getVocabulariesAsContextDtos();
         Assert.assertEquals(2, contexts.size());
-        Assert.assertEquals(Collections.singleton(VocabularyType.VSGOV.getVocabularyPattern()),
+
+        Assert.assertEquals(new HashSet<>(Arrays.asList(vocabularies)),
             contexts.stream().map(c ->
                 c.getBasedOnVocabularyVersion().toString()).collect(Collectors.toSet())
         );
