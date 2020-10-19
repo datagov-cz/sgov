@@ -76,14 +76,14 @@ class VocabularyRepositoryServiceTest extends BaseServiceTestRunner {
     }
 
     @Test
-    void getVocabulariesAsContextDtosReturnsAllButZSGoV() {
+    void getVocabulariesAsContextDtosReturnsAllIncludingZSGoV() {
         final Dataset ds =
             createDatasetOfVocabularyStubs(VocabularyType.ZSGOV.getVocabularyPattern(),
                 VocabularyType.VSGOV.getVocabularyPattern());
         setUp(ds);
 
         final List<VocabularyContext> contexts = sut.getVocabulariesAsContextDtos();
-        Assert.assertEquals(1, contexts.size());
+        Assert.assertEquals(2, contexts.size());
         Assert.assertEquals(Collections.singleton(VocabularyType.VSGOV.getVocabularyPattern()),
             contexts.stream().map(c ->
                 c.getBasedOnVocabularyVersion().toString()).collect(Collectors.toSet())
