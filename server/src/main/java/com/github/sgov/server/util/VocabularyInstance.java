@@ -16,7 +16,7 @@ public class VocabularyInstance {
     private String folder;
 
     /**
-     * Creates a mew Vocabulary instance given its iri.
+     * Creates a new Vocabulary instance given its iri.
      *
      * @param iri IRI of the vocabulary
      */
@@ -49,7 +49,7 @@ public class VocabularyInstance {
                   .append(id)
                   .toString();
               this.prefix = this.vocabularyId + "-pojem";
-              this.folder = Paths.get(type.getPrefix(), vocabularyId).toString();
+              this.folder = "content/"+Paths.get(type.getPrefix(), vocabularyId).toString();
               break;
 
           default:
