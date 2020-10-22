@@ -91,6 +91,10 @@ public class WorkspaceService {
 
     private void publishContexts(Git git, File dir, Workspace workspace) {
         for (final VocabularyContext c : workspace.getVocabularyContexts()) {
+            if (c.isReadonly()) {
+                // TODO should not be needed once the export is deterministic
+                continue;
+            }
             final URI iri = c.getBasedOnVocabularyVersion();
             try {
                 final VocabularyInstance instance = new VocabularyInstance(iri.toString());
@@ -117,9 +121,9 @@ public class WorkspaceService {
     }
 
     /**
-     * Validates the workspace with the given IRI.
+     * Publishes the workspace with the given IRI.
      *
-     * @param workspaceUri Workspace that should be created.
+     * @param workspaceUri Workspace that should be published.
      * @return GitHub PR URL
      */
     public URI publish(URI workspaceUri) {
