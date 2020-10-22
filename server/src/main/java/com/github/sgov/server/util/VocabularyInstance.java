@@ -49,7 +49,7 @@ public class VocabularyInstance {
                   .append(id)
                   .toString();
               this.prefix = this.vocabularyId + "-pojem";
-              this.folder = "content/"+Paths.get(type.getPrefix(), vocabularyId).toString();
+              this.folder = "content/" + Paths.get(type.getPrefix(), vocabularyId).toString();
               break;
 
           default:
