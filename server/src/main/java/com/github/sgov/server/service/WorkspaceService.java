@@ -77,7 +77,7 @@ public class WorkspaceService {
     private String createPullRequestBody(final Workspace workspace) {
         return MessageFormat.format("Changed vocabularies: \n - {0}", workspace
             .getVocabularyContexts()
-            .stream()
+            .stream().filter(vc -> !vc.isReadonly())
             .map(c -> c.getBasedOnVocabularyVersion().toString() + " (kontext " + c.getUri() + ")")
             .collect(Collectors.joining("\n - "))
         );
