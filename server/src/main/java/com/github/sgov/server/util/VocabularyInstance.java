@@ -32,7 +32,7 @@ public class VocabularyInstance {
           case ZSGOV:
           case VSGOV:
               this.prefix = this.type.getPrefix() + "-pojem";
-              this.folder = this.type.getPrefix();
+              this.folder = "content/" + this.type.getPrefix();
               this.vocabularyId = null;
               break;
 
@@ -49,7 +49,7 @@ public class VocabularyInstance {
                   .append(id)
                   .toString();
               this.prefix = this.vocabularyId + "-pojem";
-              this.folder = "content/"+Paths.get(type.getPrefix(), vocabularyId).toString();
+              this.folder = "content/" + Paths.get(type.getPrefix(), vocabularyId).toString();
               break;
 
           default:

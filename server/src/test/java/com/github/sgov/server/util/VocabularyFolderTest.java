@@ -12,6 +12,6 @@ public class VocabularyFolderTest {
         final File f = Files.createTempDir();
         final VocabularyFolder dir =
             VocabularyFolder.ofVocabularyIri(f, new VocabularyInstance("https://slovník.gov.cz/základní"));
-        Assert.assertEquals(f.toString() + "/z-sgov", dir.getFolder().toString());
+        Assert.assertEquals(f.toString() + "/content/z-sgov", dir.getFolder().toString());
     }
 }
