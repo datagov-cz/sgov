@@ -35,12 +35,12 @@ public class VocabularyInstanceTest {
 
     public static Stream<Arguments> provideValidVocabularyIris() {
         return Stream.of(
-            Arguments.of("z-sgov", "https://slovník.gov.cz/základní"),
-            Arguments.of("v-sgov", "https://slovník.gov.cz/veřejný-sektor"),
-            Arguments.of("g-sgov/g-sgov-a", "https://slovník.gov.cz/generický/a"),
-            Arguments.of("l-sgov/l-sgov-sbírka-1-2", "https://slovník.gov.cz/legislativní/sbírka/1/2"),
-            Arguments.of("a-sgov/a-sgov-a", "https://slovník.gov.cz/agendový/a"),
-            Arguments.of("d-sgov/d-sgov-a", "https://slovník.gov.cz/datový/a")
+            Arguments.of("content/z-sgov", "https://slovník.gov.cz/základní"),
+            Arguments.of("content/v-sgov", "https://slovník.gov.cz/veřejný-sektor"),
+            Arguments.of("content/g-sgov/g-sgov-a", "https://slovník.gov.cz/generický/a"),
+            Arguments.of("content/l-sgov/l-sgov-sbírka-1-2", "https://slovník.gov.cz/legislativní/sbírka/1/2"),
+            Arguments.of("content/a-sgov/a-sgov-a", "https://slovník.gov.cz/agendový/a"),
+            Arguments.of("content/d-sgov/d-sgov-a", "https://slovník.gov.cz/datový/a")
         );
     }
 }
