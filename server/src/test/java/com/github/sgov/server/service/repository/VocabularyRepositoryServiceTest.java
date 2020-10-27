@@ -1,16 +1,13 @@
 package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
-import com.github.sgov.server.dao.VocabularyDao;
-import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.model.VocabularyContext;
-import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.BaseServiceTestRunner;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyType;
-import java.net.URI;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,10 +19,18 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFWriter;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
@@ -40,12 +45,6 @@ class VocabularyRepositoryServiceTest extends BaseServiceTestRunner {
 
     @Autowired
     private RepositoryConf repositoryConf;
-
-    @Mock
-    private VocabularyDao vocabularyDao;
-
-    @Mock
-    private WorkspaceDao workspaceDao;
 
     private FusekiServer server;
 
@@ -93,5 +92,36 @@ class VocabularyRepositoryServiceTest extends BaseServiceTestRunner {
         );
 
         tearDown();
+    }
+
+    @Test
+    void getWriterReturnsDeterministicWriter() throws IOException {
+        final MemoryStore sspStore = new MemoryStore();
+        final Repository sspRepo = new SailRepository(sspStore);
+        final RepositoryConnection conGitSsp = sspRepo.getConnection();
+
+        final ValueFactory fsspRepo = conGitSsp.getValueFactory();
+        final IRI a = fsspRepo.createIRI("https://example.org/a");
+        final IRI b = fsspRepo.createIRI("https://example.org/b");
+
+        final BNode bnode = fsspRepo.createBNode();
+        final BNode bnode2 = fsspRepo.createBNode();
+
+        conGitSsp.add(a, RDFS.SUBCLASSOF, bnode);
+        conGitSsp.add(bnode, org.eclipse.rdf4j.model.vocabulary.OWL.ONPROPERTY, b);
+        conGitSsp.add(bnode, OWL.ALLVALUESFROM, b);
+        conGitSsp.add(a, RDFS.SUBCLASSOF, bnode2);
+        conGitSsp.add(bnode2, org.eclipse.rdf4j.model.vocabulary.OWL.ONPROPERTY, b);
+        conGitSsp.add(bnode2, OWL.SOMEVALUESFROM, b);
+
+        final StringWriter sw1 = new StringWriter();
+        final RDFWriter w1 = sut.getDeterministicWriter(sw1);
+        conGitSsp.export(w1);
+
+        final StringWriter sw2 = new StringWriter();
+        final RDFWriter w2 = sut.getDeterministicWriter(sw2);
+        conGitSsp.export(w2);
+
+        Assert.assertEquals(sw1.toString(),sw2.toString());
     }
 }

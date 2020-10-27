@@ -10,10 +10,11 @@ import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyCreationHelper;
 import com.github.sgov.server.util.VocabularyFolder;
 import com.github.sgov.server.util.VocabularyInstance;
-import com.github.sgov.server.util.VocabularyType;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -76,6 +77,35 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         this.vocabularyDao = vocabularyDao;
         this.workspaceDao = workspaceDao;
     }
+
+    /**
+     * Returns a set of URIs of vocabularies imported by the vocabulary URI of which is provided.
+     *
+     * @param uri URI of the vocabulary to get transitive imports for.
+     * @return a set of transitive imports.
+     */
+    public Set<URI> getTransitiveImports(final URI uri) {
+        try {
+            Set<URI> contexts = new HashSet<>();
+            final SPARQLRepository repo =
+                new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
+                    repositoryConf.getReleaseSparqlEndpointUrl()));
+            final RepositoryConnection connection = repo.getConnection();
+            final TupleQuery query = connection
+                .prepareTupleQuery("SELECT DISTINCT ?v WHERE {?uri ?imports+ ?v}");
+            query.setBinding("uri", connection.getValueFactory().createIRI(uri.toString()));
+            query.setBinding("imports", connection.getValueFactory()
+                .createIRI(Vocabulary.DATA_DESCRIPTION_NAMESPACE + "importuje-slovník"));
+
+            query.evaluate().forEach(b ->
+                contexts.add(URI.create(b.getValue("v").stringValue())));
+            connection.close();
+            return contexts;
+        } catch (URISyntaxException e) {
+            throw new SGoVException(e);
+        }
+    }
+
 
     public List<VocabularyContext> getVocabulariesAsContextDtos() {
         return getVocabulariesAsContextDtos(null);
@@ -215,9 +245,15 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         return query.evaluate();
     }
 
-    private RDFWriter getWriter(File file) throws FileNotFoundException {
+    /**
+     * Returns a writer which outputs the same Model in the same form all the time.
+     *
+     * @param w writer to wrap
+     * @return deterministic RDFWriter
+     */
+    public RDFWriter getDeterministicWriter(final Writer w) {
         RDFWriter writer = new ArrangedWriter(
-            new TurtleWriter(new FileOutputStream(file)), 100);
+            new TurtleWriter(w), 100);
         writer.setWriterConfig(new WriterConfig()
             .set(BasicWriterSettings.PRETTY_PRINT, true)
             .set(BasicWriterSettings.INLINE_BLANK_NODES, true));
@@ -252,10 +288,11 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      * @throws FileNotFoundException whenever the respective files cannot be found in the vocabulary
      *                               folder
      */
-    public void storeRepo(RepositoryConnection conWorkspace,
-                          String vocabularyVersionUrl,
-                          IRI ctxWorkspaceVocabulary,
-                          VocabularyFolder folder) throws FileNotFoundException {
+    private void storeRepo(RepositoryConnection conWorkspace,
+                           String vocabularyVersionUrl,
+                           IRI ctxWorkspaceVocabulary,
+                           VocabularyFolder folder
+    ) throws IOException {
 
         final MemoryStore sspStore = new MemoryStore();
         final Repository sspRepo = new SailRepository(sspStore);
@@ -263,32 +300,23 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
 
         addNamespaces(conGitSsp);
 
-        ValueFactory fsspRepo = conGitSsp.getValueFactory();
-        IRI ctxVocabulary = fsspRepo.createIRI(vocabularyVersionUrl);
+        final ValueFactory fsspRepo = conGitSsp.getValueFactory();
+        final IRI ctxVocabulary = fsspRepo.createIRI(vocabularyVersionUrl);
 
         conGitSsp.setNamespace(folder.getVocabularyId() + "-pojem",
             ctxVocabulary.toString() + "/pojem/");
         conGitSsp.setNamespace(folder.getVocabularyId(), ctxVocabulary.toString() + "/");
 
         conWorkspace.getStatements(ctxVocabulary, null, null, ctxWorkspaceVocabulary)
-            .stream()
-            .forEach(
-                s -> conGitSsp.add(s, ctxVocabulary)
-            );
+            .forEach(s -> conGitSsp.add(s, ctxVocabulary));
 
-        IRI ctxGlossary = fsspRepo.createIRI(vocabularyVersionUrl + "/glosář");
+        final IRI ctxGlossary = fsspRepo.createIRI(vocabularyVersionUrl + "/glosář");
         conWorkspace.getStatements(ctxGlossary, null, null, ctxWorkspaceVocabulary)
-            .stream()
-            .forEach(
-                s -> conGitSsp.add(s, ctxGlossary)
-            );
+            .forEach(s -> conGitSsp.add(s, ctxGlossary));
 
-        IRI ctxModel = fsspRepo.createIRI(vocabularyVersionUrl + "/model");
+        final IRI ctxModel = fsspRepo.createIRI(vocabularyVersionUrl + "/model");
         conWorkspace.getStatements(ctxModel, null, null, ctxWorkspaceVocabulary)
-            .stream()
-            .forEach(
-                s -> conGitSsp.add(s, ctxModel)
-            );
+            .forEach(s -> conGitSsp.add(s, ctxModel));
 
         conWorkspace.getStatements(null, null, null, ctxWorkspaceVocabulary)
             .stream()
@@ -318,23 +346,24 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
             folder.getFolder().mkdirs();
         }
 
-        File vocFile = folder.getVocabularyFile("");
-        conGitSsp.export(getWriter(vocFile), ctxVocabulary);
+        final File vocFile = folder.getVocabularyFile("");
+        conGitSsp.export(getDeterministicWriter(new FileWriter(vocFile)), ctxVocabulary);
 
-        File gloFile = folder.getGlossaryFile("");
-        conGitSsp.export(getWriter(gloFile), ctxGlossary);
+        final File gloFile = folder.getGlossaryFile("");
+        conGitSsp.export(getDeterministicWriter(new FileWriter(gloFile)), ctxGlossary);
 
-        File modFile = folder.getModelFile("");
-        conGitSsp.export(getWriter(modFile), ctxModel);
+        final File modFile = folder.getModelFile("");
+        conGitSsp.export(getDeterministicWriter(new FileWriter(modFile)), ctxModel);
 
         conGitSsp.close();
         conWorkspace.close();
     }
 
     /**
-     * Reloads the given vocabulary context from the source endpoint.
+     * Stores the given vocabulary context into the given vocabulary folder.
      *
      * @param vocabularyContext the vocabulary context to be loaded.
+     * @param vocabularyFolder  folder to store the context into.
      */
     @Transactional
     public void storeContext(final VocabularyContext vocabularyContext,
@@ -345,20 +374,17 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                     repositoryConf.getUrl()));
             final RepositoryConnection cWorkspaceRepo = workspaceRepo.getConnection();
 
-
-            String vocabularyVersionUrl =
+            final String vocabularyVersionUrl =
                 vocabularyContext.getBasedOnVocabularyVersion().toString();
 
-            IRI ctxWorkspaceVocabulary =
+            final IRI ctxWorkspaceVocabulary =
                 cWorkspaceRepo.getValueFactory().createIRI(vocabularyContext.getUri().toString());
 
             storeRepo(cWorkspaceRepo,
                 vocabularyVersionUrl,
                 ctxWorkspaceVocabulary,
                 vocabularyFolder);
-        } catch (URISyntaxException e) {
-            throw new SGoVException(e);
-        } catch (FileNotFoundException e) {
+        } catch (URISyntaxException | IOException e) {
             throw new SGoVException(e);
         }
     }

@@ -5,9 +5,10 @@ import java.util.regex.Matcher;
 
 public class VocabularyInstance {
 
-    private final String prefix;
 
     private final String iri;
+
+    private String conceptPrefix;
 
     private VocabularyType type;
 
@@ -22,6 +23,10 @@ public class VocabularyInstance {
      */
     public VocabularyInstance(String iri) {
         this.iri = iri;
+        parseIri();
+    }
+
+    private void parseIri() {
         this.type = VocabularyType.getType(iri);
 
         if (type == null) {
@@ -31,7 +36,7 @@ public class VocabularyInstance {
         switch (type) {
           case ZSGOV:
           case VSGOV:
-              this.prefix = this.type.getPrefix() + "-pojem";
+              this.conceptPrefix = this.type.getPrefix() + "-pojem";
               this.folder = "content/" + this.type.getPrefix();
               this.vocabularyId = null;
               break;
@@ -48,7 +53,7 @@ public class VocabularyInstance {
                   .append(type.equals(VocabularyType.LSGOV) ? "-sbírka-" : "-")
                   .append(id)
                   .toString();
-              this.prefix = this.vocabularyId + "-pojem";
+              this.conceptPrefix = this.vocabularyId + "-pojem";
               this.folder = "content/" + Paths.get(type.getPrefix(), vocabularyId).toString();
               break;
 
@@ -65,8 +70,8 @@ public class VocabularyInstance {
         return folder;
     }
 
-    public String getPrefix() {
-        return prefix;
+    public String getConceptPrefix() {
+        return conceptPrefix;
     }
 
     public String getConceptNamespace() {

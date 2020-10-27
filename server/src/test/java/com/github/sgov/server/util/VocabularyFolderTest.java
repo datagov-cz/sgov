@@ -14,4 +14,12 @@ public class VocabularyFolderTest {
             VocabularyFolder.ofVocabularyIri(f, new VocabularyInstance("https://slovník.gov.cz/základní"));
         Assert.assertEquals(f.toString() + "/content/z-sgov", dir.getFolder().toString());
     }
+
+    @Test
+    public void testGetsVocabularyFolderForVSGoVIri() {
+        final File f = Files.createTempDir();
+        final VocabularyFolder dir =
+            VocabularyFolder.ofVocabularyIri(f, new VocabularyInstance("https://slovník.gov.cz/veřejný-sektor"));
+        Assert.assertEquals(f.toString() + "/content/v-sgov", dir.getFolder().toString());
+    }
 }

@@ -7,7 +7,7 @@ public class VocabularyFolder {
 
     private final File folder;
 
-    public VocabularyFolder(File folder) {
+    private VocabularyFolder(File folder) {
         this.folder = folder;
     }
 
@@ -34,19 +34,21 @@ public class VocabularyFolder {
         return (suffix.isEmpty() ? "" : "-" + suffix);
     }
 
-    public File getVocabularyFile(String suffix) {
+    private File getFile(String type, String suffix) {
         return new File(folder,
-            getVocabularyId() + "-slovník" + getSuffixString(suffix) + ".ttl");
+            getVocabularyId() + "-" + type + getSuffixString(suffix) + ".ttl");
+    }
+
+    public File getVocabularyFile(String suffix) {
+        return getFile("slovník", suffix);
     }
 
     public File getGlossaryFile(String suffix) {
-        return new File(folder,
-            getVocabularyId() + "-glosář" + getSuffixString(suffix) + ".ttl");
+        return getFile("glosář", suffix);
     }
 
     public File getModelFile(String suffix) {
-        return new File(folder,
-            getVocabularyId() + "-model" + getSuffixString(suffix) + ".ttl");
+        return getFile("model", suffix);
     }
 
     public File getFolder() {
@@ -59,7 +61,8 @@ public class VocabularyFolder {
      * @return array of files
      */
     public File[] toPruneAllExceptCompact() {
-        return folder.listFiles((file, s) -> (s.contains("-model")
+        return folder.listFiles((file, s) -> (
+               s.contains("-model")
             || s.contains("-glosář")
             || s.contains("-slovník")
         ) && !s.endsWith("-compact.ttl"));

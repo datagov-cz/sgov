@@ -31,7 +31,7 @@ public final class VocabularyCreationHelper {
         statements.add(f.createStatement(iri, f.createIRI(BIBO_STATUS),
             f.createLiteral("Specifikace", "cs")));
         statements.add(f.createStatement(iri, VANN.PREFERRED_NAMESPACE_PREFIX,
-            f.createLiteral(vocabulary.getPrefix())));
+            f.createLiteral(vocabulary.getConceptPrefix())));
         statements.add(f.createStatement(iri, VANN.PREFERRED_NAMESPACE_URI,
             f.createLiteral(vocabulary.getConceptNamespace())));
         statements.add(f.createStatement(iri, OWL.VERSIONIRI,
