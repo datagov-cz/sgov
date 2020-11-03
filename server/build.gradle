@@ -26,7 +26,7 @@ test {
 
 dependencies {
     implementation 'org.slf4j:slf4j-simple:1.7.30'
-    implementation 'com.github.sgov:sgov-validator:1.3.4'
+    implementation 'com.github.sgov:sgov-validator:1.5.4'
 
     implementation 'cz.cvut.kbss.jopa:jopa-impl:0.14.7'
     implementation 'cz.cvut.kbss.jopa:ontodriver-sesame:0.14.4'
