@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.sgov.server.controller.util.ValidationReportSerializer;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.security.model.AuthenticationToken;
 import com.github.sgov.server.security.model.SGoVUserDetails;
@@ -24,6 +26,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.topbraid.shacl.validation.ValidationReport;
 
 public class Environment {
 
@@ -77,6 +80,9 @@ public class Environment {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             // JSR 310 (Java 8 DateTime API)
             objectMapper.registerModule(new JavaTimeModule());
+            final SimpleModule module = new SimpleModule();
+            module.addSerializer(ValidationReport.class, new ValidationReportSerializer());
+            objectMapper.registerModule(module);
         }
         return objectMapper;
     }

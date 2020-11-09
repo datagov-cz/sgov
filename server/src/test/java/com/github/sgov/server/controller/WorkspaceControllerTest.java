@@ -16,6 +16,7 @@ import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.WorkspaceService;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.topbraid.shacl.validation.ValidationReport;
+import org.topbraid.shacl.validation.ValidationResult;
 
 class WorkspaceControllerTest extends BaseControllerTestRunner {
 
@@ -33,7 +35,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
     private WorkspaceController sut;
     @Mock
     private WorkspaceService workspaceService;
-    @Mock
+
     private ValidationReport report;
     @Mock
     private IdentifierResolver resolver;
@@ -44,6 +46,15 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         when(resolver.resolveIdentifier("http://example.org/", "test"))
             .thenReturn(workspaceUri);
         super.setUp(sut);
+        report = new ValidationReport() {
+            @Override public boolean conforms() {
+                return true;
+            }
+
+            @Override public List<ValidationResult> results() {
+                return Collections.emptyList();
+            }
+        };
     }
 
     @Test
