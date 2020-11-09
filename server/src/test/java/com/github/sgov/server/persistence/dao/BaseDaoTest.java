@@ -1,5 +1,6 @@
 package com.github.sgov.server.persistence.dao;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -124,7 +124,7 @@ class BaseDaoTest extends BaseDaoTestRunner {
             final User user = Generator.generateUser();
             transactional(() -> sut.persist(user));
         });
-        Assert.assertThat(e.getCause(), is(instanceOf(OWLPersistenceException.class)));
+        assertThat(e.getCause(), is(instanceOf(OWLPersistenceException.class)));
     }
 
     @Test
@@ -134,7 +134,7 @@ class BaseDaoTest extends BaseDaoTestRunner {
 
         final PersistenceException e = assertThrows(PersistenceException.class,
             () -> transactional(() -> sut.persist(users)));
-        Assert.assertThat(e.getCause(), is(instanceOf(OWLPersistenceException.class)));
+        assertThat(e.getCause(), is(instanceOf(OWLPersistenceException.class)));
     }
 
     @Test
@@ -144,7 +144,7 @@ class BaseDaoTest extends BaseDaoTestRunner {
         user.setUri(null);
         final PersistenceException e = assertThrows(PersistenceException.class,
             () -> transactional(() -> sut.update(user)));
-        Assert.assertThat(e.getCause(), is(instanceOf(OWLPersistenceException.class)));
+        assertThat(e.getCause(), is(instanceOf(OWLPersistenceException.class)));
     }
 
     @Test
