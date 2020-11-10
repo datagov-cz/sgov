@@ -8,12 +8,11 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.3.5.RELEASE'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id "io.freefair.aspectj.post-compile-weaving" version "4.1.4"
     id 'java'
     id 'war'
-    id "dev.jacomet.logging-capabilities" version "0.9.0"
 }
 
 compileJava {
@@ -47,7 +46,7 @@ dependencies {
     implementation 'net.bull.javamelody:javamelody-core:1.82.0'
     annotationProcessor "org.projectlombok:lombok:1.18.10"
     implementation 'org.eclipse.jgit:org.eclipse.jgit:4.6.0.201612231935-r'
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat:2.3.5.RELEASE'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat:2.2.6.RELEASE'
 
     aspect 'cz.cvut.kbss.jopa:jopa-impl:0.14.4'
 
