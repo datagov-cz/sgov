@@ -39,6 +39,7 @@ import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.topbraid.shacl.validation.ValidationReport;
+import org.topbraid.shacl.validation.ValidationResult;
 
 /**
  * DAO for accessing workspace.
@@ -134,6 +135,24 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         return list;
     }
 
+    private ValidationReport validateVocabulary(final String v,
+                                                final String endpointUlozistePracovnichProstoru,
+                                                final Validator validator,
+                                                final Set<URL> rules)
+        throws IOException {
+        final String bindings = "<" + v + ">";
+        final ParameterizedSparqlString query = new ParameterizedSparqlString(
+            "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
+        log.debug("- getting all statements for the vocabularies using query {}", query.toString());
+        final QueryExecution e = QueryExecutionFactory
+            .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery());
+        final Model m = e.execConstruct();
+        log.debug("- found {} statements. Now validating", m.listStatements().toSet().size());
+        final Model dataModel =
+            ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF, m);
+        return validator.validate(dataModel, rules);
+    }
+
     /**
      * Validates workspace.
      *
@@ -142,42 +161,41 @@ public class WorkspaceDao extends BaseDao<Workspace> {
      */
     public ValidationReport validateWorkspace(final Workspace workspace) throws IOException {
         log.info("Validating workspace {}", workspace.getUri());
-        final String endpointUlozistePracovnichProstoru = properties.getUrl();
-        final List<String> vocabulariesForWorkspace = workspace
-            .getVocabularyContexts().stream().map(c -> c.getUri().toString()).collect(
-                Collectors.toList());
-        log.debug("- found vocabularies {}", vocabulariesForWorkspace);
-        final String bindings = vocabulariesForWorkspace.stream().map(v -> "<" + v + ">")
-            .collect(Collectors.joining(" "));
-        final ParameterizedSparqlString query = new ParameterizedSparqlString(
-            "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
-        log.debug("- getting all statements for the vocabularies using query {}", query.toString());
-        final QueryExecution e = QueryExecutionFactory
-            .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery());
-        final Model m = e.execConstruct();
-        log.info("- found {} statements. Now validating", m.listStatements().toSet().size());
-        final Validator validator = new Validator();
-        OntDocumentManager.getInstance().setProcessImports(false);
-        final Model dataModel =
-            ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF, m);
         final Set<URL> rules = new HashSet<>();
+        final Validator validator = new Validator();
+        boolean conforms = true;
         rules.addAll(validator.getGlossaryRules());
         rules.addAll(validator.getModelRules());
         rules.addAll(validator.getVocabularyRules());
-        final ValidationReport r = validator.validate(dataModel, rules);
-        log.info("- done.");
-        log.debug("- validation results:");
-        r.results().forEach(result -> {
-            if (log.isDebugEnabled()) {
-                log.debug(MessageFormat
-                    .format("    - [{0}] Node {1} failing for value {2} with message: {3} ",
-                        result.getSeverity().getLocalName(), result.getFocusNode(),
-                        result.getValue(),
-                        result.getMessage()));
+        OntDocumentManager.getInstance().setProcessImports(false);
+
+        final String endpointUlozistePracovnichProstoru = properties.getUrl();
+
+        final List<ValidationResult> validationResults = new ArrayList<>();
+        for (VocabularyContext c : workspace
+            .getVocabularyContexts()) {
+            if (!c.isReadonly()) {
+                final ValidationReport report = validateVocabulary(c.getUri().toString(),
+                    endpointUlozistePracovnichProstoru, validator, rules);
+                conforms = conforms && report.conforms();
+                for (ValidationResult validationResult :
+                    report.results()) {
+                    validationResults.add(validationResult);
+                }
             }
-        });
-        r.results().sort(new ValidationResultSeverityComparator());
-        return r;
+        }
+        validationResults.sort(new ValidationResultSeverityComparator());
+        boolean finalConforms = conforms;
+        log.info("- done.");
+        return new ValidationReport() {
+            @Override public boolean conforms() {
+                return finalConforms;
+            }
+
+            @Override public List<ValidationResult> results() {
+                return validationResults;
+            }
+        };
     }
 
     /**
