@@ -1,6 +1,8 @@
 package com.github.sgov.server.provenance;
 
+import com.github.sgov.server.SGoVServiceApplication;
 import com.github.sgov.server.model.HasProvenanceData;
+import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.service.security.SecurityUtils;
 import cz.cvut.kbss.jopa.model.annotations.PostLoad;
 import cz.cvut.kbss.jopa.model.annotations.PrePersist;
@@ -17,6 +19,12 @@ public class ProvenanceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProvenanceManager.class);
 
+    private UserAccount getCurrent() {
+        final SecurityUtils securityUtils = SGoVServiceApplication.context
+            .getBean(SecurityUtils.class);
+        return securityUtils.getCurrentUser();
+    }
+
     /**
      * Sets provenance data (author, datetime of creation) of the specified instance.
      *
@@ -25,24 +33,24 @@ public class ProvenanceManager {
     @PrePersist
     void generateOnPersist(HasProvenanceData instance) {
         assert instance != null;
-        assert SecurityUtils.currentUser() != null;
+        assert getCurrent() != null;
 
-        instance.setAuthor(SecurityUtils.currentUser().toUser());
+        instance.setAuthor(getCurrent().toUser());
         instance.setCreated(new Date());
     }
 
     @PreUpdate
     void generateOnUpdate(HasProvenanceData instance) {
         assert instance != null;
-        assert SecurityUtils.currentUser() != null;
+        assert getCurrent() != null;
 
-        instance.setLastEditor(SecurityUtils.currentUser().toUser());
+        instance.setLastEditor(getCurrent().toUser());
         instance.setLastModified(new Date());
     }
 
     /**
-     * Clears author data after instance load in case of anonymous access, i.e.
-     * , when no user is authenticated.
+     * Clears author data after instance load in case of anonymous access, i.e. , when no user is
+     * authenticated.
      *
      * @param instance Loaded instance
      */

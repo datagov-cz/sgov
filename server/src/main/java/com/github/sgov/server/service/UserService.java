@@ -147,9 +147,10 @@ public class UserService {
                 MessageFormat.format("User {0} attempted to update his username.",
                     currentUser));
         }
-        if (update.getPassword() != null) {
-            securityUtils.verifyCurrentUserPassword(update.getOriginalPassword());
-        }
+        // TODO
+        //        if (update.getPassword() != null) {
+        //            securityUtils.verifyCurrentUserPassword(update.getOriginalPassword());
+        //        }
         repositoryService.update(update.asUserAccount());
     }
 

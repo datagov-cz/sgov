@@ -1,34 +1,30 @@
 package com.github.sgov.server.service.security;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.github.sgov.server.dao.UserAccountDao;
 import com.github.sgov.server.environment.Environment;
 import com.github.sgov.server.environment.Generator;
-import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.UserAccount;
-import com.github.sgov.server.security.model.SGoVUserDetails;
+import com.github.sgov.server.security.SecurityConstants;
 import com.github.sgov.server.service.BaseServiceTestRunner;
 import java.util.Collections;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 
 class SecurityUtilsTest extends BaseServiceTestRunner {
-
-    @Autowired
-    private UserAccountDao userAccountDao;
 
     @Autowired
     private SecurityUtils sut;
@@ -53,42 +49,31 @@ class SecurityUtilsTest extends BaseServiceTestRunner {
     }
 
     @Test
-    void getCurrentUserDetailsReturnsUserDetailsOfCurrentlyLoggedInUser() {
-        Environment.setCurrentUser(user);
-        final Optional<SGoVUserDetails> result = sut.getCurrentUserDetails();
-        assertTrue(result.isPresent());
-        assertTrue(result.get().isEnabled());
-        assertEquals(user, result.get().getUser());
+    void getCurrentUserSupportsExtractingCurrentUserFromKeycloakToken() {
+        setKeycloakToken();
+        final UserAccount result = sut.getCurrentUser();
+        assertEquals(user, result);
+    }
+
+    private void setKeycloakToken() {
+        final AccessToken token = new AccessToken();
+        token.setSubject(user.getUri().toString());
+        token.setGivenName(user.getFirstName());
+        token.setFamilyName(user.getLastName());
+        token.setEmail(user.getUsername());
+        token.setPreferredUsername(user.getUsername());
+        final KeycloakPrincipal<KeycloakSecurityContext> kp = new KeycloakPrincipal<>(user.getUsername(),
+            new KeycloakSecurityContext(null, token, null, null));
+        SecurityContext context = new SecurityContextImpl();
+        context.setAuthentication(new KeycloakAuthenticationToken(new SimpleKeycloakAccount(kp, Collections.singleton(
+            SecurityConstants.ROLE_USER), null), true,
+            Collections.singleton(new SimpleGrantedAuthority(SecurityConstants.ROLE_USER))));
+        SecurityContextHolder.setContext(context);
     }
 
     @Test
     void getCurrentUserDetailsReturnsEmptyOptionalWhenNoUserIsLoggedIn() {
         assertFalse(sut.getCurrentUserDetails().isPresent());
-    }
-
-    @Test
-    void updateCurrentUserReplacesUserInCurrentSecurityContext() {
-        Environment.setCurrentUser(user);
-        final UserAccount update = new UserAccount();
-        update.setUri(Generator.generateUri());
-        update.setFirstName("updatedFirstName");
-        update.setLastName("updatedLastName");
-        update.setPassword(user.getPassword());
-        update.setUsername(user.getUsername());
-        transactional(() -> userAccountDao.update(update));
-        sut.updateCurrentUser();
-
-        final UserAccount currentUser = sut.getCurrentUser();
-        assertEquals(update, currentUser);
-    }
-
-    @Test
-    void verifyCurrentUserPasswordThrowsIllegalArgumentWhenPasswordDoesNotMatch() {
-        Environment.setCurrentUser(user);
-        final String password = "differentPassword";
-        final ValidationException ex = assertThrows(ValidationException.class,
-            () -> sut.verifyCurrentUserPassword(password));
-        assertThat(ex.getMessage(), containsString("does not match"));
     }
 
     @Test
@@ -100,15 +85,6 @@ class SecurityUtilsTest extends BaseServiceTestRunner {
     void isAuthenticatedReturnsTrueForAuthenticatedUser() {
         Environment.setCurrentUser(user);
         assertTrue(sut.isAuthenticated());
-    }
-
-    @Test
-    void isAuthenticatedReturnsFalseForAnonymousRequest() {
-        final AnonymousAuthenticationToken token =
-            new AnonymousAuthenticationToken("anonymousUser", "anonymousUser",
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_ANONYMOUS")));
-        SecurityContextHolder.setContext(new SecurityContextImpl(token));
-        assertFalse(sut.isAuthenticated());
     }
 
     @Test

@@ -1,30 +1,22 @@
 package com.github.sgov.server.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.sgov.server.security.AuthenticationSuccess;
-import com.github.sgov.server.security.JwtAuthenticationFilter;
-import com.github.sgov.server.security.JwtAuthorizationFilter;
-import com.github.sgov.server.security.JwtUtils;
 import com.github.sgov.server.security.Security;
-import com.github.sgov.server.security.SecurityConstants;
-import com.github.sgov.server.service.security.SGoVUserDetailsService;
-import com.github.sgov.server.service.security.SecurityUtils;
 import java.util.Collections;
+import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
+import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,83 +26,31 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableMBeanExport
+@KeycloakConfiguration
 @SuppressWarnings({
     "checkstyle:MultipleStringLiterals",
     "checkstyle:ClassFanOutComplexity",
     "checkstyle:MissingJavadocType"
 })
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-    private final AuthenticationProvider authenticationProvider;
-
-    private final AuthenticationEntryPoint authenticationEntryPoint;
-
-    private final AuthenticationSuccess authenticationSuccessHandler;
-
-    private final AuthenticationFailureHandler authenticationFailureHandler;
-
-    private final JwtUtils jwtUtils;
-
-    private final SecurityUtils securityUtils;
-
-    private final SGoVUserDetailsService userDetailsService;
-
-    private final ObjectMapper objectMapper;
-
-    /**
-     * SecurityConfig.
-     */
     @Autowired
-    @SuppressWarnings("checkstyle:ParameterNumber")
-    public SecurityConfig(AuthenticationProvider authenticationProvider,
-                          AuthenticationEntryPoint authenticationEntryPoint,
-                          AuthenticationSuccess authenticationSuccessHandler,
-                          AuthenticationFailureHandler authenticationFailureHandler,
-                          JwtUtils jwtUtils, SecurityUtils securityUtils,
-                          SGoVUserDetailsService userDetailsService,
-                          ObjectMapper objectMapper) {
-        this.authenticationProvider = authenticationProvider;
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
-        this.authenticationFailureHandler = authenticationFailureHandler;
-        this.jwtUtils = jwtUtils;
-        this.securityUtils = securityUtils;
-        this.userDetailsService = userDetailsService;
-        this.objectMapper = objectMapper;
+    public void configureGlobal(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(keycloakAuthenticationProvider());
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(authenticationProvider);
+    @Bean
+    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/rest/query").permitAll().and().cors().and().csrf()
-            .disable()
-            .authorizeRequests().antMatchers("/**").permitAll()
-            .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
-            .and().cors().and().csrf().disable()
-            .addFilter(authenticationFilter())
-            .addFilter(
-                new JwtAuthorizationFilter(authenticationManager(), jwtUtils, securityUtils,
-                    userDetailsService,
-                    objectMapper))
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
-
-    /**
-     * JwtAuthenticationFilter.
-     */
-    @Bean
-    public JwtAuthenticationFilter authenticationFilter() throws Exception {
-        final JwtAuthenticationFilter authenticationFilter =
-            new JwtAuthenticationFilter(authenticationManager(),
-                jwtUtils);
-        authenticationFilter.setFilterProcessesUrl(SecurityConstants.SECURITY_CHECK_URI);
-        authenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
-        authenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
-        return authenticationFilter;
+        super.configure(http);
+        http.authorizeRequests().antMatchers("/rest/query").permitAll()
+            .and().cors()
+            .and().csrf().disable()
+            .authorizeRequests().antMatchers("/**").permitAll();
     }
 
     @Bean

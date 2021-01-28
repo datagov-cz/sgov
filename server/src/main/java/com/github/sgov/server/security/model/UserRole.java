@@ -64,7 +64,27 @@ public enum UserRole {
         throw new IllegalArgumentException("No role found for type " + type + ".");
     }
 
+    /**
+     * Gets role for the specified role name.
+     *
+     * @param roleName Role name
+     * @return Matching role
+     * @throws IllegalArgumentException If no matching role exists
+     */
+    public static UserRole fromRoleName(String roleName) {
+        for (UserRole r : values()) {
+            if (r.name.equals(roleName)) {
+                return r;
+            }
+        }
+        throw new IllegalArgumentException("No role found for name " + roleName + ".");
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getType() {
+        return type;
     }
 }

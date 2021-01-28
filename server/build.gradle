@@ -44,6 +44,8 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.10'
     implementation 'org.mitre.dsmiley.httpproxy:smiley-http-proxy-servlet:1.11'
     implementation 'net.bull.javamelody:javamelody-core:1.82.0'
+    implementation 'org.keycloak:keycloak-spring-security-adapter:12.0.1'
+
     annotationProcessor "org.projectlombok:lombok:1.18.10"
     implementation 'org.eclipse.jgit:org.eclipse.jgit:4.6.0.201612231935-r'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat:2.2.6.RELEASE'
