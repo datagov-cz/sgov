@@ -45,30 +45,10 @@ public class UserRepositoryService extends BaseRepositoryService<UserAccount> {
         return userAccountDao;
     }
 
-    /**
-     * Checks whether a user with the specified username exists.
-     *
-     * @param username Username to search by
-     * @return {@code true} if a user with the specifier username exists
-     */
-    public boolean exists(String username) {
-        return userAccountDao.exists(username);
-    }
-
     @Override
     protected UserAccount postLoad(UserAccount instance) {
         instance.erasePassword();
         return instance;
-    }
-
-    @Override
-    protected void prePersist(UserAccount instance) {
-        validate(instance);
-        if (instance.getUri() == null) {
-            instance.setUri(idResolver
-                .generateUserIdentifier(instance.getFirstName(), instance.getLastName()));
-        }
-        instance.setPassword(passwordEncoder.encode(instance.getPassword()));
     }
 
     @Override
