@@ -6,6 +6,9 @@ import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.service.IdentifierResolver;
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -78,5 +81,39 @@ public class UserRepositoryService extends BaseRepositoryService<UserAccount> {
             instance.setPassword(original.getPassword());
         }
         validate(instance);
+    }
+
+    /**
+     * Finds all user accounts.
+     *
+     * @return list of user accounts
+     */
+    public List<UserAccount> findAll() {
+        final List<UserAccount> accounts = userAccountDao.findAll();
+        accounts.forEach(UserAccount::erasePassword);
+        return accounts;
+    }
+
+    /**
+     * Finds a user account.
+     *
+     * @param uri user IRI
+     * @return
+     */
+    public Optional<UserAccount> find(URI uri) {
+        return userAccountDao.find(uri);
+    }
+
+    /**
+     * Finds a user account. Throws NotFoundException if the user cannot be found.
+     *
+     * @param uri user IRI
+     * @return User account
+     */
+    public UserAccount findRequired(URI uri) {
+        return find(uri).map(u -> {
+            u.erasePassword();
+            return u;
+        }).orElseThrow(() -> NotFoundException.create(UserAccount.class.getSimpleName(), uri));
     }
 }

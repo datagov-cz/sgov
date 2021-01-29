@@ -1,6 +1,7 @@
 package com.github.sgov.server.environment.config;
 
 import com.github.sgov.server.environment.Environment;
+import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.Services;
 import com.github.sgov.server.service.security.SecurityUtils;
 import java.nio.charset.StandardCharsets;
@@ -58,8 +59,7 @@ public class TestServiceConfig {
 
     @Bean
     @Autowired
-    public SecurityUtils securityUtils(UserDetailsService userDetailService,
-                                       PasswordEncoder passwordEncoder) {
-        return new SecurityUtils(userDetailService, passwordEncoder);
+    public SecurityUtils securityUtils(IdentifierResolver identifierResolver) {
+        return new SecurityUtils(identifierResolver);
     }
 }

@@ -111,15 +111,6 @@ class UserRepositoryServiceTest extends BaseServiceTestRunner {
         assertEquals(newLastName, result.getLastName());
     }
 
-    @Test
-    void postLoadErasesPasswordFromInstance() {
-        final UserAccount user = persistUser();
-
-        final Optional<UserAccount> result = sut.find(user.getUri());
-        assertTrue(result.isPresent());
-        assertNull(result.get().getPassword());
-    }
-
     private UserAccount persistUser() {
         final UserAccount user = Generator.generateUserAccountWithPassword();
         user.setPassword(passwordEncoder.encode(user.getPassword()));

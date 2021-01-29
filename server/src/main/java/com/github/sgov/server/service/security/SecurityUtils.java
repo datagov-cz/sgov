@@ -4,9 +4,13 @@ import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.security.model.AuthenticationToken;
 import com.github.sgov.server.security.model.SGoVUserDetails;
+import com.github.sgov.server.security.model.UserRole;
+import com.github.sgov.server.service.IdentifierResolver;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -23,36 +27,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecurityUtils {
 
-    private final UserDetailsService userDetailsService;
-
-    private final PasswordEncoder passwordEncoder;
+    private final IdentifierResolver idResolver;
 
     /**
      * SecurityUtils.
      */
     @Autowired
-    public SecurityUtils(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder;
+    public SecurityUtils(IdentifierResolver idResolver) {
+        this.idResolver = idResolver;
         // Ensures security context is propagated to additionally spun threads, e.g., used
         // by @Async methods
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
-
-    /**
-     * This is a statically accessible variant of the {@link #getCurrentUser()} method.
-     *
-     * <p>It allows to access the currently logged in user without injecting {@code SecurityUtils}
-     * as a bean.
-     *
-     * @return Currently logged in user
-     */
-    public static UserAccount currentUser() {
-        final SecurityContext context = SecurityContextHolder.getContext();
-        assert context != null;
-        final SGoVUserDetails userDetails =
-            (SGoVUserDetails) context.getAuthentication().getDetails();
-        return userDetails.getUser();
     }
 
     /**
@@ -63,8 +48,7 @@ public class SecurityUtils {
      */
     public static boolean authenticated() {
         final SecurityContext context = SecurityContextHolder.getContext();
-        return context.getAuthentication() != null
-            && context.getAuthentication().getDetails() instanceof SGoVUserDetails;
+        return context.getAuthentication() != null && context.getAuthentication().isAuthenticated();
     }
 
     /**
@@ -90,7 +74,14 @@ public class SecurityUtils {
      * @return Current user
      */
     public UserAccount getCurrentUser() {
-        return currentUser();
+        final SecurityContext context = SecurityContextHolder.getContext();
+        assert context != null && context.getAuthentication().isAuthenticated();
+        if (context.getAuthentication().getPrincipal() instanceof KeycloakPrincipal) {
+            return resolveAccountFromKeycloakPrincipal(context);
+        } else {
+            assert context.getAuthentication() instanceof AuthenticationToken;
+            return ((SGoVUserDetails) context.getAuthentication().getDetails()).getUser();
+        }
     }
 
     /**
@@ -137,26 +128,19 @@ public class SecurityUtils {
         return token;
     }
 
-    /**
-     * Reloads the current user's data from the database.
-     */
-    public void updateCurrentUser() {
-        final SGoVUserDetails updateDetails =
-            (SGoVUserDetails) userDetailsService.loadUserByUsername(getCurrentUser().getUsername());
-        setCurrentUser(updateDetails);
+    private UserAccount resolveAccountFromKeycloakPrincipal(SecurityContext context) {
+        final KeycloakPrincipal<?> principal =
+            (KeycloakPrincipal<?>) context.getAuthentication().getPrincipal();
+        final AccessToken keycloakToken = principal.getKeycloakSecurityContext().getToken();
+        final UserAccount account = new UserAccount();
+        account.setFirstName(keycloakToken.getGivenName());
+        account.setLastName(keycloakToken.getFamilyName());
+        account.setUsername(keycloakToken.getPreferredUsername());
+        context.getAuthentication().getAuthorities().stream()
+            .map(ga -> UserRole.fromRoleName(ga.getAuthority()))
+            .filter(r -> !r.getType().isEmpty()).forEach(r -> account.addType(r.getType()));
+        account.setUri(idResolver.generateUserIdentifier(keycloakToken.getSubject()));
+        return account;
     }
 
-    /**
-     * Checks that the specified password corresponds to the current user's password.
-     *
-     * @param password The password to verify
-     * @throws IllegalArgumentException When the password's do not match
-     */
-    public void verifyCurrentUserPassword(String password) {
-        final UserAccount currentUser = getCurrentUser();
-        if (!passwordEncoder.matches(password, currentUser.getPassword())) {
-            throw new ValidationException(
-                "The specified password does not match the original one.");
-        }
-    }
 }

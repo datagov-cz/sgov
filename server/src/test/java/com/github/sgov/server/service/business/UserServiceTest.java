@@ -62,35 +62,6 @@ class UserServiceTest {
     }
 
     @Test
-    void updateVerifiesOriginalPasswordBeforeUpdatingAccountWithNewPassword() {
-        final UserUpdateDto update = new UserUpdateDto();
-        update.setUri(Generator.generateUri());
-        update.setFirstName("firstName");
-        update.setLastName("lastName");
-        update.setUsername("username");
-        update.setPassword("password");
-        update.setOriginalPassword("originalPassword");
-        when(securityUtilsMock.getCurrentUser()).thenReturn(update.asUserAccount());
-        sut.updateCurrent(update);
-        final InOrder inOrder = Mockito.inOrder(securityUtilsMock, repositoryServiceMock);
-        inOrder.verify(securityUtilsMock).verifyCurrentUserPassword(update.getOriginalPassword());
-        inOrder.verify(repositoryServiceMock).update(update.asUserAccount());
-    }
-
-    @Test
-    void updateDoesNotVerifyOriginalPasswordWhenAccountDoesNotUpdatePassword() {
-        final UserUpdateDto update = new UserUpdateDto();
-        update.setUri(Generator.generateUri());
-        update.setFirstName("firstName");
-        update.setLastName("lastName");
-        update.setUsername("username");
-        when(securityUtilsMock.getCurrentUser()).thenReturn(update.asUserAccount());
-        sut.updateCurrent(update);
-        verify(repositoryServiceMock).update(update.asUserAccount());
-        verify(securityUtilsMock, never()).verifyCurrentUserPassword(any());
-    }
-
-    @Test
     void updateThrowsAuthorizationExceptionWhenAttemptingToUpdateDifferentUserThatCurrent() {
         final UserUpdateDto update = new UserUpdateDto();
         update.setUri(Generator.generateUri());

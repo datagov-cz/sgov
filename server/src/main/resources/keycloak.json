@@ -1,0 +1,29 @@
+{
+  "realm" : "<REALM>",
+  "resource" : "<RESOURCE>",
+  "realm-public-key" : "<PUBLIC_KEY>",
+  "auth-server-url" : "<AUTH_SERVER_URL>",
+  "ssl-required" : "none",
+  "use-resource-role-mappings" : true,
+  "enable-cors" : true,
+  "cors-max-age" : 1000,
+  "cors-allowed-methods" : "POST, PUT, DELETE, GET, HEAD",
+  "cors-exposed-headers" : "WWW-Authenticate",
+  "bearer-only" : false,
+  "enable-basic-auth" : false,
+  "expose-token" : true,
+  "verify-token-audience" : false,
+  "credentials" : {
+    "secret" : "<CLIENT_SECRET>"
+  },
+
+  "connection-pool-size" : 20,
+  "disable-trust-manager": false,
+  "allow-any-hostname" : false,
+  "token-minimum-time-to-live" : 0,
+  "min-time-between-jwks-requests" : 10,
+  "public-key-cache-ttl": 86400,
+  "redirect-rewrite-rules" : {
+    "^/wsmaster/api/(.*)$" : "/api/$1"
+  }
+}
