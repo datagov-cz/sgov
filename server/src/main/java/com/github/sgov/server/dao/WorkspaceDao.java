@@ -4,6 +4,7 @@ import com.github.sgov.server.ValidationResultSeverityComparator;
 import com.github.sgov.server.Validator;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.exception.PersistenceException;
+import com.github.sgov.server.model.User;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.model.util.DescriptorFactory;
@@ -15,7 +16,6 @@ import cz.cvut.kbss.ontodriver.exception.OntoDriverException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,9 +90,22 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         try {
             // Evict possibly cached instance loaded from default context
             em.getEntityManagerFactory().getCache().evict(Workspace.class, entity.getUri(), null);
+            updateUser(entity.getAuthor());
+            updateUser(entity.getLastEditor());
             return em.merge(entity, DescriptorFactory.workspaceDescriptor(entity));
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
+        }
+    }
+
+    private void updateUser(final User user) {
+        if (user != null) {
+            final User u = em.find(User.class, user.getUri());
+            if (u == null) {
+                em.persist(user);
+            } else {
+                em.merge(user);
+            }
         }
     }
 
@@ -106,6 +119,8 @@ public class WorkspaceDao extends BaseDao<Workspace> {
                 em.getMetamodel().entity(Workspace.class).getIRI().toURI()
             );
             entity.setUri(entityUri);
+            updateUser(entity.getAuthor());
+            updateUser(entity.getLastEditor());
             em.persist(entity, DescriptorFactory.workspaceDescriptor(entity));
         } catch (RuntimeException | OntoDriverException e) {
             throw new PersistenceException(e);

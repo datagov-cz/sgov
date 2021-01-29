@@ -37,6 +37,7 @@ public class ProvenanceManager {
 
         instance.setAuthor(getCurrent().toUser());
         instance.setCreated(new Date());
+        generateOnUpdate(instance);
     }
 
     @PreUpdate

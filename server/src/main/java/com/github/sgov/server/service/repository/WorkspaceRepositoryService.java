@@ -43,10 +43,6 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         this.repositoryConf = repositoryConf;
     }
 
-    public List<String> getAllWorkspaceIris() {
-        return workspaceDao.getAllWorkspaceIris();
-    }
-
     @Override
     protected WorkspaceDao getPrimaryDao() {
         return workspaceDao;
