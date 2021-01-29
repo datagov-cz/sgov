@@ -1,15 +1,12 @@
 package com.github.sgov.server.controller;
 
-import static com.github.sgov.server.service.IdentifierResolver.extractIdentifierFragment;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 import com.github.sgov.server.config.conf.JwtConf;
 import com.github.sgov.server.controller.util.RestExceptionHandler;
@@ -105,44 +102,6 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
                 .andExpect(status().isOk()).andReturn();
         final UserAccount result = readValue(mvcResult, UserAccount.class);
         Assert.assertEquals(user, result);
-    }
-
-    @Test
-    void unlockThrowsForbiddenForNonAdmin() throws Exception {
-        // This one is not an admin
-        Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
-        final UserAccount toUnlock = Generator.generateUserAccountWithPassword();
-
-        mockMvc.perform(
-            delete(BASE_URL + "/" + extractIdentifierFragment(toUnlock.getUri()) + "/lock")
-                .content(toUnlock.getPassword()))
-            .andExpect(status().isForbidden());
-        verify(userService, never()).unlock(any(), any());
-    }
-
-    @Test
-    void enableThrowsForbiddenForNonAdmin() throws Exception {
-        // This one is not an admin
-        Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
-        final UserAccount toEnable = Generator.generateUserAccountWithPassword();
-
-        mockMvc.perform(
-            post(BASE_URL + "/" + extractIdentifierFragment(toEnable.getUri()) + "/status"))
-            .andExpect(status().isForbidden());
-        verify(userService, never()).enable(any());
-    }
-
-    @Test
-    void disableThrowsForbiddenForNonAdmin() throws Exception {
-        // This one is not an admin
-        Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
-        final UserAccount toDisable = Generator.generateUserAccountWithPassword();
-
-        mockMvc
-            .perform(
-                delete(BASE_URL + "/" + extractIdentifierFragment(toDisable.getUri()) + "/status"))
-            .andExpect(status().isForbidden());
-        verify(userService, never()).disable(any());
     }
 
     /**
