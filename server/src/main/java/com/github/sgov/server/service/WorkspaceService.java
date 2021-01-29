@@ -51,11 +51,6 @@ public class WorkspaceService {
         this.githubService = githubService;
     }
 
-
-    public List<String> getAllWorkspaceIris() {
-        return repositoryService.getAllWorkspaceIris();
-    }
-
     /**
      * Validates the workspace with the given IRI.
      *
