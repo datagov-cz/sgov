@@ -20,18 +20,15 @@ public class UserService {
 
     private final UserRepositoryService repositoryService;
     private final WorkspaceRepositoryService workspaceRepositoryService;
-    private final SecurityUtils securityUtils;
 
     /**
      * Constructor.
      */
     @Autowired
     public UserService(UserRepositoryService repositoryService,
-                       WorkspaceRepositoryService workspaceRepositoryService,
-                       SecurityUtils securityUtils) {
+                       WorkspaceRepositoryService workspaceRepositoryService) {
         this.repositoryService = repositoryService;
         this.workspaceRepositoryService = workspaceRepositoryService;
-        this.securityUtils = securityUtils;
     }
 
     /**
@@ -49,7 +46,7 @@ public class UserService {
      * @return Currently logged in user's account
      */
     public UserAccount getCurrent() {
-        final UserAccount account = securityUtils.getCurrentUser();
+        final UserAccount account = SecurityUtils.getCurrentUser();
         account.erasePassword();
         return account;
     }

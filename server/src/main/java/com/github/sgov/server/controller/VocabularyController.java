@@ -1,10 +1,8 @@
 package com.github.sgov.server.controller;
 
 import com.github.sgov.server.model.VocabularyContext;
-import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.util.Constants;
-import cz.cvut.kbss.jopa.model.IRI;
 import cz.cvut.kbss.jsonld.JsonLd;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,9 +32,7 @@ public class VocabularyController extends BaseController {
     private final VocabularyService vocabularyService;
 
     @Autowired
-    public VocabularyController(VocabularyService vocabularyService,
-                                IdentifierResolver idResolver) {
-        super(idResolver);
+    public VocabularyController(VocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
     }
 

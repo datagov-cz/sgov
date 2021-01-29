@@ -50,8 +50,7 @@ public class WorkspaceController extends BaseController {
     private final WorkspaceService workspaceService;
 
     @Autowired
-    public WorkspaceController(WorkspaceService workspaceService, IdentifierResolver idResolver) {
-        super(idResolver);
+    public WorkspaceController(WorkspaceService workspaceService) {
         this.workspaceService = workspaceService;
     }
 

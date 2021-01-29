@@ -3,7 +3,6 @@ package com.github.sgov.server.service;
 import com.github.sgov.server.config.conf.JwtConf;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
-import com.github.sgov.server.config.conf.UserConf;
 import com.github.sgov.server.dao.UserAccountDao;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
@@ -31,7 +30,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
                 TestPersistenceConfig.class,
                 PersistenceConf.class,
                 RepositoryConf.class,
-                UserConf.class,
                 JwtConf.class
         })
 @ActiveProfiles("test")

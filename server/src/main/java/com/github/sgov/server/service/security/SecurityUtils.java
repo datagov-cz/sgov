@@ -1,6 +1,5 @@
 package com.github.sgov.server.service.security;
 
-import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.security.model.AuthenticationToken;
 import com.github.sgov.server.security.model.SGoVUserDetails;
@@ -17,8 +16,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,14 +24,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecurityUtils {
 
-    private final IdentifierResolver idResolver;
-
     /**
      * SecurityUtils.
      */
     @Autowired
-    public SecurityUtils(IdentifierResolver idResolver) {
-        this.idResolver = idResolver;
+    public SecurityUtils() {
         // Ensures security context is propagated to additionally spun threads, e.g., used
         // by @Async methods
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
@@ -73,7 +67,7 @@ public class SecurityUtils {
      *
      * @return Current user
      */
-    public UserAccount getCurrentUser() {
+    public static UserAccount getCurrentUser() {
         final SecurityContext context = SecurityContextHolder.getContext();
         assert context != null && context.getAuthentication().isAuthenticated();
         if (context.getAuthentication().getPrincipal() instanceof KeycloakPrincipal) {
@@ -128,7 +122,7 @@ public class SecurityUtils {
         return token;
     }
 
-    private UserAccount resolveAccountFromKeycloakPrincipal(SecurityContext context) {
+    private static UserAccount resolveAccountFromKeycloakPrincipal(SecurityContext context) {
         final KeycloakPrincipal<?> principal =
             (KeycloakPrincipal<?>) context.getAuthentication().getPrincipal();
         final AccessToken keycloakToken = principal.getKeycloakSecurityContext().getToken();
@@ -139,8 +133,8 @@ public class SecurityUtils {
         context.getAuthentication().getAuthorities().stream()
             .map(ga -> UserRole.fromRoleName(ga.getAuthority()))
             .filter(r -> !r.getType().isEmpty()).forEach(r -> account.addType(r.getType()));
-        account.setUri(idResolver.generateUserIdentifier(keycloakToken.getSubject()));
+        account.setUri(IdentifierResolver
+            .generateUserIdentifier(keycloakToken.getSubject()));
         return account;
     }
-
 }

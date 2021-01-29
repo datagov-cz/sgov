@@ -17,28 +17,22 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @PreAuthorize("hasRole('" + SecurityConstants.ROLE_USER + "')")
 public class BaseController {
 
-    protected final IdentifierResolver idResolver;
-
-    protected BaseController(IdentifierResolver idResolver) {
-        this.idResolver = idResolver;
-    }
-
     URI generateLocation(URI identifier, String entityType) {
         if (identifier.toString().startsWith(getEntityTypeNamespace(entityType))) {
             return RestUtils.createLocationFromCurrentUriWithPath("/{name}",
-                    IdentifierResolver.extractIdentifierFragment(identifier));
+                IdentifierResolver.extractIdentifierFragment(identifier));
         } else {
             return RestUtils.createLocationFromCurrentUriWithPathAndQuery(
-                    "/{name}",
-                    QueryParams.NAMESPACE,
-                    IdentifierResolver.extractIdentifierNamespace(identifier),
-                    IdentifierResolver.extractIdentifierFragment(identifier));
+                "/{name}",
+                QueryParams.NAMESPACE,
+                IdentifierResolver.extractIdentifierNamespace(identifier),
+                IdentifierResolver.extractIdentifierFragment(identifier));
         }
     }
 
     /**
-     * Resolves identifier based on the specified resource (if provided) or the namespace
-     * loaded from application configuration.
+     * Resolves identifier based on the specified resource (if provided) or the namespace loaded
+     * from application configuration.
      *
      * @param namespace  Explicitly provided namespace. Optional
      * @param fragment   Locally unique identifier fragment
@@ -47,15 +41,16 @@ public class BaseController {
      */
     protected URI resolveIdentifier(String namespace, String fragment, String entityType) {
         if (namespace != null) {
-            return idResolver.resolveIdentifier(namespace, fragment);
+            return IdentifierResolver.resolveIdentifier(namespace, fragment);
         } else {
-            return idResolver.resolveIdentifier(getEntityTypeNamespace(entityType), fragment);
+            return IdentifierResolver
+                .resolveIdentifier(getEntityTypeNamespace(entityType), fragment);
         }
     }
 
     /**
-     * Ensures that the entity specified for update has the same identifier as the one that
-     * has been resolved from the request URL.
+     * Ensures that the entity specified for update has the same identifier as the one that has been
+     * resolved from the request URL.
      *
      * @param entity            Entity
      * @param requestIdentifier Identifier resolved from request
@@ -63,9 +58,9 @@ public class BaseController {
     void verifyRequestAndEntityIdentifier(HasIdentifier entity, URI requestIdentifier) {
         if (!requestIdentifier.equals(entity.getUri())) {
             throw new ValidationException(
-                    "The ID " + requestIdentifier
-                            + ", resolved from request URL"
-                            + ", does not match the ID of the specified entity.");
+                "The ID " + requestIdentifier
+                    + ", resolved from request URL"
+                    + ", does not match the ID of the specified entity.");
         }
     }
 

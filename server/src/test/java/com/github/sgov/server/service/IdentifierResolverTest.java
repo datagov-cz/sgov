@@ -2,19 +2,12 @@ package com.github.sgov.server.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.github.sgov.server.config.conf.UserConf;
+
 import com.github.sgov.server.environment.Generator;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 class IdentifierResolverTest extends BaseServiceTestRunner {
-
-    @Autowired
-    private IdentifierResolver sut;
-
-    @Autowired
-    private UserConf confUser;
 
     @Test
     void normalizeTransformsValueToLowerCase() {
@@ -74,10 +67,10 @@ class IdentifierResolverTest extends BaseServiceTestRunner {
 
     @Test
     void generateIdentifierAppendsNormalizedComponentsToNamespaceLoadedFromConfig() {
-        final String namespace = "http://onto.fel.cvut.cz/ontologies/users/";
+        final String namespace =
+            "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/uživatel/";
         final String comp = "John Doe";
-        confUser.setNamespace(namespace);
-        final String result = sut.generateUserIdentifier(comp).toString();
+        final String result = IdentifierResolver.generateUserIdentifier(comp).toString();
         assertEquals(namespace + "john-doe", result);
     }
 
@@ -85,7 +78,8 @@ class IdentifierResolverTest extends BaseServiceTestRunner {
     void resolveIdentifierAppendsFragmentToSpecifiedNamespace() {
         final String namespace = "http://onto.fel.cvut.cz/ontologies/termit/vocabulary/";
         final String fragment = "metropolitan-plan";
-        assertEquals(namespace + fragment, sut.resolveIdentifier(namespace, fragment).toString());
+        assertEquals(namespace + fragment,
+            IdentifierResolver.resolveIdentifier(namespace, fragment).toString());
     }
 
     @Test
@@ -93,23 +87,24 @@ class IdentifierResolverTest extends BaseServiceTestRunner {
         final String namespace = "http://onto.fel.cvut.cz/ontologies/termit/vocabulary";
         final String fragment = "metropolitan-plan";
         assertEquals(namespace + "/" + fragment,
-            sut.resolveIdentifier(namespace, fragment).toString());
+            IdentifierResolver.resolveIdentifier(namespace, fragment).toString());
     }
 
     @Test
     void resolveIdentifierDoesNotAppendSlashIfNamespaceEndsWithHashTag() {
         final String namespace = "http://onto.fel.cvut.cz/ontologies/termit/vocabulary#";
         final String fragment = "metropolitan-plan";
-        assertEquals(namespace + fragment, sut.resolveIdentifier(namespace, fragment).toString());
+        assertEquals(namespace + fragment,
+            IdentifierResolver.resolveIdentifier(namespace, fragment).toString());
     }
 
     @Test
     void resolveIdentifierAppendsFragmentToNamespaceLoadedFromConfiguration() {
-        final String namespace = "http://onto.fel.cvut.cz/ontologies/users/";
+        final String namespace =
+            "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/uživatel/";
         final String fragment = "john-doe";
-        confUser.setNamespace(namespace);
         assertEquals(namespace + fragment,
-            sut.resolveUserIdentifier(fragment).toString());
+            IdentifierResolver.resolveUserIdentifier(fragment).toString());
     }
 
     @Test

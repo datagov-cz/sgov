@@ -1,12 +1,9 @@
 package com.github.sgov.server.environment.config;
 
 import com.github.sgov.server.environment.Environment;
-import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.Services;
-import com.github.sgov.server.service.security.SecurityUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -55,11 +52,5 @@ public class TestServiceConfig {
     @Bean
     public ClassPathResource languageSpecification() {
         return new ClassPathResource("languages/language.ttl");
-    }
-
-    @Bean
-    @Autowired
-    public SecurityUtils securityUtils(IdentifierResolver identifierResolver) {
-        return new SecurityUtils(identifierResolver);
     }
 }

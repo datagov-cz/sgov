@@ -37,14 +37,10 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
     private WorkspaceService workspaceService;
 
     private ValidationReport report;
-    @Mock
-    private IdentifierResolver resolver;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(resolver.resolveIdentifier("http://example.org/", "test"))
-            .thenReturn(workspaceUri);
         super.setUp(sut);
         report = new ValidationReport() {
             @Override public boolean conforms() {
@@ -93,7 +89,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
             .willThrow(new NotFoundException(""));
 
         mockMvc.perform(get("/workspaces/test/validate")
-            .param("namespace", "http://example.org/")
+            .param("namespace", "https://example.org/")
             .header("Accept-language", "cs"))
             .andExpect(status().is4xxClientError());
     }
@@ -104,7 +100,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
             .willThrow(new NotFoundException(""));
 
         mockMvc.perform(post("/workspaces/test/publish")
-            .param("namespace", "http://example.org/"))
+            .param("namespace", "https://example.org/"))
             .andExpect(status().is4xxClientError());
     }
 

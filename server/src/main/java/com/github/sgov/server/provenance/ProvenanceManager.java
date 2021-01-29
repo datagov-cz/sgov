@@ -1,6 +1,5 @@
 package com.github.sgov.server.provenance;
 
-import com.github.sgov.server.SGoVServiceApplication;
 import com.github.sgov.server.model.HasProvenanceData;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.service.security.SecurityUtils;
@@ -20,9 +19,7 @@ public class ProvenanceManager {
     private static final Logger LOG = LoggerFactory.getLogger(ProvenanceManager.class);
 
     private UserAccount getCurrent() {
-        final SecurityUtils securityUtils = SGoVServiceApplication.context
-            .getBean(SecurityUtils.class);
-        return securityUtils.getCurrentUser();
+        return SecurityUtils.getCurrentUser();
     }
 
     /**

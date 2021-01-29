@@ -1,10 +1,9 @@
 package com.github.sgov.server.service;
 
-import com.github.sgov.server.config.conf.UserConf;
+import com.github.sgov.server.util.Vocabulary;
 import java.net.URI;
 import java.text.Normalizer;
 import java.util.Objects;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,12 +15,7 @@ public class IdentifierResolver {
 
     private static final char REPLACEMENT_CHARACTER = '-';
 
-    private final UserConf config;
-
-    @Autowired
-    public IdentifierResolver(UserConf config) {
-        this.config = config;
-    }
+    private static String namespace = Vocabulary.DATA_DESCRIPTION_NAMESPACE + "uživatel";
 
     /**
      * Normalizes the specified value. This includes:
@@ -97,11 +91,11 @@ public class IdentifierResolver {
      * @param components Components to normalize and add to the identifier
      * @return Generated identifier
      */
-    public URI generateUserIdentifier(String... components) {
-        return generateIdentifier(config.getNamespace(), components);
+    public static URI generateUserIdentifier(String... components) {
+        return generateIdentifier(namespace, components);
     }
 
-    private URI generateIdentifier(String ns, String... components) {
+    private static URI generateIdentifier(String ns, String... components) {
         Objects.requireNonNull(ns);
         String namespace = ns;
         if (components.length == 0) {
@@ -131,7 +125,7 @@ public class IdentifierResolver {
      * @param fragment  Normalized string unique in the specified namespace
      * @return Identifier
      */
-    public URI resolveIdentifier(String namespace, String fragment) {
+    public static URI resolveIdentifier(String namespace, String fragment) {
         Objects.requireNonNull(namespace);
         String ns = namespace;
         if (!ns.endsWith("/") && !ns.endsWith("#")) {
@@ -148,8 +142,7 @@ public class IdentifierResolver {
      * @return Identifier
      * @see #resolveIdentifier(String, String)
      */
-    public URI resolveUserIdentifier(String fragment) {
-        final String namespace = config.getNamespace();
+    public static URI resolveUserIdentifier(String fragment) {
         Objects.requireNonNull(namespace);
         return resolveIdentifier(namespace, fragment);
     }
