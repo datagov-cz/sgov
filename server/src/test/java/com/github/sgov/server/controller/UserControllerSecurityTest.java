@@ -14,7 +14,6 @@ import com.github.sgov.server.environment.Environment;
 import com.github.sgov.server.environment.Generator;
 import com.github.sgov.server.environment.config.TestRestSecurityConfig;
 import com.github.sgov.server.model.UserAccount;
-import com.github.sgov.server.security.JwtUtils;
 import com.github.sgov.server.service.UserService;
 import com.github.sgov.server.service.security.SecurityUtils;
 import java.util.Collections;
@@ -142,11 +141,6 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
         @Bean
         public RestExceptionHandler restExceptionHandler() {
             return new RestExceptionHandler();
-        }
-
-        @Bean
-        public JwtUtils jwtUtils(JwtConf config) {
-            return new JwtUtils(config);
         }
 
         @Override
