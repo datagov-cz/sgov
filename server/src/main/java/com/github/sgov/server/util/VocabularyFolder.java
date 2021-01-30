@@ -51,6 +51,10 @@ public class VocabularyFolder {
         return getFile("model", suffix);
     }
 
+    public File getCompactModelFile(String suffix) {
+        return getFile("model-kompaktní", suffix);
+    }
+
     public File getFolder() {
         return folder;
     }

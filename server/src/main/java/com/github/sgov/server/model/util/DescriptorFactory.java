@@ -1,9 +1,7 @@
 package com.github.sgov.server.model.util;
 
 import com.github.sgov.server.model.HasProvenanceData;
-import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.model.Workspace;
-import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
 import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
 import java.net.URI;
@@ -16,30 +14,6 @@ public final class DescriptorFactory {
 
     private DescriptorFactory() {
         throw new AssertionError();
-    }
-
-    /**
-     * Creates a JOPA descriptor for the specified user account.
-     *
-     * <p>The descriptor specifies that the instance context will correspond to the
-     * {@code vocabulary}'s IRI. It also initializes other required attribute descriptors.
-     *
-     * @param userAccount User Account for which the descriptor should be created
-     * @return user account descriptor
-     */
-    public static Descriptor userManagementDescriptor(UserAccount userAccount) {
-        Objects.requireNonNull(userAccount);
-        final EntityDescriptor descriptor
-            = new EntityDescriptor(URI.create(Vocabulary.s_c_uzivatel));
-        descriptor
-            .addAttributeDescriptor(UserAccount.getPasswordField(),
-                new EntityDescriptor(null));
-        if (userAccount.getCurrentWorkspace() != null) {
-            descriptor
-                .addAttributeDescriptor(UserAccount.getCurrentWorkspaceField(),
-                    workspaceDescriptor(userAccount.getCurrentWorkspace()));
-        }
-        return descriptor;
     }
 
     /**
@@ -69,7 +43,7 @@ public final class DescriptorFactory {
      */
     public static Descriptor workspaceDescriptor(URI workspaceUri) {
         Objects.requireNonNull(workspaceUri);
-        EntityDescriptor descriptor = new EntityDescriptor(workspaceUri);
+        EntityDescriptor descriptor = assetDescriptor(workspaceUri);
         descriptor.addAttributeDescriptor(Workspace.getVocabularyContextsField(),
             vocabularyDescriptor(workspaceUri));
         descriptor.addAttributeDescriptor(
@@ -79,6 +53,13 @@ public final class DescriptorFactory {
             HasProvenanceData.getLastEditorField(), new EntityDescriptor(null)
         );
         return descriptor;
+    }
+
+    private static EntityDescriptor assetDescriptor(URI iri) {
+        if (iri == null) {
+            return new EntityDescriptor();
+        }
+        return new EntityDescriptor(iri);
     }
 
     /**

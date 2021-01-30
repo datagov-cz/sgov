@@ -279,6 +279,19 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
     }
 
     /**
+     * Decides whether a statement belongs to a glossary or to a model. All statements with
+     * predicate or object in SKOS namespace are considered glossary triples.
+     *
+     * @param statement statement statement to check
+     * @return true if the statement should be put to glossary, false otherwise
+     */
+    private boolean isGlossaryTriple(Statement statement) {
+        return ((statement.getObject() instanceof IRI)
+            && ((IRI) statement.getObject()).getNamespace().equals(SKOS.NAMESPACE))
+            || statement.getPredicate().getNamespace().equals(SKOS.NAMESPACE);
+    }
+
+    /**
      * Stores a vocabulary into the given vocabulary folder.
      *
      * @param conWorkspace           given workspace repository
@@ -320,9 +333,11 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
 
         conWorkspace.getStatements(null, null, null, ctxWorkspaceVocabulary)
             .stream()
+            // triples already processed
             .filter(s -> !s.getSubject().equals(ctxVocabulary))
             .filter(s -> !s.getSubject().equals(ctxGlossary))
             .filter(s -> !s.getSubject().equals(ctxModel))
+            // triples belonging to tools
             .filter(s -> !s.getPredicate().stringValue()
                 .startsWith(Vocabulary.ONTOGRAPHER_NAMESPACE))
             .filter(s -> !s.getObject().stringValue()
@@ -331,16 +346,10 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                 .startsWith(Vocabulary.TERMIT_NAMESPACE))
             .filter(s -> !s.getObject().stringValue()
                 .startsWith(Vocabulary.TERMIT_NAMESPACE))
-            .forEach(s -> {
-                if (((s.getObject() instanceof IRI)
-                    && ((IRI) s.getObject()).getNamespace().equals(SKOS.NAMESPACE))
-                    || s.getPredicate().getNamespace().equals(SKOS.NAMESPACE)
-                ) {
-                    conGitSsp.add(s, ctxGlossary);
-                } else {
-                    conGitSsp.add(s, ctxModel);
-                }
-            });
+            // all the rest belongs either to glossary or to model
+            .forEach(s ->
+                conGitSsp.add(s, isGlossaryTriple(s) ? ctxGlossary : ctxModel)
+            );
 
         if (!folder.getFolder().exists()) {
             folder.getFolder().mkdirs();
@@ -355,9 +364,33 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         final File modFile = folder.getModelFile("");
         conGitSsp.export(getDeterministicWriter(new FileWriter(modFile)), ctxModel);
 
+        //        final File comModFile = folder.getCompactModelFile("");
+        //        conGitSsp.export(getDeterministicWriter(new FileWriter(comModFile)),
+        //            compact(conGitSsp, ctxModel));
+
         conGitSsp.close();
         conWorkspace.close();
     }
+
+    //    private IRI compact(final RepositoryConnection connection, final IRI ctxModel)
+    //        throws IOException {
+    //        // copy context
+    //        final IRI ctxComModel =
+    //            connection.getValueFactory().createIRI(ctxModel.stringValue() + "-compact");
+    //        connection.add(connection.getStatements(null, null, null, ctxModel), ctxComModel);
+    //
+    //        // infer domains
+    //        connection.prepareUpdate(IOUtils.toString(getClass()
+    //            .getResourceAsStream("/queries/infer-domain.rq"), "utf-8")
+    //            .replace("?g", "<" + ctxComModel.stringValue() + ">"));
+    //
+    //        // infer ranges
+    //        connection.prepareUpdate(IOUtils.toString(getClass()
+    //            .getResourceAsStream("/queries/infer-range.rq"), "utf-8")
+    //            .replace("?g", "<" + ctxComModel.stringValue() + ">"));
+    //
+    //        return ctxComModel;
+    //    }
 
     /**
      * Stores the given vocabulary context into the given vocabulary folder.

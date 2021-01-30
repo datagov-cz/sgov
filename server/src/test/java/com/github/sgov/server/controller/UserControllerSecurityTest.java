@@ -1,7 +1,5 @@
 package com.github.sgov.server.controller;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,7 +14,6 @@ import com.github.sgov.server.environment.config.TestRestSecurityConfig;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.service.UserService;
 import com.github.sgov.server.service.security.SecurityUtils;
-import java.util.Collections;
 import java.util.List;
 import javax.servlet.Filter;
 import org.junit.Assert;
@@ -80,15 +77,6 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
             MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity(springSecurityFilterChain))
                 .build();
-    }
-
-    @Test
-    void findAllThrowsForbiddenForUnauthorizedUser() throws Exception {
-        Environment.setCurrentUser(Generator.generateUserAccountWithPassword());
-        when(userService.findAll()).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/users")).andExpect(status().isForbidden());
-        verify(userService, never()).findAll();
     }
 
     @Test
