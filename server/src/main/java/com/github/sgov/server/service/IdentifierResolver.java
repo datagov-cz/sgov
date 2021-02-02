@@ -15,7 +15,7 @@ public class IdentifierResolver {
 
     private static final char REPLACEMENT_CHARACTER = '-';
 
-    private static String namespace = Vocabulary.DATA_DESCRIPTION_NAMESPACE + "uživatel";
+    private static String namespace = "http://onto.fel.cvut.cz/ontologies/uzivatel";
 
     /**
      * Normalizes the specified value. This includes:
