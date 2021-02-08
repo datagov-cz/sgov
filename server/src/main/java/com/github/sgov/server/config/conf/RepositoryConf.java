@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.annotation.Transient;
 
 @Setter
 @Getter
@@ -33,4 +34,9 @@ public class RepositoryConf {
     private String githubOrganization;
 
     private String githubUserToken;
+
+    @Transient
+    private String remoteUrl =
+        "https://github.com/" + getGithubOrganization() + "/" + getGithubRepo();
+
 }

@@ -52,7 +52,7 @@ public class GithubRepositoryService {
     public Git checkout(String branchName, File dir) {
         try {
             Git git = Git.cloneRepository()
-                .setURI(getRemoteUrl())
+                .setURI(repositoryConf.getRemoteUrl())
                 .setDirectory(dir)
                 .call();
             if (git
@@ -122,9 +122,6 @@ public class GithubRepositoryService {
         }
     }
 
-    private String getRemoteUrl() {
-        return "https://github.com/" + getFullGithubRepo();
-    }
 
     /**
      * Pushes the changes for the given GIT repository to SSP repo.
@@ -132,7 +129,7 @@ public class GithubRepositoryService {
      * @param git GIT repository to push changes from
      */
     public void push(Git git) {
-        final String remoteUrl = getRemoteUrl();
+        final String remoteUrl = repositoryConf.getRemoteUrl();
         try {
             git.push()
                 .setCredentialsProvider(credentialsProvider)
@@ -154,23 +151,19 @@ public class GithubRepositoryService {
      * @return PR URL
      */
     public String createOrUpdatePullRequestToMaster(String fromBranch, String title, String body) {
-        final String pr = getLatestPullRequestForBranch(fromBranch);
+        String pr = getLatestPullRequestForBranch(fromBranch);
 
-        if (pr != null) {
-            return pr;
+        if (pr == null) {
+            pr = createPullRequest(fromBranch, title, body);
         }
 
-        return createPullRequest(fromBranch, title, body);
-    }
-
-    private String getFullGithubRepo() {
-        return repositoryConf.getGithubOrganization() + "/" + repositoryConf.getGithubRepo();
+        return pr;
     }
 
     private String getLatestPullRequestForBranch(String fromBranch) {
         final HttpResponse<JsonNode> prGet =
             Unirest
-                .get("https://api.github.com/repos/" + getFullGithubRepo() + "/pulls")
+                .get("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/" + repositoryConf.getGithubRepo() + "/pulls")
                 .header("Authorization", "Bearer " + repositoryConf.getGithubUserToken())
                 .queryString("state", "open")
                 .queryString("head", repositoryConf.getGithubOrganization() + ":" + fromBranch)
@@ -188,7 +181,7 @@ public class GithubRepositoryService {
     private String createPullRequest(String fromBranch, String title, String body) {
         final HttpResponse<JsonNode> prResponse =
             Unirest
-                .post("https://api.github.com/repos/" + getFullGithubRepo() + "/pulls")
+                .post("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/" + repositoryConf.getGithubRepo() + "/pulls")
                 .header("Authorization", "Bearer " + repositoryConf.getGithubUserToken())
                 .body(new JSONObject()
                     .put("title", title)
