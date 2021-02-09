@@ -3,6 +3,9 @@ plugins {
 }
 
 subprojects {
+    def revision = 'git rev-list --count HEAD'.execute().text.trim()
+    def hash = 'git rev-parse --short HEAD'.execute().text.trim()
+
     apply plugin: 'java'
     apply plugin: 'ru.vyarus.quality'
     apply plugin: 'maven-publish'
@@ -15,29 +18,35 @@ subprojects {
         configDir = 'config'
     }
 
+    group 'com.github.sgov'
+    version = "1.0.0.r${revision}.${hash}";
+
+    processResources {
+        filesMatching('application.yml') {
+            expand(["version": project.version]);
+        }
+    }
+
     repositories {
         jcenter()
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/opendata-mvcr/sgov-validator")
+            name = 'GitHubPackages'
+            url = uri('https://maven.pkg.github.com/opendata-mvcr/sgov-validator')
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+                username = project.findProperty('gpr.user') ?: System.getenv('USERNAME')
+                password = project.findProperty('gpr.key') ?: System.getenv('TOKEN')
             }
         }
     }
 
-    group 'com.github.sgov'
-    version = '1.0'
-
     publishing {
         repositories {
             maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/opendata-mvcr/sgov")
+                name = 'GitHubPackages'
+                url = uri('https://maven.pkg.github.com/opendata-mvcr/sgov')
                 credentials {
-                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                    password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+                    username = project.findProperty('gpr.user') ?: System.getenv('USERNAME')
+                    password = project.findProperty('gpr.key') ?: System.getenv('TOKEN')
                 }
             }
         }

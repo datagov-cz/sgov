@@ -1,14 +1,15 @@
 package com.github.sgov.server.config;
 
+import com.github.sgov.server.config.conf.ApplicationConf;
 import cz.cvut.kbss.jopa.sessions.UnitOfWorkImpl;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
@@ -25,6 +26,9 @@ import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class SpringFoxConfig {
 
+    @Autowired
+    private ApplicationConf applicationConf;
+
     /**
      * Returns Swagger Docket.
      */
@@ -33,7 +37,6 @@ public class SpringFoxConfig {
         return new Docket(DocumentationType.SWAGGER_2)
             .pathMapping("/")
             .select()
-            .apis(RequestHandlerSelectors.basePackage("com.github.sgov"))
             .paths(PathSelectors.any())
             .build()
             .enableUrlTemplating(true)
@@ -76,7 +79,7 @@ public class SpringFoxConfig {
         return new ApiInfoBuilder()
             .title("SGoV Server")
             .description("Server for Semantic Government Vocabulary (SGoV) management.")
-            .version("1.0.0")
+            .version(applicationConf.getVersion())
             .contact(new Contact("Petr Křemen", "", "petr.kremen@mvcr.cz"))
             .build();
     }
