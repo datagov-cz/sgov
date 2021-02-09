@@ -36,7 +36,9 @@ public class RepositoryConf {
     private String githubUserToken;
 
     @Transient
-    private String remoteUrl =
-        "https://github.com/" + getGithubOrganization() + "/" + getGithubRepo();
+    private String remoteUrl;
 
+    public String getRemoteUrl() {
+        return "https://github.com/" + getGithubOrganization() + "/" + getGithubRepo();
+    }
 }
