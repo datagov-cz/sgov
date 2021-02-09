@@ -1,3 +1,6 @@
+application:
+  version: ${version}
+
 spring:
   output:
     ansi:
@@ -15,7 +18,7 @@ repository:
   releaseSparqlEndpointUrl: https://slovník.gov.cz/sparql
   githubRepo: ssp
   githubOrganization: opendata-mvcr
-  githubUserToken: ${GITHUB_USER_TOKEN}
+  githubUserToken: \${GITHUB_USER_TOKEN}
 
 persistence:
   driver: cz.cvut.kbss.ontodriver.sesame.SesameDataSource
