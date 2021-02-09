@@ -44,4 +44,4 @@ RUN sed -i "s@<AUTH_SERVER_URL>@${AUTH_SERVER_URL}@g" $KEYCLOAK_JSON
 RUN sed -i "s/<CLIENT_SECRET>/${AUTH_SERVER_CLIENT_SECRET}/g" $KEYCLOAK_JSON
 RUN zip -r $JAR $KEYCLOAK_JSON
 
-ENTRYPOINT ["java","-jar","/$JAR"]
+ENTRYPOINT ["java","-jar","/sgov-server-build/sgov-server.jar"]
