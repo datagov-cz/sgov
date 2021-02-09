@@ -21,7 +21,7 @@ spring:
       enabled: DETECT
 
 server:
-  port: 18189
+  port: 8080
   servlet:
     contextPath: /sgov-server
 
