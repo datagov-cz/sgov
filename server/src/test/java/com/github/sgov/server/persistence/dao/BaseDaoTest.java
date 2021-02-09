@@ -39,20 +39,6 @@ class BaseDaoTest extends BaseDaoTestRunner {
     }
 
     @Test
-    void findAllRetrievesAllExistingInstances() {
-        final List<User> users =
-            IntStream.range(0, 5).mapToObj(i -> {
-                final User u = Generator.generateUser();
-                u.setUri(Generator.generateUri());
-                return u;
-            }).collect(Collectors.toList());
-        transactional(() -> sut.persist(users));
-        final List<User> result = sut.findAll();
-        assertEquals(users.size(), result.size());
-        assertTrue(users.containsAll(result));
-    }
-
-    @Test
     void existsReturnsTrueForExistingEntity() {
         final User user = Generator.generateUser();
         user.setUri(Generator.generateUri());
