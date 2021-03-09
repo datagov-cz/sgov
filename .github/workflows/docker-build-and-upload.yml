@@ -8,13 +8,6 @@ env:
   USERNAME: ${{ github.actor }}
   TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Build JAR
-        run: gradle clean build
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
