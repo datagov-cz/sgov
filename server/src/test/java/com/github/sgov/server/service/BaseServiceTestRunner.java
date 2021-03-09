@@ -1,5 +1,6 @@
 package com.github.sgov.server.service;
 
+import com.github.sgov.server.config.conf.components.ComponentsProperties;
 import com.github.sgov.server.config.conf.JwtConf;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
@@ -9,7 +10,7 @@ import com.github.sgov.server.environment.TransactionalTestRunner;
 import com.github.sgov.server.environment.config.TestPersistenceConfig;
 import com.github.sgov.server.environment.config.TestServiceConfig;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,13 +22,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class,
+@ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class,
         classes = {TestServiceConfig.class,
                 VocabularyDao.class,
                 WorkspaceDao.class,
                 TestPersistenceConfig.class,
                 PersistenceConf.class,
                 RepositoryConf.class,
+                ComponentsProperties.class,
                 JwtConf.class
         })
 @ActiveProfiles("test")

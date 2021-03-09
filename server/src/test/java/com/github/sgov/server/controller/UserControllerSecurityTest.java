@@ -17,6 +17,7 @@ import com.github.sgov.server.service.security.SecurityUtils;
 import java.util.List;
 import javax.servlet.Filter;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -45,7 +46,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * UserControllerTest}.
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class,
+@ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class,
     classes = {
         JwtConf.class,
         TestRestSecurityConfig.class,
@@ -66,9 +67,11 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
     @Autowired
     private UserService userService;
 
+    private AutoCloseable mocks;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mocks = MockitoAnnotations.openMocks(this);
         super.setupObjectMappers();
         // WebApplicationContext is required for proper security. Otherwise, standaloneSetup
         // could be
@@ -77,6 +80,11 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
             MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity(springSecurityFilterChain))
                 .build();
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        mocks.close();
     }
 
     @Test

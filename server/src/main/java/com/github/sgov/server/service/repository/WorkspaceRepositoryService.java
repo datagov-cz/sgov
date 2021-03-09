@@ -28,19 +28,15 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
 
     WorkspaceDao workspaceDao;
 
-    RepositoryConf repositoryConf;
-
     /**
      * Creates a new repository service.
      */
     @Autowired
     public WorkspaceRepositoryService(
         @Qualifier("validatorFactoryBean") Validator validator,
-        WorkspaceDao workspaceDao,
-        RepositoryConf repositoryConf) {
+        WorkspaceDao workspaceDao) {
         super(validator);
         this.workspaceDao = workspaceDao;
-        this.repositoryConf = repositoryConf;
     }
 
     @Override

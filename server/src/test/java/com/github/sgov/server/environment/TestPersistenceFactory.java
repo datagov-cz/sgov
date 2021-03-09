@@ -4,6 +4,8 @@ import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.DATA_SOURCE_CLAS
 import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.LANG;
 import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.ONTOLOGY_PHYSICAL_URI_KEY;
 
+
+import com.github.sgov.server.config.conf.components.ComponentsProperties;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.environment.config.TestServiceConfig;
@@ -15,7 +17,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -23,10 +25,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 @TestConfiguration
-@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class,
-    classes = {TestServiceConfig.class, PersistenceConf.class, RepositoryConf.class})
+@ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class,
+    classes = {TestServiceConfig.class, PersistenceConf.class, RepositoryConf.class,
+        ComponentsProperties.class})
 @ActiveProfiles("test")
 public class TestPersistenceFactory {
+
+    private final ComponentsProperties confComponents;
 
     private final RepositoryConf confRepository;
 
@@ -35,9 +40,11 @@ public class TestPersistenceFactory {
     private EntityManagerFactory emf;
 
     @Autowired
-    public TestPersistenceFactory(RepositoryConf confRepository, PersistenceConf confPersistence) {
+    public TestPersistenceFactory(RepositoryConf confRepository, PersistenceConf confPersistence,
+                                  ComponentsProperties confComponents) {
         this.confRepository = confRepository;
         this.confPersistence = confPersistence;
+        this.confComponents = confComponents;
     }
 
     @Bean
@@ -49,7 +56,7 @@ public class TestPersistenceFactory {
     @PostConstruct
     private void init() {
         final Map<String, String> properties = MainPersistenceFactory.defaultParams();
-        properties.put(ONTOLOGY_PHYSICAL_URI_KEY, confRepository.getUrl());
+        properties.put(ONTOLOGY_PHYSICAL_URI_KEY, confComponents.getComponents().getDbServerUrl());
         properties
             .put(SesameOntoDriverProperties.SESAME_USE_VOLATILE_STORAGE, Boolean.TRUE.toString());
         properties.put(SesameOntoDriverProperties.SESAME_USE_INFERENCE, Boolean.TRUE.toString());

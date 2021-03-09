@@ -8,11 +8,10 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.2.6.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "io.freefair.aspectj.post-compile-weaving" version "4.1.4"
     id 'java'
-    id 'war'
 }
 
 compileJava {
@@ -45,11 +44,10 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.16'
     implementation 'org.mitre.dsmiley.httpproxy:smiley-http-proxy-servlet:1.11'
     implementation 'net.bull.javamelody:javamelody-core:1.86.0'
-    implementation 'org.keycloak:keycloak-spring-security-adapter:12.0.1'
+    implementation 'org.keycloak:keycloak-spring-boot-starter:12.0.3'
 
     annotationProcessor "org.projectlombok:lombok:1.18.16"
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.10.0.202012080955-r'
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat:2.3.8.RELEASE'
 
     aspect 'cz.cvut.kbss.jopa:jopa-impl:0.14.4'
 
@@ -64,10 +62,6 @@ dependencies {
 
 bootJar {
     archiveFileName = "sgov-server-${project.version}.jar"
-}
-
-bootWar {
-    archiveFileName = "sgov-server-${project.version}.war"
 }
 
 bootRun {

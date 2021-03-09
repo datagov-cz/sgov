@@ -12,6 +12,7 @@ import com.github.sgov.server.service.UserService;
 import com.github.sgov.server.util.Vocabulary;
 import java.util.Collections;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -31,13 +32,20 @@ class UserControllerTest extends BaseControllerTestRunner {
 
     private UserAccount user;
 
+    private AutoCloseable mocks;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mocks = MockitoAnnotations.openMocks(this);
         super.setUp(sut);
         this.user = generateUserAccount();
         this.user.setTypes(Collections.singleton(Vocabulary.s_c_administrator));
         Environment.setCurrentUser(user);
+    }
+
+    @AfterEach
+    void tearDown() throws Exception{
+        mocks.close();
     }
 
     @Test
