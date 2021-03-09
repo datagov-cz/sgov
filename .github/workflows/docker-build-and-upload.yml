@@ -4,7 +4,6 @@ on:
     branches: [ master ]
   workflow_dispatch:
 env:
-  IMAGE_NAME: al-sgov
   USERNAME: ${{ github.actor }}
   TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
@@ -17,6 +16,8 @@ jobs:
         run: gradle clean build
 
       - name: Build image
+        env:
+          IMAGE_NAME: al-sgov
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Log into registry
