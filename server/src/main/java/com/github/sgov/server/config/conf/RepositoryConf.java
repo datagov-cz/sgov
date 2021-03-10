@@ -1,7 +1,10 @@
 package com.github.sgov.server.config.conf;
 
+import com.github.sgov.server.config.conf.components.ComponentsConf;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +17,9 @@ import org.springframework.data.annotation.Transient;
 @ConfigurationProperties("repository")
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RepositoryConf {
+
+    @Autowired
+    private ComponentsConf componentsConf;
 
     /**
      * URL of the release SPARQL endpoint.
@@ -37,6 +43,18 @@ public class RepositoryConf {
 
     @Transient
     private String remoteUrl;
+
+    /**
+     * Returns repository.url. If empty, then returns components.dbServer.url
+     *
+     * @return url
+     */
+    public String getUrl() {
+        if (!Strings.isEmpty(url)) {
+            return url;
+        }
+        return componentsConf.getDbServerUrl();
+    }
 
     public String getRemoteUrl() {
         return "https://github.com/" + getGithubOrganization() + "/" + getGithubRepo();

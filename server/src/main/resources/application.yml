@@ -23,29 +23,54 @@ spring:
 server:
   port: 8080
   servlet:
-    contextPath: /sgov-server
+    contextPath: /modelujeme/sluzby/sgovServer
 
-jwt.secretKey: SecretKey
+components:
 
 repository:
-  url: https://onto.fel.cvut.cz:7200/repositories/kodi-uloziste-dev
+  # overrides components.dbServer.url
+  #  url: # http://localhost/modelujeme/sluzby/dbServer/repositories/assembly-line
   releaseSparqlEndpointUrl: https://slovník.gov.cz/sparql
   githubRepo: ssp
   githubOrganization: opendata-mvcr
-  githubUserToken: <GITHUB_USER_TOKEN>
+  ## required
+  githubUserToken:
 
 persistence:
   driver: cz.cvut.kbss.ontodriver.sesame.SesameDataSource
   language: cs
 
 keycloak:
-  configurationFile: classpath:keycloak.json
+  realm: assembly-line
+  resource: sgovServer
+  ## overrides components.authServer.url, which denotes the realm URL (auth-server-url denotes
+  ## the keycloak server endpoint)
+  # auth-server-url: # http://localhost/modelujeme/sluzby/authServer
+  ssl-required: none
+  bearer-only: false
+  use-resource-role-mappings: true
+  cors: true
+  cors-max-age: 1000
+  cors-allowed-methods: POST,PUT,DELETE,GET,HEAD
+  cors-exposed-headers: WWW-Authenticate,Location
+  enable-basic-auth: false
+  expose-token: true
+  verify-token-audience: false
+  connection-pool-size: 20
+  disable-trust-manager: false
+  allow-any-hostname: false
+  token-minimum-time-to-live: 0
+  min-time-between-jwks-requests: 10
+  public-key-cache-ttl: 86400
+  public-client: false
+  ## required
+  # realm-key:
+  #  credentials: {
+  #    secret:
+  #  }
 
 logging:
   pattern:
-#    console: "%black(%d{dd-MM-yyyy HH:mm:ss.SSS}) [%X{username}] [%blue(thread)] %highlight(%-5level) %logger{36} - %yellow(%msg) %n%throwable"
     console: "%d{dd-MM-yyyy HH:mm:ss.SSS} [%X{username}] [thread] %-5level %logger{36} - %msg %n%throwable"
   level:
     root: INFO
-    com.github.sgov: INFO
-    org.springframework.web: INFO

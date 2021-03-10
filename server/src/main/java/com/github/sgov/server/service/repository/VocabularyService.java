@@ -58,11 +58,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class VocabularyService extends BaseRepositoryService<VocabularyContext> {
 
-    RepositoryConf repositoryConf;
+    private final RepositoryConf repositoryConf;
 
-    VocabularyDao vocabularyDao;
+    private final VocabularyDao vocabularyDao;
 
-    WorkspaceDao workspaceDao;
+    private final WorkspaceDao workspaceDao;
 
     /**
      * Creates a new repository service.
