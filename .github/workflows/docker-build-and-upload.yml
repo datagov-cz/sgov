@@ -1,7 +1,7 @@
 name: Build docker
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
 env:
   USERNAME: ${{ github.actor }}
@@ -16,9 +16,7 @@ jobs:
         run: gradle clean build
 
       - name: Build image
-        env:
-          IMAGE_NAME: al-sgov
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+        run: docker build . --file Dockerfile --tag al-sgov
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
