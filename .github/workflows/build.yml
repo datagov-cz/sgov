@@ -14,3 +14,6 @@ jobs:
 
       - name: Build JAR
         run: gradle clean build
+
+      - name: Test
+        run: gradle test
