@@ -1,5 +1,6 @@
 package com.github.sgov.server.model.util;
 
+import com.github.sgov.server.config.conf.UserConf;
 import com.github.sgov.server.model.HasProvenanceData;
 import com.github.sgov.server.model.Workspace;
 import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
@@ -47,10 +48,12 @@ public final class DescriptorFactory {
         descriptor.addAttributeDescriptor(Workspace.getVocabularyContextsField(),
             vocabularyDescriptor(workspaceUri));
         descriptor.addAttributeDescriptor(
-            HasProvenanceData.getAuthorField(), new EntityDescriptor(null)
+            HasProvenanceData.getAuthorField(),
+            assetDescriptor(URI.create(UserConf.context))
         );
         descriptor.addAttributeDescriptor(
-            HasProvenanceData.getLastEditorField(), new EntityDescriptor(null)
+            HasProvenanceData.getLastEditorField(),
+            assetDescriptor(URI.create(UserConf.context))
         );
         return descriptor;
     }
@@ -73,7 +76,15 @@ public final class DescriptorFactory {
      */
     public static Descriptor vocabularyDescriptor(URI vocabularyContextUri) {
         Objects.requireNonNull(vocabularyContextUri);
-        EntityDescriptor descriptor = new EntityDescriptor(vocabularyContextUri);
+        EntityDescriptor descriptor = assetDescriptor(vocabularyContextUri);
+        descriptor.addAttributeDescriptor(
+            HasProvenanceData.getAuthorField(),
+            assetDescriptor(URI.create(UserConf.context))
+        );
+        descriptor.addAttributeDescriptor(
+            HasProvenanceData.getLastEditorField(),
+            assetDescriptor(URI.create(UserConf.context))
+        );
         return descriptor;
     }
 }

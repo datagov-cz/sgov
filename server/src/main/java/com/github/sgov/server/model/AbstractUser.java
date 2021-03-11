@@ -7,6 +7,7 @@ import cz.cvut.kbss.jopa.model.annotations.Id;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
+import cz.cvut.kbss.jopa.model.annotations.Transient;
 import cz.cvut.kbss.jopa.model.annotations.Types;
 import java.io.Serializable;
 import java.net.URI;
@@ -30,9 +31,7 @@ abstract class AbstractUser implements HasIdentifier, HasTypes, Serializable {
     @OWLDataProperty(iri = Vocabulary.s_p_ma_prijmeni)
     protected String lastName;
 
-    @NotBlank
-    @ParticipationConstraints(nonEmpty = true)
-    @OWLDataProperty(iri = Vocabulary.s_p_ma_uzivatelske_jmeno)
+    @Transient
     protected String username;
 
     @Types

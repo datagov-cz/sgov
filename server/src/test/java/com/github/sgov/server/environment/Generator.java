@@ -63,7 +63,6 @@ public class Generator {
         final User user = new User();
         user.setFirstName("Firstname" + randomInt());
         user.setLastName("Lastname" + randomInt());
-        user.setUsername("user" + randomInt() + "@example.cz");
         return user;
     }
 
