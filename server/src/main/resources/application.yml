@@ -36,6 +36,10 @@ repository:
   ## required
   githubUserToken:
 
+user:
+  context: https://slovník.gov.cz/uživatel
+  namespace: https://slovník.gov.cz/uživatel/
+
 persistence:
   driver: cz.cvut.kbss.ontodriver.sesame.SesameDataSource
   language: cs

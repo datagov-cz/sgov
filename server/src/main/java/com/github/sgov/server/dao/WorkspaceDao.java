@@ -50,17 +50,13 @@ public class WorkspaceDao extends BaseDao<Workspace> {
 
     private final RepositoryConf properties;
 
-    private final ComponentsConf componentsConf;
-
     /**
      * Constructor.
      */
     @Autowired
-    public WorkspaceDao(EntityManager em, RepositoryConf properties,
-                        ComponentsConf componentsConf) {
+    public WorkspaceDao(EntityManager em, RepositoryConf properties) {
         super(Workspace.class, em);
         this.properties = properties;
-        this.componentsConf = componentsConf;
     }
 
     @Override
@@ -122,7 +118,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
      * @return list of workspace IRIs.
      */
     public List<String> getAllWorkspaceIris() {
-        final String uri = componentsConf.getComponents().get(ComponentsConf.DB_SERVER).getUrl();
+        final String uri = properties.getUrl();
         final HttpResponse<JsonObject> response =
             Unirest.post(uri).header("Content-type", "application/sparql-query")
                 .header("Accept", "application/sparql-results+json")
@@ -172,7 +168,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         rules.addAll(validator.getVocabularyRules());
         OntDocumentManager.getInstance().setProcessImports(false);
 
-        final String endpointUlozistePracovnichProstoru = componentsConf.getDbServerUrl();
+        final String endpointUlozistePracovnichProstoru = properties.getUrl();
 
         final List<ValidationResult> validationResults = new ArrayList<>();
         for (VocabularyContext c : workspace
@@ -217,7 +213,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
             .map(vc -> vc.getUri().toString())
             .collect(Collectors.joining(">)\n  (<", "  (<", ">)\n"));
 
-        final String uri = componentsConf.getDbServerUrl();
+        final String uri = properties.getUrl();
         final HttpResponse<JsonObject> response =
             Unirest.post(uri).header("Content-type", "application/sparql-query")
                 .header("Accept", "application/sparql-results+json")

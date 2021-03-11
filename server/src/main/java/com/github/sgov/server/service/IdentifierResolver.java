@@ -1,6 +1,6 @@
 package com.github.sgov.server.service;
 
-import com.github.sgov.server.util.Vocabulary;
+import com.github.sgov.server.config.conf.UserConf;
 import java.net.URI;
 import java.text.Normalizer;
 import java.util.Objects;
@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 public class IdentifierResolver {
 
     private static final char REPLACEMENT_CHARACTER = '-';
-
-    private static String namespace = "http://onto.fel.cvut.cz/ontologies/uzivatel";
 
     /**
      * Normalizes the specified value. This includes:
@@ -92,7 +90,7 @@ public class IdentifierResolver {
      * @return Generated identifier
      */
     public static URI generateUserIdentifier(String... components) {
-        return generateIdentifier(namespace, components);
+        return generateIdentifier(UserConf.namespace, components);
     }
 
     private static URI generateIdentifier(String ns, String... components) {
@@ -143,7 +141,7 @@ public class IdentifierResolver {
      * @see #resolveIdentifier(String, String)
      */
     public static URI resolveUserIdentifier(String fragment) {
-        Objects.requireNonNull(namespace);
-        return resolveIdentifier(namespace, fragment);
+        Objects.requireNonNull(UserConf.namespace);
+        return resolveIdentifier(UserConf.namespace, fragment);
     }
 }

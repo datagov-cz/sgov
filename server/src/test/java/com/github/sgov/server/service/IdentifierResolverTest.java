@@ -68,7 +68,7 @@ class IdentifierResolverTest extends BaseServiceTestRunner {
     @Test
     void generateIdentifierAppendsNormalizedComponentsToNamespaceLoadedFromConfig() {
         final String namespace =
-            "http://onto.fel.cvut.cz/ontologies/uzivatel/";
+            "https://slovník.gov.cz/uživatel/";
         final String comp = "John Doe";
         final String result = IdentifierResolver.generateUserIdentifier(comp).toString();
         assertEquals(namespace + "john-doe", result);
@@ -96,15 +96,6 @@ class IdentifierResolverTest extends BaseServiceTestRunner {
         final String fragment = "metropolitan-plan";
         assertEquals(namespace + fragment,
             IdentifierResolver.resolveIdentifier(namespace, fragment).toString());
-    }
-
-    @Test
-    void resolveIdentifierAppendsFragmentToNamespaceLoadedFromConfiguration() {
-        final String namespace =
-            "http://onto.fel.cvut.cz/ontologies/uzivatel/";
-        final String fragment = "john-doe";
-        assertEquals(namespace + fragment,
-            IdentifierResolver.resolveUserIdentifier(fragment).toString());
     }
 
     @Test

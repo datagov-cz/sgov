@@ -1,5 +1,6 @@
 package com.github.sgov.server.service;
 
+import com.github.sgov.server.config.conf.UserConf;
 import com.github.sgov.server.config.conf.components.ComponentsProperties;
 import com.github.sgov.server.config.conf.JwtConf;
 import com.github.sgov.server.config.conf.PersistenceConf;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
                 TestPersistenceConfig.class,
                 PersistenceConf.class,
                 RepositoryConf.class,
+                UserConf.class,
                 ComponentsProperties.class,
                 JwtConf.class
         })
