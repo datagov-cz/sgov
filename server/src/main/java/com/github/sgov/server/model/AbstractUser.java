@@ -32,7 +32,7 @@ abstract class AbstractUser implements HasIdentifier, HasTypes, Serializable {
     protected String lastName;
 
     @Transient
-    protected String username;
+    protected String id;
 
     @Types
     protected Set<String> types;
@@ -45,6 +45,12 @@ abstract class AbstractUser implements HasIdentifier, HasTypes, Serializable {
     @Override
     public void setUri(URI uri) {
         this.uri = uri;
+    }
+
+    public String getId() {
+        return uri != null
+            ? uri.getPath().substring(uri.getPath().lastIndexOf('/') + 1)
+            : null;
     }
 
     public String getFirstName() {
@@ -61,14 +67,6 @@ abstract class AbstractUser implements HasIdentifier, HasTypes, Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     @Override
@@ -90,12 +88,12 @@ abstract class AbstractUser implements HasIdentifier, HasTypes, Serializable {
             return false;
         }
         final AbstractUser that = (AbstractUser) o;
-        return Objects.equals(uri, that.uri) && Objects.equals(username, that.username);
+        return Objects.equals(uri, that.uri) && Objects.equals(getId(), that.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uri, username);
+        return Objects.hash(uri, getId());
     }
 
     @Override
@@ -103,7 +101,7 @@ abstract class AbstractUser implements HasIdentifier, HasTypes, Serializable {
         return "User{"
             + firstName
             + " " + lastName
-            + ", username='" + username + '\''
+            + ", id='" + getId() + '\''
             + '}';
     }
 }

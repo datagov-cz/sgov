@@ -2,6 +2,7 @@ package com.github.sgov.server.controller;
 
 import static com.github.sgov.server.environment.Generator.generateUserAccount;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,5 +59,6 @@ class UserControllerTest extends BaseControllerTestRunner {
 
         final JSONObject o = new JSONObject(mvcResult.getResponse().getContentAsString());
         assertFalse(o.has("types"));
+        assertTrue(o.has("username"));
     }
 }

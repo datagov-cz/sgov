@@ -25,6 +25,11 @@ public class UserAccount extends AbstractUser {
 
     @NotBlank
     @ParticipationConstraints(nonEmpty = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_ma_uzivatelske_jmeno)
+    protected String username;
+
+    @NotBlank
+    @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Vocabulary.s_p_ma_heslo)
     private String password;
 
@@ -54,6 +59,13 @@ public class UserAccount extends AbstractUser {
         }
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getPassword() {
         return password;
@@ -167,7 +179,6 @@ public class UserAccount extends AbstractUser {
         target.setUri(uri);
         target.setFirstName(firstName);
         target.setLastName(lastName);
-        target.setUsername(username);
         if (types != null) {
             target.setTypes(new HashSet<>(types));
         }
@@ -182,6 +193,7 @@ public class UserAccount extends AbstractUser {
         final UserAccount clone = new UserAccount();
         copyAttributes(clone);
         clone.password = password;
+        clone.username = username;
         clone.setCurrentWorkspace(currentWorkspace);
         return clone;
     }

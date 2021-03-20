@@ -29,6 +29,7 @@ class ValidationExceptionTest {
         final ValidationResult<UserAccount> violations = ValidationResult.of(validator.validate(u));
         final ValidationException ex = new ValidationException(violations);
         final String result = ex.getMessage();
-        assertAll(() -> assertThat(result, containsString("password")));
+        assertAll(() -> assertThat(result, containsString("username")),
+            () -> assertThat(result, containsString("password")));
     }
 }
