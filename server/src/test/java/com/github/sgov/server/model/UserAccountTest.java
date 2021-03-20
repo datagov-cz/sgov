@@ -30,7 +30,6 @@ class UserAccountTest {
         assertAll(() -> assertEquals(ua.getUri(), result.getUri()),
             () -> assertEquals(ua.getFirstName(), result.getFirstName()),
             () -> assertEquals(ua.getLastName(), result.getLastName()),
-            () -> assertEquals(ua.getUsername(), result.getUsername()),
             () -> assertEquals(ua.getTypes(), result.getTypes()));
     }
 
