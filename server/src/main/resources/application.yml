@@ -12,7 +12,7 @@ management:
 
 info.app:
   name: "SGoV Server"
-  description: "This is SGoV Server, see https://github.com/opendata-mvcr/sgov for details."
+  description: "This is the SGoV Server, see https://github.com/opendata-mvcr/sgov for details."
   version: ${version}
 
 spring:
