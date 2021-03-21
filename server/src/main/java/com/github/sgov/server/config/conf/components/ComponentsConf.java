@@ -10,9 +10,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ComponentsConf {
 
-    public static final String DB_SERVER = "dbServer";
+    public static final String DB_SERVER = "al-db-server";
 
-    public static final String AUTH_SERVER = "authServer";
+    public static final String AUTH_SERVER = "al-auth-server";
 
     Map<String, ComponentConf> components;
 

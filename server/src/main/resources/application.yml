@@ -28,8 +28,8 @@ server:
 components:
 
 repository:
-  # overrides components.dbServer.url
-  #  url: # http://localhost/modelujeme/sluzby/dbServer/repositories/assembly-line
+  # overrides components['al-db-server'].url
+  #  url: # http://localhost/modelujeme/sluzby/db-server/repositories/assembly-line
   releaseSparqlEndpointUrl: https://slovník.gov.cz/sparql
   githubRepo: ssp
   githubOrganization: opendata-mvcr
@@ -47,9 +47,9 @@ persistence:
 keycloak:
   realm: assembly-line
   resource: sgovServer
-  ## overrides components.authServer.url, which denotes the realm URL (auth-server-url denotes
+  ## overrides components["al-auth-server"].url, which denotes the realm URL (auth-server-url denotes
   ## the keycloak server endpoint)
-  # auth-server-url: # http://localhost/modelujeme/sluzby/authServer
+  # auth-server-url: # http://localhost/modelujeme/sluzby/auth-server
   ssl-required: none
   bearer-only: false
   use-resource-role-mappings: true
