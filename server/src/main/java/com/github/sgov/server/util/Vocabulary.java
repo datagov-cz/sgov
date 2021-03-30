@@ -46,7 +46,7 @@ public final class Vocabulary {
     public static final String s_p_ma_puvodni_heslo = WORKSPACE_NAMESPACE
         + "má-původní-heslo";
     public static final String s_p_pouziva_pojmy_ze_slovniku = TERMIT_NAMESPACE
-        + "používá-pojmy-ze-slovníku";
+        + "pojem/používá-pojmy-ze-slovníku";
     public static final String s_p_ma_heslo = DATA_DESCRIPTION_NAMESPACE
             + "má-heslo";
     public static final String s_p_ma_krestni_jmeno = DATA_DESCRIPTION_NAMESPACE
