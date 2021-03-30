@@ -1,6 +1,5 @@
 package com.github.sgov.server.service.repository;
 
-import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.SGoVException;
@@ -85,14 +84,13 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
      * Gets the context for the given vocabulary URI in the given workspace, or null if no such
      * context exists.
      *
-     * @param workspaceUri  URI of the workspace.
+     * @param workspace  Workspace.
      * @param vocabularyUri URI of the vocabulary for which the context is created.
      * @return true if the vocabulary is already present in the workspace
      */
     @Transactional
     public URI getVocabularyContextReference(
-        final URI workspaceUri, final URI vocabularyUri) {
-        final Workspace workspace = findRequired(workspaceUri);
+        final Workspace workspace, final URI vocabularyUri) {
         final Optional<URI> vocabularyContextUri = workspace
             .getVocabularyContexts()
             .stream()
@@ -124,5 +122,9 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
      */
     public void clearVocabularyContext(final URI vocabularyContext) {
         workspaceDao.clearVocabularyContext(vocabularyContext);
+    }
+
+    public List<URI> getAllDependentVocabularies(final Workspace workspace) {
+        return workspaceDao.getAllDependentVocabularies(workspace);
     }
 }

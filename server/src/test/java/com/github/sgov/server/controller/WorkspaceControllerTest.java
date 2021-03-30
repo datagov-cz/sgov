@@ -24,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.topbraid.shacl.validation.ValidationReport;
 import org.topbraid.shacl.validation.ValidationResult;
 
@@ -65,7 +66,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         ws1.setUri(URI.create("http://example.org/test1"));
         final Workspace ws2 = new Workspace();
         ws2.setUri(URI.create("http://example.org/test2"));
-        final List<Workspace> workspaces = Arrays.asList(ws1,ws2);
+        final List<Workspace> workspaces = Arrays.asList(ws1, ws2);
 
         BDDMockito.given(workspaceService.findAllInferred())
             .willReturn(workspaces);
@@ -118,5 +119,22 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         mockMvc.perform(post("/workspaces/test/publish")
             .param("namespace", "http://example.org/"))
             .andExpect(status().isCreated());
+    }
+
+    @Test
+    void getDependenciesRetrievesAllDependencies() throws Exception {
+        final List<URI> vocabularies = Arrays.asList(
+            URI.create("https://example.org/1"),
+            URI.create("https://example.org/2")
+        );
+
+        BDDMockito.given(workspaceService.getAllDependentVocabularies(workspaceUri))
+            .willReturn(vocabularies);
+
+        mockMvc.perform(get("/workspaces/test/dependencies")
+            .param("namespace", "https://example.org/")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)));
     }
 }

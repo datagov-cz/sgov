@@ -44,8 +44,9 @@ public final class Vocabulary {
     public static final String s_c_zablokovany_uzivatel = WORKSPACE_NAMESPACE
         + "zablokovaný-uživatel";
     public static final String s_p_ma_puvodni_heslo = WORKSPACE_NAMESPACE
-            + "má-původní-heslo";
-
+        + "má-původní-heslo";
+    public final static String s_p_pouziva_pojmy_ze_slovniku = TERMIT_NAMESPACE
+        + "pou\u017e\u00edv\u00e1-pojmy-ze-slovn\u00edku";
     public static final String s_p_ma_heslo = DATA_DESCRIPTION_NAMESPACE
             + "má-heslo";
     public static final String s_p_ma_krestni_jmeno = DATA_DESCRIPTION_NAMESPACE

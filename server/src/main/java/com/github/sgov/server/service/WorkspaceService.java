@@ -203,14 +203,14 @@ public class WorkspaceService {
      */
     public URI ensureVocabularyExistsInWorkspace(
         URI workspaceUri, URI vocabularyUri, boolean isReadOnly, String label) {
+        final Workspace workspace = repositoryService.findRequired(workspaceUri);
         URI vocabularyContextUri =
-            repositoryService.getVocabularyContextReference(workspaceUri, vocabularyUri);
+            repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
         if (vocabularyContextUri != null) {
             return vocabularyContextUri;
         }
 
         VocabularyContext vocabularyContext;
-        Workspace workspace = repositoryService.findRequired(workspaceUri);
 
         if (!vocabularyService.getVocabulariesAsContextDtos().stream()
             .filter(vc ->
@@ -223,7 +223,7 @@ public class WorkspaceService {
                 workspace.addRefersToVocabularyContexts(vocabularyContext);
                 repositoryService.update(workspace);
                 vocabularyContextUri =
-                    repositoryService.getVocabularyContextReference(workspaceUri, vocabularyUri);
+                    repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
                 vocabularyContext = vocabularyService.findRequired(vocabularyContextUri);
                 vocabularyService.createContext(vocabularyContext, label);
             } else {
@@ -287,5 +287,10 @@ public class WorkspaceService {
         repositoryService.update(workspace);
 
         return vocabularyContext;
+    }
+
+    public List<URI> getAllDependentVocabularies(URI workspaceId) {
+        Workspace workspace = repositoryService.findRequired(workspaceId);
+        return repositoryService.getAllDependentVocabularies(workspace);
     }
 }
