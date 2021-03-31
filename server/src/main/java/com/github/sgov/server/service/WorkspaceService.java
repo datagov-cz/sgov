@@ -289,8 +289,14 @@ public class WorkspaceService {
         return vocabularyContext;
     }
 
-    public List<URI> getAllDependentVocabularies(URI workspaceId) {
-        Workspace workspace = repositoryService.findRequired(workspaceId);
-        return repositoryService.getAllDependentVocabularies(workspace);
+    /**
+     * Retrieves all direct dependent vocabularies for the given vocabulary in the given workspace.
+     *
+     * @param workspaceId         Uri of a workspace.
+     * @param vocabularyId        Uri of a vocabulary context.
+     */
+    public List<URI> getDependentsForVocabularyInWorkspace(URI workspaceId, URI vocabularyId) {
+        final Workspace workspace = repositoryService.findRequired(workspaceId);
+        return repositoryService.getDependentsForVocabularyInWorkspace(workspace, vocabularyId);
     }
 }

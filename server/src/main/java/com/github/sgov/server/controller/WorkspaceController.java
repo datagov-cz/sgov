@@ -5,6 +5,7 @@ import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.WorkspaceService;
+import com.github.sgov.server.util.Constants;
 import com.github.sgov.server.util.Constants.QueryParams;
 import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jsonld.JsonLd;
@@ -166,6 +167,34 @@ public class WorkspaceController extends BaseController {
         return workspace.getVocabularyContexts();
     }
 
+
+    /**
+     * Get vocabularies dependent on the current vocabulary in the given workspace
+     *
+     * @param workspaceFragment localname of the workspace
+     * @param vocabularyFragment localname of the vocabulary.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
+     * @return Workspace specified by workspaceFragment and optionally namespace.
+     */
+    @GetMapping(value = "/{workspaceFragment}/vocabularies/{vocabularyFragment}/dependencies",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            JsonLd.MEDIA_TYPE})
+    @ApiOperation(value = "Get vocabularies dependent on the given vocabulary.")
+    @Deprecated
+    public List<URI> getDependentVocabularies(
+        @PathVariable String workspaceFragment,
+        @PathVariable String vocabularyFragment,
+        @RequestParam(name = Constants.QueryParams.NAMESPACE) String namespace) {
+            final URI workspaceId = resolveIdentifier(
+                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+            final URI vocabularyId = resolveIdentifier(
+                namespace, vocabularyFragment, Vocabulary.s_c_slovnikovy_kontext);
+        return workspaceService.getDependentsForVocabularyInWorkspace(workspaceId, vocabularyId);
+    }
+
+
     /**
      * Adds a vocabulary to a workspace.
      *
@@ -314,23 +343,5 @@ public class WorkspaceController extends BaseController {
         return ResponseEntity.created(
             id
         ).build();
-    }
-
-    /**
-     * Gets all dependent vocabularies on some vocabulary in a workspace.
-     *
-     * @param workspaceFragment Localname of workspace id.
-     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
-     *                          specified, the configured namespace is used.
-     */
-    @GetMapping(value = "/{workspaceFragment}/dependencies", produces = {
-        MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
-    @ApiOperation(value = "Get all vocabularies on which some of the workspace vocabulary depends.")
-    public List<URI> getAllDependentVocabularies(
-        @PathVariable String workspaceFragment,
-        @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
-        final URI workspaceId = resolveIdentifier(
-            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        return workspaceService.getAllDependentVocabularies(workspaceId);
     }
 }

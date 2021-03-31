@@ -124,7 +124,7 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         workspaceDao.clearVocabularyContext(vocabularyContext);
     }
 
-    public List<URI> getAllDependentVocabularies(final Workspace workspace) {
-        return workspaceDao.getAllDependentVocabularies(workspace);
+    public List<URI> getDependentsForVocabularyInWorkspace(final Workspace workspace, final URI vocabularyUri) {
+        return workspaceDao.getDependentsForVocabularyInWorkspace(workspace, vocabularyUri);
     }
 }
