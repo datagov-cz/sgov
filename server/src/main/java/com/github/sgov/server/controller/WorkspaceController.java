@@ -172,12 +172,12 @@ public class WorkspaceController extends BaseController {
      * Get vocabularies dependent on the current vocabulary in the given workspace.
      *
      * @param workspaceFragment localname of the workspace
-     * @param vocabularyFragment localname of the vocabulary.
+     * @param vocabularyIri     IRI of the vocabulary.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @return Workspace specified by workspaceFragment and optionally namespace.
      */
-    @GetMapping(value = "/{workspaceFragment}/vocabularies/{vocabularyFragment}/dependencies",
+    @GetMapping(value = "/{workspaceFragment}/dependencies",
         produces = {
             MediaType.APPLICATION_JSON_VALUE,
             JsonLd.MEDIA_TYPE})
@@ -185,12 +185,11 @@ public class WorkspaceController extends BaseController {
     @Deprecated
     public List<URI> getDependentVocabularies(
         @PathVariable String workspaceFragment,
-        @PathVariable String vocabularyFragment,
-        @RequestParam(name = Constants.QueryParams.NAMESPACE) String namespace) {
+        @RequestParam(name = QueryParams.VOCABULARY_IRI) String vocabularyIri,
+        @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace) {
         final URI workspaceId = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        final URI vocabularyId = resolveIdentifier(
-            namespace, vocabularyFragment, Vocabulary.s_c_slovnikovy_kontext);
+        final URI vocabularyId = URI.create(vocabularyIri);
         return workspaceService.getDependentsForVocabularyInWorkspace(workspaceId, vocabularyId);
     }
 

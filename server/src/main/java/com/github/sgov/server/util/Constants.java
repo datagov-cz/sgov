@@ -36,6 +36,13 @@ public class Constants {
         public static final String NAMESPACE = "namespace";
 
         /**
+         * HTTP request query parameter denoting vocabulary IRI
+         *
+         * <p>URI of the vocabulary.
+         */
+        public static final String VOCABULARY_IRI = "vocabularyIri";
+
+        /**
          * HTTP request query parameter denoting page number.
          *
          * <p>Used for paging in collections of results.

@@ -130,7 +130,8 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         BDDMockito.given(workspaceService.getDependentsForVocabularyInWorkspace(workspaceUri, v1))
             .willReturn(Collections.singletonList(v2));
 
-        mockMvc.perform(get("/workspaces/test/vocabularies/1/dependencies")
+        mockMvc.perform(get("/workspaces/test/dependencies")
+            .param("vocabularyIri", "https://example.org/1")
             .param("namespace", "https://example.org/")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
