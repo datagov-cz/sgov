@@ -84,7 +84,7 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
      * Gets the context for the given vocabulary URI in the given workspace, or null if no such
      * context exists.
      *
-     * @param workspace  Workspace.
+     * @param workspace     Workspace.
      * @param vocabularyUri URI of the vocabulary for which the context is created.
      * @return true if the vocabulary is already present in the workspace
      */
@@ -124,7 +124,8 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         workspaceDao.clearVocabularyContext(vocabularyContext);
     }
 
-    public List<URI> getDependentsForVocabularyInWorkspace(final Workspace workspace, final URI vocabularyUri) {
+    public List<URI> getDependentsForVocabularyInWorkspace(final Workspace workspace,
+                                                           final URI vocabularyUri) {
         return workspaceDao.getDependentsForVocabularyInWorkspace(workspace, vocabularyUri);
     }
 }

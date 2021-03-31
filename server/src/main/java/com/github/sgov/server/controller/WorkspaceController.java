@@ -169,7 +169,7 @@ public class WorkspaceController extends BaseController {
 
 
     /**
-     * Get vocabularies dependent on the current vocabulary in the given workspace
+     * Get vocabularies dependent on the current vocabulary in the given workspace.
      *
      * @param workspaceFragment localname of the workspace
      * @param vocabularyFragment localname of the vocabulary.
@@ -187,10 +187,10 @@ public class WorkspaceController extends BaseController {
         @PathVariable String workspaceFragment,
         @PathVariable String vocabularyFragment,
         @RequestParam(name = Constants.QueryParams.NAMESPACE) String namespace) {
-            final URI workspaceId = resolveIdentifier(
-                namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-            final URI vocabularyId = resolveIdentifier(
-                namespace, vocabularyFragment, Vocabulary.s_c_slovnikovy_kontext);
+        final URI workspaceId = resolveIdentifier(
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final URI vocabularyId = resolveIdentifier(
+            namespace, vocabularyFragment, Vocabulary.s_c_slovnikovy_kontext);
         return workspaceService.getDependentsForVocabularyInWorkspace(workspaceId, vocabularyId);
     }
 

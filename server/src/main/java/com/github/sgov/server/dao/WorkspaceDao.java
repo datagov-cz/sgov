@@ -271,7 +271,8 @@ public class WorkspaceDao extends BaseDao<Workspace> {
      *
      * @param workspace workspace
      */
-    public List<URI> getDependentsForVocabularyInWorkspace(final Workspace workspace, final URI vocabularyUri) {
+    public List<URI> getDependentsForVocabularyInWorkspace(final Workspace workspace,
+                                                           final URI vocabularyUri) {
         try {
             return em
                 .createNativeQuery(
