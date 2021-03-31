@@ -69,6 +69,7 @@ public class VocabularyController extends BaseController {
             MediaType.APPLICATION_JSON_VALUE,
             JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Get vocabulary imports.")
+    @Deprecated
     public Set<URI> getVocabularyImports(
         @PathVariable String vocabularyFragment,
         @RequestParam(name = Constants.QueryParams.NAMESPACE) String namespace) {

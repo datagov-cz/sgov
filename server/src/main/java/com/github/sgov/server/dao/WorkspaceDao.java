@@ -271,20 +271,15 @@ public class WorkspaceDao extends BaseDao<Workspace> {
      *
      * @param workspace workspace
      */
-    public List<URI> getAllDependentVocabularies(final Workspace workspace) {
+    public List<URI> getDependentsForVocabularyInWorkspace(final Workspace workspace,
+                                                           final URI vocabularyUri) {
         try {
-            final String valuesBlock = "VALUES ?s { "
-                + workspace.getVocabularyContexts().stream()
-                .map(c -> "<" + c.getBasedOnVocabularyVersion() + ">")
-                .collect(Collectors.joining(" "))
-                + " }";
             return em
                 .createNativeQuery(
-                    "SELECT ?o WHERE { "
-                        + "?s ?p ?o . "
-                        + "} " + valuesBlock,
+                    "SELECT ?o WHERE { ?s ?p ?o } ",
                     URI.class)
                 .setParameter("p", URI.create(Vocabulary.s_p_pouziva_pojmy_ze_slovniku))
+                .setParameter("s", vocabularyUri)
                 .getResultList();
         } catch (RuntimeException e) {
             throw new PersistenceException(e);

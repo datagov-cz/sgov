@@ -14,6 +14,7 @@ import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.WorkspaceService;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -123,18 +124,16 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
 
     @Test
     void getDependenciesRetrievesAllDependencies() throws Exception {
-        final List<URI> vocabularies = Arrays.asList(
-            URI.create("https://example.org/1"),
-            URI.create("https://example.org/2")
-        );
+        final URI v1 = URI.create("https://example.org/1");
+        final URI v2 = URI.create("https://example.org/2");
 
-        BDDMockito.given(workspaceService.getAllDependentVocabularies(workspaceUri))
-            .willReturn(vocabularies);
+        BDDMockito.given(workspaceService.getDependentsForVocabularyInWorkspace(workspaceUri, v1))
+            .willReturn(Collections.singletonList(v2));
 
-        mockMvc.perform(get("/workspaces/test/dependencies")
+        mockMvc.perform(get("/workspaces/test/vocabularies/1/dependencies")
             .param("namespace", "https://example.org/")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(2)));
+            .andExpect(jsonPath("$", hasSize(1)));
     }
 }
