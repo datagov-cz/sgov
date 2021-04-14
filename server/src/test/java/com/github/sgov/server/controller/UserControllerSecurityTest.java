@@ -116,7 +116,7 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
         private UserController controller;
 
         Config() {
-            MockitoAnnotations.initMocks(this);
+            MockitoAnnotations.openMocks(this);
         }
 
         @Bean
