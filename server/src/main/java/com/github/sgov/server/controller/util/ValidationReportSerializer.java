@@ -40,8 +40,6 @@ public class ValidationReportSerializer extends JsonSerializer<ValidationReport>
                 gen.writeStringField("severity", r.getSeverity().getURI());
                 gen.writeStringField("message", sb.toString());
                 gen.writeStringField("focusNode", r.getFocusNode().toString());
-                //                        gen.writeStringField("value", r.getValue()
-                //                        .toString());
                 gen.writeEndObject();
             } catch (IOException e) {
                 e.printStackTrace();

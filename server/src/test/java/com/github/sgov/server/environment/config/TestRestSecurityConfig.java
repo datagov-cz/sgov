@@ -34,7 +34,7 @@ public class TestRestSecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationProvider authenticationProvider;
 
     protected TestRestSecurityConfig() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Override

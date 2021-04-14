@@ -8,7 +8,7 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 
 public class ComponentsConstructor extends Constructor {
-    private TypeDescription itemType = new TypeDescription(ComponentConf.class);
+    private final TypeDescription itemType = new TypeDescription(ComponentConf.class);
 
     public ComponentsConstructor() {
         this.rootTag = new Tag("myRoot");

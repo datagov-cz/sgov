@@ -154,11 +154,9 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      */
     private List<URI> getWriteLockedVocabularies() {
         final List<URI> result = new ArrayList<>();
-        workspaceDao.findAll().stream().forEach(w -> {
-            w.getVocabularyContexts().stream()
-                .filter(vc -> !vc.isReadonly())
-                .forEach(vc -> result.add(vc.getBasedOnVocabularyVersion()));
-        });
+        workspaceDao.findAll().forEach(w -> w.getVocabularyContexts().stream()
+            .filter(vc -> !vc.isReadonly())
+            .forEach(vc -> result.add(vc.getBasedOnVocabularyVersion())));
         return result;
     }
 
@@ -318,7 +316,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
 
         conGitSsp.setNamespace(folder.getVocabularyId() + "-pojem",
             ctxVocabulary.toString() + "/pojem/");
-        conGitSsp.setNamespace(folder.getVocabularyId(), ctxVocabulary.toString() + "/");
+        conGitSsp.setNamespace(folder.getVocabularyId(), ctxVocabulary + "/");
 
         conWorkspace.getStatements(ctxVocabulary, null, null, ctxWorkspaceVocabulary)
             .forEach(s -> conGitSsp.add(s, ctxVocabulary));
@@ -364,33 +362,9 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         final File modFile = folder.getModelFile("");
         conGitSsp.export(getDeterministicWriter(new FileWriter(modFile)), ctxModel);
 
-        //        final File comModFile = folder.getCompactModelFile("");
-        //        conGitSsp.export(getDeterministicWriter(new FileWriter(comModFile)),
-        //            compact(conGitSsp, ctxModel));
-
         conGitSsp.close();
         conWorkspace.close();
     }
-
-    //    private IRI compact(final RepositoryConnection connection, final IRI ctxModel)
-    //        throws IOException {
-    //        // copy context
-    //        final IRI ctxComModel =
-    //            connection.getValueFactory().createIRI(ctxModel.stringValue() + "-compact");
-    //        connection.add(connection.getStatements(null, null, null, ctxModel), ctxComModel);
-    //
-    //        // infer domains
-    //        connection.prepareUpdate(IOUtils.toString(getClass()
-    //            .getResourceAsStream("/queries/infer-domain.rq"), "utf-8")
-    //            .replace("?g", "<" + ctxComModel.stringValue() + ">"));
-    //
-    //        // infer ranges
-    //        connection.prepareUpdate(IOUtils.toString(getClass()
-    //            .getResourceAsStream("/queries/infer-range.rq"), "utf-8")
-    //            .replace("?g", "<" + ctxComModel.stringValue() + ">"));
-    //
-    //        return ctxComModel;
-    //    }
 
     /**
      * Stores the given vocabulary context into the given vocabulary folder.

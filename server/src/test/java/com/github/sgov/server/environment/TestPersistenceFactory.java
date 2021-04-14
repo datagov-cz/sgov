@@ -33,16 +33,13 @@ public class TestPersistenceFactory {
 
     private final ComponentsProperties confComponents;
 
-    private final RepositoryConf confRepository;
-
     private final PersistenceConf confPersistence;
 
     private EntityManagerFactory emf;
 
     @Autowired
-    public TestPersistenceFactory(RepositoryConf confRepository, PersistenceConf confPersistence,
+    public TestPersistenceFactory(PersistenceConf confPersistence,
                                   ComponentsProperties confComponents) {
-        this.confRepository = confRepository;
         this.confPersistence = confPersistence;
         this.confComponents = confComponents;
     }

@@ -17,7 +17,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
@@ -60,9 +60,9 @@ class VocabularyRepositoryServiceWithFusekiTest extends BaseServiceTestRunner {
         repositoryConf.setReleaseSparqlEndpointUrl("http://localhost:1234/");
 
         final List<VocabularyContext> contexts = sut.getVocabulariesAsContextDtos();
-        Assert.assertEquals(2, contexts.size());
+        Assertions.assertEquals(2, contexts.size());
 
-        Assert.assertEquals(new HashSet<>(Arrays.asList(vocabularies)),
+        Assertions.assertEquals(new HashSet<>(Arrays.asList(vocabularies)),
             contexts.stream().map(c ->
                 c.getBasedOnVocabularyVersion().toString()).collect(Collectors.toSet())
         );

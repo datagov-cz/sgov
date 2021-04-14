@@ -1,7 +1,6 @@
 package com.github.sgov.server.util;
 
 import java.util.stream.Stream;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,15 +12,13 @@ public class VocabularyInstanceTest {
     @MethodSource("provideValidVocabularyIris")
     public void allVocabularyTypesResolveVocabularyFoldersCorrectly(final String expectedFolder,
                                                                     final String vocabularyIri) {
-        Assert.assertEquals(expectedFolder, new VocabularyInstance(vocabularyIri).getFolder());
+        Assertions.assertEquals(expectedFolder, new VocabularyInstance(vocabularyIri).getFolder());
     }
 
     @ParameterizedTest
     @MethodSource("provideInvalidVocabularyIris")
     public void invalidVocabularyIrisResultInNullFolderfinal(String vocabularyIri) {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new VocabularyInstance(vocabularyIri).getFolder();
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new VocabularyInstance(vocabularyIri).getFolder());
     }
 
     public static Stream<Arguments> provideInvalidVocabularyIris() {

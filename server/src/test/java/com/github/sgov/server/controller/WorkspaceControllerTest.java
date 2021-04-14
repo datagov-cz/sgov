@@ -25,7 +25,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.topbraid.shacl.validation.ValidationReport;
 import org.topbraid.shacl.validation.ValidationResult;
 

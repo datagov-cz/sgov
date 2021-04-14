@@ -72,7 +72,7 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
      * Gets a reference to an object wih the specified identifier.
      *
      * <p>Note that all attributes of the reference are loaded lazily and the corresponding
-     * persistence context must bestill open to load them.
+     * persistence context must be still open to load them.
      *
      * <p>Also note that, in contrast to {@link #find(URI)}, this method does not invoke
      * {@link #postLoad(HasIdentifier)}for the loaded instance.
@@ -88,7 +88,7 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
      * Finds an object with the specified id and returns it.
      *
      * <p>In comparison to {@link #find(URI)}, this method guarantees to return a matching
-     * instance. If no such object isfound, a {@link NotFoundException} is thrown.
+     * instance. If no such object is found, a {@link NotFoundException} is thrown.
      *
      * @param id Identifier of the object to load
      * @return The matching object

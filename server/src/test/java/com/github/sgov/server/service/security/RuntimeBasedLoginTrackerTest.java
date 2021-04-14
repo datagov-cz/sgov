@@ -1,6 +1,5 @@
 package com.github.sgov.server.service.security;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.never;
@@ -14,6 +13,7 @@ import com.github.sgov.server.event.LoginFailureEvent;
 import com.github.sgov.server.event.LoginSuccessEvent;
 import com.github.sgov.server.model.UserAccount;
 import com.github.sgov.server.security.SecurityConstants;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +61,7 @@ public class RuntimeBasedLoginTrackerTest {
         }
         loginTracker.onLoginFailure(new LoginFailureEvent(user));
         assertNotNull(listener.user);
-        assertEquals(user, listener.user);
+        Assertions.assertEquals(user, listener.user);
     }
 
     @Test

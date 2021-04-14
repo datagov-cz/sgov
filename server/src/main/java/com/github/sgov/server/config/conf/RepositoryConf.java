@@ -18,7 +18,6 @@ import org.springframework.data.annotation.Transient;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class RepositoryConf {
 
-    @Autowired
     private ComponentsConf componentsConf;
 
     /**
@@ -43,6 +42,11 @@ public class RepositoryConf {
 
     @Transient
     private String remoteUrl;
+
+    @Autowired
+    public RepositoryConf(ComponentsConf componentsConf) {
+        this.componentsConf = componentsConf;
+    }
 
     /**
      * Returns repository.url. If empty, then returns components.dbServer.url
