@@ -73,7 +73,6 @@ public final class DescriptorFactory {
      */
     public static Descriptor vocabularyDescriptor(URI vocabularyContextUri) {
         Objects.requireNonNull(vocabularyContextUri);
-        EntityDescriptor descriptor = new EntityDescriptor(vocabularyContextUri);
-        return descriptor;
+        return new EntityDescriptor(vocabularyContextUri);
     }
 }

@@ -3,6 +3,7 @@ package com.github.sgov.server.service.repository;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.SGoVException;
+import com.github.sgov.server.model.AbstractEntity;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import java.io.IOException;
@@ -95,7 +96,7 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
             .getVocabularyContexts()
             .stream()
             .filter(vc -> vc.getBasedOnVocabularyVersion().equals(vocabularyUri))
-            .map(vc -> vc.getUri())
+            .map(AbstractEntity::getUri)
             .findFirst();
         return vocabularyContextUri.orElse(null);
     }

@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class Generator {
 
-    private static Random random = new Random();
+    private static final Random random = new Random();
 
     private Generator() {
         throw new AssertionError();

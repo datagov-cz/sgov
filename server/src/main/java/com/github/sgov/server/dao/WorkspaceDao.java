@@ -141,7 +141,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         final String bindings = "<" + v + ">";
         final ParameterizedSparqlString query = new ParameterizedSparqlString(
             "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
-        log.debug("- getting all statements for the vocabularies using query {}", query.toString());
+        log.debug("- getting all statements for the vocabularies using query {}", query);
         final QueryExecution e = QueryExecutionFactory
             .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery());
         final Model m = e.execConstruct();
@@ -176,10 +176,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
                 final ValidationReport report = validateVocabulary(c.getUri().toString(),
                     endpointUlozistePracovnichProstoru, validator, rules);
                 conforms = conforms && report.conforms();
-                for (ValidationResult validationResult :
-                    report.results()) {
-                    validationResults.add(validationResult);
-                }
+                validationResults.addAll(report.results());
             }
         }
         validationResults.sort(new ValidationResultSeverityComparator());

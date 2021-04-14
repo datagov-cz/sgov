@@ -99,9 +99,7 @@ public class WorkspaceService {
                 final File[] files = f.toPruneAllExceptCompact();
                 if (files != null) {
                     Arrays.stream(files).forEach(
-                        ff -> {
-                            githubService.delete(git, ff);
-                        }
+                        ff -> githubService.delete(git, ff)
                     );
                 }
 
@@ -213,9 +211,9 @@ public class WorkspaceService {
         VocabularyContext vocabularyContext;
 
         if (!vocabularyService.getVocabulariesAsContextDtos().stream()
-            .filter(vc ->
+            .anyMatch(vc ->
                 vc.getBasedOnVocabularyVersion().equals(vocabularyUri)
-            ).findAny().isPresent()
+            )
         ) {
             if (label != null) {
                 vocabularyContext = stub(vocabularyUri);
@@ -252,9 +250,7 @@ public class WorkspaceService {
             .filter(ws -> ws.getVocabularyContexts()
                 .stream()
                 .filter(vc -> vc.getBasedOnVocabularyVersion().equals(vocabularyIri))
-                .filter(vc -> !vc.isReadonly())
-                .findAny()
-                .isPresent()
+                .anyMatch(vc -> !vc.isReadonly())
             ).collect(Collectors.toList());
     }
 

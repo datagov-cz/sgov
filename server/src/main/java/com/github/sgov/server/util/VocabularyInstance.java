@@ -10,10 +10,6 @@ public class VocabularyInstance {
 
     private String conceptPrefix;
 
-    private VocabularyType type;
-
-    private String vocabularyId;
-
     private String folder;
 
     /**
@@ -27,7 +23,7 @@ public class VocabularyInstance {
     }
 
     private void parseIri() {
-        this.type = VocabularyType.getType(iri);
+        VocabularyType type = VocabularyType.getType(iri);
 
         if (type == null) {
             throw new IllegalArgumentException("Unknown vocabulary type for IRI " + iri);
@@ -36,25 +32,22 @@ public class VocabularyInstance {
         switch (type) {
           case ZSGOV:
           case VSGOV:
-              this.conceptPrefix = this.type.getPrefix() + "-pojem";
-              this.folder = "content/" + this.type.getPrefix();
-              this.vocabularyId = null;
+              this.conceptPrefix = type.getPrefix() + "-pojem";
+              this.folder = "content/" + type.getPrefix();
               break;
 
           case GSGOV:
           case LSGOV:
           case ASGOV:
           case DSGOV:
-              final Matcher m = this.type.getRegex().matcher(iri);
+              final Matcher m = type.getRegex().matcher(iri);
               m.matches();
               final String id = m.group(2).replace("/", "-");
-              this.vocabularyId = new StringBuilder()
-                  .append(this.type.getPrefix())
-                  .append(type.equals(VocabularyType.LSGOV) ? "-sbírka-" : "-")
-                  .append(id)
-                  .toString();
-              this.conceptPrefix = this.vocabularyId + "-pojem";
-              this.folder = "content/" + Paths.get(type.getPrefix(), vocabularyId).toString();
+              String vocabularyId = type.getPrefix()
+                  + (type.equals(VocabularyType.LSGOV) ? "-sbírka-" : "-")
+                  + id;
+              this.conceptPrefix = vocabularyId + "-pojem";
+              this.folder = "content/" + Paths.get(type.getPrefix(), vocabularyId);
               break;
 
           default:

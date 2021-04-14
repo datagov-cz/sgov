@@ -16,8 +16,8 @@ import com.github.sgov.server.service.UserService;
 import com.github.sgov.server.service.security.SecurityUtils;
 import java.util.List;
 import javax.servlet.Filter;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,7 +96,7 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
             mockMvc.perform(get(BASE_URL + "/current").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
         final UserAccount result = readValue(mvcResult, UserAccount.class);
-        Assert.assertEquals(user, result);
+        Assertions.assertEquals(user, result);
     }
 
     /**

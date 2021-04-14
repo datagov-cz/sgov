@@ -1,9 +1,9 @@
 package com.github.sgov.server.controller;
 
 import com.github.sgov.server.exception.VocabularyRegisteredinReadWriteException;
+import com.github.sgov.server.model.Asset;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
-import com.github.sgov.server.service.IdentifierResolver;
 import com.github.sgov.server.service.WorkspaceService;
 import com.github.sgov.server.util.Constants.QueryParams;
 import com.github.sgov.server.util.Vocabulary;
@@ -97,7 +97,7 @@ public class WorkspaceController extends BaseController {
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace workspace = workspaceService.findInferred(identifier);
         LOG.info("Workspace {} " + workspace.getLastModified().getTime() + " : "
-            + workspace.getLastModifiedOrCreated().getTime());
+            + workspace.getLastModifiedOrCreated().getTime(), workspace.getUri());
         return workspace;
     }
 
@@ -204,7 +204,7 @@ public class WorkspaceController extends BaseController {
             if (!wss.isEmpty()) {
                 throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
                     wss.stream()
-                        .map(ws -> ws.getUri()).collect(Collectors.toList())
+                        .map(Asset::getUri).collect(Collectors.toList())
                 );
             }
         }

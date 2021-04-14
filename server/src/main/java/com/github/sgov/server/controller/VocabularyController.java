@@ -48,11 +48,7 @@ public class VocabularyController extends BaseController {
     public List<VocabularyContext> findAll(@RequestHeader
                                                    Map<String, String> headers) {
         final String lang;
-        if (headers.containsKey("Accept-Language")) {
-            lang = headers.get("Accept-Language");
-        } else {
-            lang = "cs";
-        }
+        lang = headers.getOrDefault("Accept-Language", "cs");
         return vocabularyService.getVocabulariesAsContextDtos(lang);
     }
 

@@ -47,7 +47,7 @@ public enum VocabularyType {
         return Pattern.compile("^" + getVocabularyPattern() + "$");
     }
 
-    public static final VocabularyType getType(String iri) {
+    public static VocabularyType getType(String iri) {
         return Arrays.stream(values())
             .filter(vt -> vt.getRegex().matcher(iri).matches()).findAny().orElse(null);
     }

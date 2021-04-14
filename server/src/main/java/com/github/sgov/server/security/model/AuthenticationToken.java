@@ -59,8 +59,4 @@ public class AuthenticationToken extends AbstractAuthenticationToken implements 
         return Objects.hash(super.hashCode(), userDetails);
     }
 
-    @Override
-    public String toString() {
-        return super.toString();
-    }
 }

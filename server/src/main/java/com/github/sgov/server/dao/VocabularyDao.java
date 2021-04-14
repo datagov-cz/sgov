@@ -1,7 +1,5 @@
 package com.github.sgov.server.dao;
 
-import com.github.sgov.server.config.conf.PersistenceConf;
-import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.util.DescriptorFactory;

@@ -2,7 +2,7 @@ package com.github.sgov.server.config;
 
 import com.github.sgov.server.config.conf.ApplicationConf;
 import cz.cvut.kbss.jopa.sessions.UnitOfWorkImpl;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +26,12 @@ import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class SpringFoxConfig {
 
+    private final ApplicationConf applicationConf;
+
     @Autowired
-    private ApplicationConf applicationConf;
+    public SpringFoxConfig(ApplicationConf applicationConf) {
+        this.applicationConf = applicationConf;
+    }
 
     /**
      * Returns Swagger Docket.
@@ -43,8 +47,8 @@ public class SpringFoxConfig {
             .genericModelSubstitutes(ResponseEntity.class)
             .ignoredParameterTypes(UnitOfWorkImpl.class)
             .apiInfo(apiInfo())
-            .securityContexts(Arrays.asList(securityContext()))
-            .securitySchemes(Arrays.asList(securityScheme()));
+            .securityContexts(Collections.singletonList(securityContext()))
+            .securitySchemes(Collections.singletonList(securityScheme()));
     }
 
     @Bean
@@ -71,7 +75,7 @@ public class SpringFoxConfig {
             "global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("Bearer",
+        return Collections.singletonList(new SecurityReference("Bearer",
             authorizationScopes));
     }
 

@@ -12,7 +12,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
@@ -53,6 +53,6 @@ class VocabularyRepositoryServiceTest extends BaseServiceTestRunner {
         final RDFWriter w2 = sut.getDeterministicWriter(sw2);
         conGitSsp.export(w2);
 
-        Assert.assertEquals(sw1.toString(), sw2.toString());
+        Assertions.assertEquals(sw1.toString(), sw2.toString());
     }
 }

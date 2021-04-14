@@ -12,7 +12,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -76,7 +76,7 @@ class RestUtilsTest {
     @Test
     void urlEncodeEncodesSpecifiedStringWithUtf8UrlEncoding() throws Exception {
         final String value = Generator.generateUri().toString();
-        Assert.assertEquals(URLEncoder.encode(value, StandardCharsets.UTF_8.name()),
+        Assertions.assertEquals(URLEncoder.encode(value, StandardCharsets.UTF_8.name()),
             RestUtils.urlEncode(value));
     }
 
