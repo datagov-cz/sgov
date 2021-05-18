@@ -1,5 +1,6 @@
 package com.github.sgov.server.controller;
 
+import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.exception.VocabularyRegisteredinReadWriteException;
 import com.github.sgov.server.model.Asset;
 import com.github.sgov.server.model.VocabularyContext;
@@ -192,6 +193,20 @@ public class WorkspaceController extends BaseController {
         return workspaceService.getDependentsForVocabularyInWorkspace(workspaceId, vocabularyId);
     }
 
+    private void checkNotLoaded(final URI workspaceUri, final URI vocabularyUri) {
+        final Collection<Workspace> wss = workspaceService
+            .getWorkspacesWithReadWriteVocabulary(vocabularyUri)
+            .stream()
+            .filter(ws -> !ws.getUri().equals(workspaceUri))
+            .collect(Collectors.toSet());
+
+        if (!wss.isEmpty()) {
+            throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
+                wss.stream()
+                    .map(Asset::getUri).collect(Collectors.toList())
+            );
+        }
+    }
 
     /**
      * Adds a vocabulary to a workspace.
@@ -206,6 +221,7 @@ public class WorkspaceController extends BaseController {
      *                          specified, the configured namespace is used.
      * @param vocabularyUri     Uri of a vocabulary for which context should be created.
      */
+    @Deprecated
     @PostMapping(value = "/{workspaceFragment}/vocabularies")
     @ApiOperation(value =
         "Create vocabulary context within workspace. If label is provided, a new vocabulary is "
@@ -219,24 +235,52 @@ public class WorkspaceController extends BaseController {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
 
-        final Collection<Workspace> wss = workspaceService
-            .getWorkspacesWithReadWriteVocabulary(vocabularyUri)
-            .stream()
-            .filter(ws -> !ws.getUri().equals(workspaceUri))
-            .collect(Collectors.toSet());
-
-        if (!wss.isEmpty()) {
-            throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
-                wss.stream()
-                    .map(Asset::getUri).collect(Collectors.toList())
-            );
-        }
+        checkNotLoaded(workspaceUri, vocabularyUri);
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,
-                vocabularyUri,
-                label
+                new VocabularyContextDto()
+                    .setBasedOnVocabularyVersion(vocabularyUri)
+                    .setLabel(label)
+            );
+        LOG.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
+        return ResponseEntity.created(
+            generateLocation(vocabularyContextUri, Vocabulary.s_c_slovnikovy_kontext)
+        ).build();
+    }
+
+    /**
+     * Adds a vocabulary to a workspace.
+     *
+     * <p>
+     * This creates a new vocabulary context within a workspace and its relevant change context. If
+     * the label is provided, a new vocabulary is created, otherwise an existing one is loaded.
+     * </p>
+     *
+     * @param workspaceFragment Localname of workspace id.
+     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
+     *                          specified, the configured namespace is used.
+     * @param vocabularyContext vocabularyContext to create/load
+     */
+    @PostMapping(value = "/{workspaceFragment}/vocabularies-full")
+    @ApiOperation(value =
+        "Create vocabulary context within workspace. If label is provided, a new vocabulary is "
+            + "created if not found.")
+    public ResponseEntity<String> addVocabularyToWorkspace(
+        @PathVariable String workspaceFragment,
+        @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
+        @RequestBody VocabularyContextDto vocabularyContext
+    ) {
+        final URI workspaceUri = resolveIdentifier(
+            namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+
+        checkNotLoaded(workspaceUri, vocabularyContext.getBasedOnVocabularyVersion());
+
+        final URI vocabularyContextUri =
+            workspaceService.ensureVocabularyExistsInWorkspace(
+                workspaceUri,
+                vocabularyContext
             );
         LOG.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
         return ResponseEntity.created(

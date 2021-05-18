@@ -1,5 +1,6 @@
 package com.github.sgov.server.util;
 
+import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import java.util.Date;
 import java.util.Set;
 import org.eclipse.rdf4j.model.IRI;
@@ -16,6 +17,7 @@ import org.eclipse.rdf4j.model.vocabulary.VANN;
  */
 public final class VocabularyCreationHelper {
 
+    public static final String LANGUAGE = "cs";
     private static String BIBO_STATUS = "http://purl.org/ontology/bibo/status";
 
     private static void addCommon(ValueFactory f,
@@ -27,9 +29,9 @@ public final class VocabularyCreationHelper {
         statements.add(f.createStatement(iri, RDF.TYPE, OWL.ONTOLOGY));
         statements.add(f.createStatement(iri, DCTERMS.CREATED, f.createLiteral(new Date())));
         statements.add(f.createStatement(iri, DCTERMS.RIGHTS, license));
-        statements.add(f.createStatement(iri, DCTERMS.TITLE, f.createLiteral(label, "cs")));
+        statements.add(f.createStatement(iri, DCTERMS.TITLE, f.createLiteral(label, LANGUAGE)));
         statements.add(f.createStatement(iri, f.createIRI(BIBO_STATUS),
-            f.createLiteral("Specifikace", "cs")));
+            f.createLiteral("Specifikace", LANGUAGE)));
         statements.add(f.createStatement(iri, VANN.PREFERRED_NAMESPACE_PREFIX,
             f.createLiteral(vocabulary.getConceptPrefix())));
         statements.add(f.createStatement(iri, VANN.PREFERRED_NAMESPACE_URI,
@@ -43,15 +45,18 @@ public final class VocabularyCreationHelper {
      *
      * @param f          RDF4J value factory
      * @param vocabulary vocabulary vocabulary
-     * @param label      vocabulary label
+     * @param vocabularyContextDto  vocabulary context data
      * @param statements set of output statements
      * @return vocabulary resource
      */
     public static IRI createVocabulary(ValueFactory f,
                                        VocabularyInstance vocabulary,
-                                       String label,
+                                       VocabularyContextDto vocabularyContextDto,
                                        Set<Statement> statements) {
         String iri = vocabulary.getIri();
+
+        String label = vocabularyContextDto.getLabel();
+        String description = vocabularyContextDto.getDescription();
 
         // glossary
         IRI g = f.createIRI(iri + "/glosář");
@@ -73,6 +78,10 @@ public final class VocabularyCreationHelper {
         statements.add(f.createStatement(s, OWL.IMPORTS, m));
         statements.add(f.createStatement(s, f.createIRI(Vocabulary.s_p_ma_glosar), g));
         statements.add(f.createStatement(s, f.createIRI(Vocabulary.s_p_ma_model), m));
+        if (description != null) {
+            statements.add(f.createStatement(s, DCTERMS.DESCRIPTION,
+                f.createLiteral(description, LANGUAGE)));
+        }
 
         return s;
     }

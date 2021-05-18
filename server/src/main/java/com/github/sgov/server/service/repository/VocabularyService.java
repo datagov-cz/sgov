@@ -1,6 +1,7 @@
 package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
@@ -187,7 +188,8 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      * @param vocabularyContext the vocabulary context to be loaded.
      */
     @Transactional
-    public void createContext(final VocabularyContext vocabularyContext, final String label) {
+    public void createContext(final VocabularyContext vocabularyContext,
+                              final VocabularyContextDto vocabularyContextDto) {
         final Set<Statement> statements = new HashSet<>();
         final HTTPRepository workspaceRepository = new HTTPRepository(
             repositoryConf.getUrl());
@@ -202,7 +204,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         VocabularyCreationHelper.createVocabulary(
             f,
             i,
-            label,
+            vocabularyContextDto,
             statements
         );
 

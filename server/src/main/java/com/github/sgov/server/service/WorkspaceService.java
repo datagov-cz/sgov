@@ -1,5 +1,6 @@
 package com.github.sgov.server.service;
 
+import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.model.ChangeTrackingContext;
@@ -183,11 +184,12 @@ public class WorkspaceService {
      * part of the workspace, it is added to the workspace and its content is loaded.
      *
      * @param workspaceUri  URI of the workspace to connect the vocabulary context to.
-     * @param vocabularyUri URI of the vocabulary to be attached to the workspace
+     * @param vocabularyContextDto vocabulary metadata
      * @return URI of the vocabulary context to create
      */
     public URI ensureVocabularyExistsInWorkspace(
-        URI workspaceUri, URI vocabularyUri, String label) {
+        final URI workspaceUri, final VocabularyContextDto vocabularyContextDto) {
+        final URI vocabularyUri = vocabularyContextDto.getBasedOnVocabularyVersion();
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
         URI vocabularyContextUri =
             repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
@@ -195,32 +197,41 @@ public class WorkspaceService {
             return vocabularyContextUri;
         }
 
-        VocabularyContext vocabularyContext;
-
         if (!vocabularyService.getVocabulariesAsContextDtos().stream()
             .anyMatch(vc ->
                 vc.getBasedOnVocabularyVersion().equals(vocabularyUri)
             )
         ) {
-            if (label != null) {
-                vocabularyContext = stub(vocabularyUri);
-                workspace.addRefersToVocabularyContexts(vocabularyContext);
-                repositoryService.update(workspace);
-                vocabularyContextUri =
-                    repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
-                vocabularyContext = vocabularyService.findRequired(vocabularyContextUri);
-                vocabularyService.createContext(vocabularyContext, label);
-            } else {
+            if (vocabularyContextDto.getLabel() == null) {
                 throw NotFoundException.create("Vocabulary", vocabularyUri);
             }
+            return createVocabularyContext(workspace, vocabularyContextDto);
         } else {
-            vocabularyContext = stub(vocabularyUri);
-            workspace.addRefersToVocabularyContexts(vocabularyContext);
-            repositoryService.update(workspace);
-            vocabularyContextUri = vocabularyContext.getUri();
-            vocabularyService.loadContext(vocabularyContext);
+            return loadVocabularyContextFromCache(workspace, vocabularyUri);
         }
+    }
 
+    private URI createVocabularyContext(Workspace workspace,
+                                        VocabularyContextDto vocabularyContextDto) {
+        URI vocabularyUri = vocabularyContextDto.getBasedOnVocabularyVersion();
+        URI vocabularyContextUri;
+        VocabularyContext vocabularyContext = stub(vocabularyUri);
+        workspace.addRefersToVocabularyContexts(vocabularyContext);
+        repositoryService.update(workspace);
+        vocabularyContextUri =
+            repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
+        vocabularyContext = vocabularyService.findRequired(vocabularyContextUri);
+        vocabularyService.createContext(vocabularyContext, vocabularyContextDto);
+        return vocabularyContextUri;
+    }
+
+    private URI loadVocabularyContextFromCache(Workspace workspace, URI vocabularyUri) {
+        URI vocabularyContextUri;
+        VocabularyContext vocabularyContext = stub(vocabularyUri);
+        workspace.addRefersToVocabularyContexts(vocabularyContext);
+        repositoryService.update(workspace);
+        vocabularyContextUri = vocabularyContext.getUri();
+        vocabularyService.loadContext(vocabularyContext);
         return vocabularyContextUri;
     }
 
