@@ -54,30 +54,30 @@ public final class VocabularyCreationHelper {
                                        VocabularyContextDto vocabularyContextDto,
                                        Set<Statement> statements) {
         String iri = vocabulary.getIri();
-
         String label = vocabularyContextDto.getLabel();
-        String description = vocabularyContextDto.getDescription();
 
         // glossary
-        IRI g = f.createIRI(iri + "/glosář");
+        final IRI g = f.createIRI(iri + "/glosář");
         addCommon(f, g, vocabulary, label + " - glosář", statements);
         statements.add(f.createStatement(g, RDF.TYPE, f.createIRI(Vocabulary.s_c_glosar)));
         statements.add(f.createStatement(g, RDF.TYPE, SKOS.CONCEPT_SCHEME));
 
         // model
-        IRI m = f.createIRI(iri + "/model");
+        final IRI m = f.createIRI(iri + "/model");
         addCommon(f, m, vocabulary, label + " - model", statements);
         statements.add(f.createStatement(m, OWL.IMPORTS, g));
         statements.add(f.createStatement(m, RDF.TYPE, f.createIRI(Vocabulary.s_c_model)));
 
         // slovnik
-        IRI s = f.createIRI(iri);
+        final IRI s = f.createIRI(iri);
         addCommon(f, s, vocabulary, label, statements);
         statements.add(f.createStatement(s, RDF.TYPE, f.createIRI(Vocabulary.s_c_slovnik)));
         statements.add(f.createStatement(s, OWL.IMPORTS, g));
         statements.add(f.createStatement(s, OWL.IMPORTS, m));
         statements.add(f.createStatement(s, f.createIRI(Vocabulary.s_p_ma_glosar), g));
         statements.add(f.createStatement(s, f.createIRI(Vocabulary.s_p_ma_model), m));
+
+        final String description = vocabularyContextDto.getDescription();
         if (description != null) {
             statements.add(f.createStatement(s, DCTERMS.DESCRIPTION,
                 f.createLiteral(description, LANGUAGE)));
