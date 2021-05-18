@@ -109,8 +109,7 @@ public class Generator {
     }
 
     /**
-     * Generates a random {@link Workspace} instance, initialized with
-     * label and identifier.
+     * Generates a random {@link Workspace} instance, initialized with label and identifier.
      *
      * @return A new {@code Workspace} instance
      */

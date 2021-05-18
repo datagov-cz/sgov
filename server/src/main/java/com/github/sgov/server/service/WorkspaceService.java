@@ -125,15 +125,15 @@ public class WorkspaceService {
             try (final Git git = githubService.checkout(branchName, dir)) {
                 FileUtils.deleteDirectory(dir);
                 String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
-                        MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
-                                workspaceUriString),
-                        createPullRequestBody(workspace));
+                    MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
+                        workspaceUriString),
+                    createPullRequestBody(workspace));
 
                 return URI.create(prUrl);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new PublicationException("An exception occurred during publishing workspace.",
-                    e);
+                e);
         }
     }
 
@@ -271,8 +271,8 @@ public class WorkspaceService {
     /**
      * Retrieves all direct dependent vocabularies for the given vocabulary in the given workspace.
      *
-     * @param workspaceId         Uri of a workspace.
-     * @param vocabularyId        Uri of a vocabulary context.
+     * @param workspaceId  Uri of a workspace.
+     * @param vocabularyId Uri of a vocabulary context.
      */
     public List<URI> getDependentsForVocabularyInWorkspace(URI workspaceId, URI vocabularyId) {
         final Workspace workspace = repositoryService.findRequired(workspaceId);

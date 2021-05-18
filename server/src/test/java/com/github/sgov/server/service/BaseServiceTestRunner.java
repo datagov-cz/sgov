@@ -1,10 +1,10 @@
 package com.github.sgov.server.service;
 
-import com.github.sgov.server.config.conf.UserConf;
-import com.github.sgov.server.config.conf.components.ComponentsProperties;
 import com.github.sgov.server.config.conf.JwtConf;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.config.conf.UserConf;
+import com.github.sgov.server.config.conf.components.ComponentsProperties;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.environment.TransactionalTestRunner;

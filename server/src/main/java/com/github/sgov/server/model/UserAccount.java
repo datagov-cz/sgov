@@ -1,7 +1,6 @@
 package com.github.sgov.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.annotations.CascadeType;
 import cz.cvut.kbss.jopa.model.annotations.FetchType;
@@ -9,28 +8,24 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
-import lombok.Data;
-
-import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 @OWLClass(iri = Vocabulary.s_c_uzivatel)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class UserAccount extends AbstractUser {
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_ma_pracovni_metadatovy_kontext,
-            cascade = CascadeType.MERGE,
-            fetch = FetchType.EAGER)
-    private Workspace currentWorkspace;
-
     @NotBlank
     @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Vocabulary.s_p_ma_uzivatelske_jmeno)
     protected String username;
-
+    @OWLObjectProperty(iri = Vocabulary.s_p_ma_pracovni_metadatovy_kontext,
+        cascade = CascadeType.MERGE,
+        fetch = FetchType.EAGER)
+    private Workspace currentWorkspace;
     @NotBlank
     @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Vocabulary.s_p_ma_heslo)

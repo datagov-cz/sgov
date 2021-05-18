@@ -1,6 +1,7 @@
 package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
@@ -25,7 +26,12 @@ import javax.validation.Validator;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.*;
+import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.SKOS;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -147,8 +153,8 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      * Returns the list of vocabularies which are write-locked (i.e. they are writable in some
      * workspace).
      */
-    private List<URI> getWriteLockedVocabularies() {
-        final List<URI> result = new ArrayList<>();
+    private Set<URI> getWriteLockedVocabularies() {
+        final Set<URI> result = new HashSet<>();
         workspaceDao.findAll().forEach(w -> w.getVocabularyContexts().stream()
             .forEach(vc -> result.add(vc.getBasedOnVocabularyVersion())));
         return result;

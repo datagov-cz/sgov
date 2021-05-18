@@ -7,9 +7,8 @@ import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 @Data
 @MappedSuperclass

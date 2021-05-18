@@ -1,7 +1,7 @@
 package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
-import com.github.sgov.server.model.VocabularyContext;
+import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.service.BaseServiceTestRunner;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyType;
@@ -59,7 +59,7 @@ class VocabularyRepositoryServiceWithFusekiTest extends BaseServiceTestRunner {
         server.start();
         repositoryConf.setReleaseSparqlEndpointUrl("http://localhost:1234/");
 
-        final List<VocabularyContext> contexts = sut.getVocabulariesAsContextDtos();
+        final List<VocabularyDto> contexts = sut.getVocabulariesAsContextDtos();
         Assertions.assertEquals(2, contexts.size());
 
         Assertions.assertEquals(new HashSet<>(Arrays.asList(vocabularies)),

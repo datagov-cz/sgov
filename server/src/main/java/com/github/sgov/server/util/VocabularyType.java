@@ -30,6 +30,11 @@ public enum VocabularyType {
         this.idRegex = idRegex;
     }
 
+    public static VocabularyType getType(String iri) {
+        return Arrays.stream(values())
+            .filter(vt -> vt.getRegex().matcher(iri).matches()).findAny().orElse(null);
+    }
+
     public String getIriLocalName() {
         return iriLocalName;
     }
@@ -45,10 +50,5 @@ public enum VocabularyType {
 
     public Pattern getRegex() {
         return Pattern.compile("^" + getVocabularyPattern() + "$");
-    }
-
-    public static VocabularyType getType(String iri) {
-        return Arrays.stream(values())
-            .filter(vt -> vt.getRegex().matcher(iri).matches()).findAny().orElse(null);
     }
 }

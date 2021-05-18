@@ -4,9 +4,8 @@ import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
-import lombok.Data;
-
 import java.net.URI;
+import lombok.Data;
 
 @Data
 @OWLClass(iri = Vocabulary.s_c_kontext_sledovani_zmen)

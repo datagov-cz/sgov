@@ -66,9 +66,9 @@ public class VocabularyFolder {
      */
     public File[] toPruneAllExceptCompact() {
         return folder.listFiles((file, s) -> (
-               s.contains("-model")
-            || s.contains("-glosář")
-            || s.contains("-slovník")
+            s.contains("-model")
+                || s.contains("-glosář")
+                || s.contains("-slovník")
         ) && !s.endsWith("-compact.ttl"));
     }
 }

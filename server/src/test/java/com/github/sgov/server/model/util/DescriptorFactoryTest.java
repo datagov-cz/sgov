@@ -23,12 +23,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class, classes = {
-        TestDescriptorFactory.class,
-        TestPersistenceConfig.class,
-        PersistenceConf.class,
-        RepositoryConf.class,
-        ComponentsProperties.class,
-        ComponentsConverter.class,
+    TestDescriptorFactory.class,
+    TestPersistenceConfig.class,
+    PersistenceConf.class,
+    RepositoryConf.class,
+    ComponentsProperties.class,
+    ComponentsConverter.class,
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")

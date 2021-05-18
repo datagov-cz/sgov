@@ -9,13 +9,11 @@ import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.cvut.kbss.jopa.model.annotations.Transient;
 import cz.cvut.kbss.jopa.model.annotations.Types;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.net.URI;
-import java.util.Objects;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 @MappedSuperclass

@@ -43,10 +43,8 @@ public class GithubRepositoryService {
      * Checks out the given branch {@param branchName} from SSP repo into {@param dir}.
      *
      * @param branchName name of the branch to be checked out
-     * @param dir directory to checkout the repo into
-     *
+     * @param dir        directory to checkout the repo into
      * @return JGit object to work with
-     *
      * @throws PublicationException if an error during cloning/checking out occurs
      */
     public Git checkout(String branchName, File dir) {
@@ -80,7 +78,7 @@ public class GithubRepositoryService {
      * Deletes a file from Git repository.
      *
      * @param git GIT repository to commit into
-     * @param f File to delete
+     * @param f   File to delete
      */
     public void delete(Git git, File f) {
         try {
@@ -97,9 +95,8 @@ public class GithubRepositoryService {
     /**
      * Creates a new commit for the given GIT repository with custom message.
      *
-     * @param git GIT repository to commit into
+     * @param git     GIT repository to commit into
      * @param message commit message
-     *
      * @throws PublicationException if an error during commit occurs
      */
     public void commit(Git git, String message) {
@@ -145,9 +142,8 @@ public class GithubRepositoryService {
      * the existing one is reused.
      *
      * @param fromBranch branch to create PR from
-     * @param title title of the PR
-     * @param body body of the PR
-     *
+     * @param title      title of the PR
+     * @param body       body of the PR
      * @return PR URL
      */
     public String createOrUpdatePullRequestToMaster(String fromBranch, String title, String body) {
@@ -163,7 +159,8 @@ public class GithubRepositoryService {
     private String getLatestPullRequestForBranch(String fromBranch) {
         final HttpResponse<JsonNode> prGet =
             Unirest
-                .get("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/" + repositoryConf.getGithubRepo() + "/pulls")
+                .get("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/"
+                    + repositoryConf.getGithubRepo() + "/pulls")
                 .header("Authorization", "Bearer " + repositoryConf.getGithubUserToken())
                 .queryString("state", "open")
                 .queryString("head", repositoryConf.getGithubOrganization() + ":" + fromBranch)
@@ -181,7 +178,8 @@ public class GithubRepositoryService {
     private String createPullRequest(String fromBranch, String title, String body) {
         final HttpResponse<JsonNode> prResponse =
             Unirest
-                .post("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/" + repositoryConf.getGithubRepo() + "/pulls")
+                .post("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/"
+                    + repositoryConf.getGithubRepo() + "/pulls")
                 .header("Authorization", "Bearer " + repositoryConf.getGithubUserToken())
                 .body(new JSONObject()
                     .put("title", title)

@@ -62,12 +62,14 @@ class SecurityUtilsTest extends BaseServiceTestRunner {
         token.setFamilyName(user.getLastName());
         token.setEmail(user.getUsername());
         token.setPreferredUsername(user.getUsername());
-        final KeycloakPrincipal<KeycloakSecurityContext> kp = new KeycloakPrincipal<>(user.getUsername(),
-            new KeycloakSecurityContext(null, token, null, null));
+        final KeycloakPrincipal<KeycloakSecurityContext> kp =
+            new KeycloakPrincipal<>(user.getUsername(),
+                new KeycloakSecurityContext(null, token, null, null));
         SecurityContext context = new SecurityContextImpl();
-        context.setAuthentication(new KeycloakAuthenticationToken(new SimpleKeycloakAccount(kp, Collections.singleton(
-            SecurityConstants.ROLE_USER), null), true,
-            Collections.singleton(new SimpleGrantedAuthority(SecurityConstants.ROLE_USER))));
+        context.setAuthentication(
+            new KeycloakAuthenticationToken(new SimpleKeycloakAccount(kp, Collections.singleton(
+                SecurityConstants.ROLE_USER), null), true,
+                Collections.singleton(new SimpleGrantedAuthority(SecurityConstants.ROLE_USER))));
         SecurityContextHolder.setContext(context);
     }
 

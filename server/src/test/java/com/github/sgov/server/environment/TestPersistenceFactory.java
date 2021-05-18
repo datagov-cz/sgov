@@ -5,9 +5,9 @@ import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.LANG;
 import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.ONTOLOGY_PHYSICAL_URI_KEY;
 
 
-import com.github.sgov.server.config.conf.components.ComponentsProperties;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.config.conf.components.ComponentsProperties;
 import com.github.sgov.server.environment.config.TestServiceConfig;
 import com.github.sgov.server.persistence.MainPersistenceFactory;
 import cz.cvut.kbss.jopa.Persistence;

@@ -41,10 +41,10 @@ public final class VocabularyCreationHelper {
     /**
      * Creates a vocabulary skeleton as RDF4J statements.
      *
-     * @param f               RDF4J value factory
-     * @param vocabulary        vocabulary vocabulary
-     * @param label           vocabulary label
-     * @param statements      set of output statements
+     * @param f          RDF4J value factory
+     * @param vocabulary vocabulary vocabulary
+     * @param label      vocabulary label
+     * @param statements set of output statements
      * @return vocabulary resource
      */
     public static IRI createVocabulary(ValueFactory f,

@@ -45,7 +45,7 @@ class UserControllerTest extends BaseControllerTestRunner {
     }
 
     @AfterEach
-    void tearDown() throws Exception{
+    void tearDown() throws Exception {
         mocks.close();
     }
 

@@ -55,7 +55,8 @@ public class WorkspaceDao extends BaseDao<Workspace> {
      * Constructor.
      */
     @Autowired
-    public WorkspaceDao(EntityManager em, DescriptorFactory descriptorFactory, RepositoryConf properties) {
+    public WorkspaceDao(EntityManager em, DescriptorFactory descriptorFactory,
+                        RepositoryConf properties) {
         super(Workspace.class, em);
         this.properties = properties;
         this.descriptorFactory = descriptorFactory;
@@ -184,11 +185,13 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         boolean finalConforms = conforms;
         log.info("- done.");
         return new ValidationReport() {
-            @Override public boolean conforms() {
+            @Override
+            public boolean conforms() {
                 return finalConforms;
             }
 
-            @Override public List<ValidationResult> results() {
+            @Override
+            public List<ValidationResult> results() {
                 return validationResults;
             }
         };

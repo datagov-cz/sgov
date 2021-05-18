@@ -18,6 +18,6 @@ public class TestDescriptorFactory {
 
     @Bean
     public DescriptorFactory descriptorFactory() {
-        return new DescriptorFactory(new PersistenceUtils( emf ));
+        return new DescriptorFactory(new PersistenceUtils(emf));
     }
 }

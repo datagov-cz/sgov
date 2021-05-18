@@ -16,12 +16,6 @@ import org.springframework.web.context.request.RequestContextListener;
 public class DispatcherServletInitializer
     implements ServletContextInitializer {
 
-    @Override
-    public void onStartup(ServletContext servletContext) {
-        initMdcFilter(servletContext);
-        servletContext.addListener(new RequestContextListener());
-    }
-
     /**
      * Initializes diagnostics context filter for logging session info.
      */
@@ -31,5 +25,11 @@ public class DispatcherServletInitializer
         final EnumSet<DispatcherType> es =
             EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD);
         mdcFilter.addMappingForUrlPatterns(es, true, "/*");
+    }
+
+    @Override
+    public void onStartup(ServletContext servletContext) {
+        initMdcFilter(servletContext);
+        servletContext.addListener(new RequestContextListener());
     }
 }

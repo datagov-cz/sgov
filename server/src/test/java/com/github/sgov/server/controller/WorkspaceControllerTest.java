@@ -44,11 +44,13 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         mocks = MockitoAnnotations.openMocks(this);
         super.setUp(sut);
         report = new ValidationReport() {
-            @Override public boolean conforms() {
+            @Override
+            public boolean conforms() {
                 return true;
             }
 
-            @Override public List<ValidationResult> results() {
+            @Override
+            public List<ValidationResult> results() {
                 return Collections.emptyList();
             }
         };
