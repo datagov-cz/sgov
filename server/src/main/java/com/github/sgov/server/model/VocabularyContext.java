@@ -1,7 +1,6 @@
 package com.github.sgov.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.util.HasTypes;
 import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.annotations.CascadeType;
@@ -14,11 +13,12 @@ import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.cvut.kbss.jopa.model.annotations.Types;
 import cz.cvut.kbss.jopa.vocabulary.DC;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
-import java.lang.reflect.Field;
+import lombok.Data;
+
 import java.net.URI;
-import java.util.Objects;
 import java.util.Set;
 
+@Data
 @OWLClass(iri = Vocabulary.s_c_slovnikovy_kontext)
 @JsonLdAttributeOrder({"uri", "label", "comment", "author", "lastEditor"})
 public class VocabularyContext extends AbstractEntity implements Context, HasTypes {
@@ -95,43 +95,4 @@ public class VocabularyContext extends AbstractEntity implements Context, HasTyp
     public void setTypes(Set<String> types) {
         this.types = types;
     }
-
-    /**
-     * Returns field changeTrackingContext.
-     */
-    public static Field getChangeTrackingContextField() {
-        try {
-            return VocabularyContext.class.getDeclaredField("changeTrackingContext");
-        } catch (NoSuchFieldException e) {
-            throw new SGoVException(
-                "Fatal error! Unable to retrieve \"changeTrackingContext\" field.", e
-            );
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof VocabularyContext)) {
-            return false;
-        }
-        VocabularyContext that = (VocabularyContext) o;
-        return Objects.equals(getUri(), that.getUri());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getUri());
-    }
-
-    @Override
-    public String toString() {
-        return "VocabularyContext{"
-                + " <" + getUri() + '>'
-                + ", basedOnVocabularyVersion=" + getBasedOnVocabularyVersion()
-                + '}';
-    }
-
 }

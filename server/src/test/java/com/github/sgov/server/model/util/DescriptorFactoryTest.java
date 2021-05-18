@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
-import com.github.sgov.server.config.conf.components.ComponentsConf;
 import com.github.sgov.server.config.conf.components.ComponentsConverter;
 import com.github.sgov.server.config.conf.components.ComponentsProperties;
 import com.github.sgov.server.environment.Generator;

@@ -1,6 +1,5 @@
 package com.github.sgov.server.model;
 
-import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.provenance.ProvenanceManager;
 import com.github.sgov.server.util.Vocabulary;
@@ -13,14 +12,14 @@ import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.cvut.kbss.jopa.vocabulary.DC;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
-import java.lang.reflect.Field;
+import lombok.Data;
+
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 
+@Data
 @OWLClass(iri = Vocabulary.s_c_metadatovy_kontext)
 @JsonLdAttributeOrder({"uri", "label", "author", "lastEditor"})
 @EntityListeners(ProvenanceManager.class)
@@ -35,15 +34,6 @@ public class Workspace extends Asset implements Context {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
             fetch = FetchType.EAGER)
     private Set<VocabularyContext> vocabularyContexts;
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
 
     /**
      * Returns all vocabulary contexts of this workspace.
@@ -80,47 +70,4 @@ public class Workspace extends Asset implements Context {
 
         vocabularyContexts.add(context);
     }
-
-    /**
-     * Returns field vocabularyContexts.
-     */
-    public static Field getVocabularyContextsField() {
-        try {
-            return Workspace.class.getDeclaredField("vocabularyContexts");
-        } catch (NoSuchFieldException e) {
-            throw new SGoVException(
-                "Fatal error! Unable to retrieve \"vocabularyContexts\" field.", e
-            );
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Workspace)) {
-            return false;
-        }
-        Workspace that = (Workspace) o;
-        return Objects.equals(getUri(), that.getUri());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getUri());
-    }
-
-    @Override
-    public String toString() {
-        return "Workspace{"
-                + getLabel()
-                + " <" + getUri() + '>'
-                + (getVocabularyContexts().isEmpty() ? "" :
-                ", vocabularies = [" + getVocabularyContexts().stream()
-                        .map(p -> "<" + p.getBasedOnVocabularyVersion() + ">")
-                        .collect(Collectors.joining(", ")) + "]")
-                + '}';
-    }
-
 }

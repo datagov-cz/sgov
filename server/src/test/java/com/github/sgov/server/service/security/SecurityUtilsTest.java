@@ -52,7 +52,7 @@ class SecurityUtilsTest extends BaseServiceTestRunner {
     void getCurrentUserSupportsExtractingCurrentUserFromKeycloakToken() {
         setKeycloakToken();
         final UserAccount result = sut.getCurrentUser();
-        assertEquals(user, result);
+        assertEquals(user.getUsername(), result.getUsername());
     }
 
     private void setKeycloakToken() {
