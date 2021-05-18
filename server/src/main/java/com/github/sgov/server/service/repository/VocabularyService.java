@@ -102,7 +102,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
     }
 
 
-    public List<VocabularyContext> getVocabulariesAsContextDtos() {
+    public List<VocabularyDto> getVocabulariesAsContextDtos() {
         return getVocabulariesAsContextDtos(null);
     }
 
@@ -112,9 +112,9 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      * @param lang language to fetch the label in
      * @return vocabularies in the form of vocabulary context
      */
-    public List<VocabularyContext> getVocabulariesAsContextDtos(String lang) {
+    public List<VocabularyDto> getVocabulariesAsContextDtos(String lang) {
         try {
-            List<VocabularyContext> contexts = new ArrayList<>();
+            List<VocabularyDto> contexts = new ArrayList<>();
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
                     repositoryConf.getReleaseSparqlEndpointUrl()));
@@ -125,9 +125,9 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                     + " ?g <" + DCTERMS.TITLE + "> ?label . "
                     + ((lang != null) ? "FILTER (lang(?label)='" + lang + "')" : "")
                     + " }} ORDER BY ?label");
-            final List<URI> uris = getWriteLockedVocabularies();
+            final Set<URI> uris = getWriteLockedVocabularies();
             query.evaluate().forEach(b -> {
-                final VocabularyContext c = new VocabularyContext();
+                final VocabularyDto c = new VocabularyDto();
                 final URI uri = URI.create(b.getValue("g").stringValue());
                 c.setBasedOnVocabularyVersion(uri);
                 c.setReadonly(uris.contains(uri));
@@ -150,7 +150,6 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
     private List<URI> getWriteLockedVocabularies() {
         final List<URI> result = new ArrayList<>();
         workspaceDao.findAll().forEach(w -> w.getVocabularyContexts().stream()
-            .filter(vc -> !vc.isReadonly())
             .forEach(vc -> result.add(vc.getBasedOnVocabularyVersion())));
         return result;
     }

@@ -205,7 +205,6 @@ public class WorkspaceController extends BaseController {
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @param vocabularyUri     Uri of a vocabulary for which context should be created.
-     * @param readOnly          True if vocabulary should be readonly, false otherwise.
      */
     @PostMapping(value = "/{workspaceFragment}/vocabularies")
     @ApiOperation(value =
@@ -215,32 +214,28 @@ public class WorkspaceController extends BaseController {
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
         @RequestParam(name = "vocabularyUri", required = false) URI vocabularyUri,
-        @RequestParam(name = "label", required = false) String label,
-        @RequestParam(name = "readOnly", required = false) boolean readOnly
+        @RequestParam(name = "label", required = false) String label
     ) {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
 
-        if (!readOnly) {
-            final Collection<Workspace> wss = workspaceService
-                .getWorkspacesWithReadWriteVocabulary(vocabularyUri)
-                .stream()
-                .filter(ws -> !ws.getUri().equals(workspaceUri))
-                .collect(Collectors.toSet());
+        final Collection<Workspace> wss = workspaceService
+            .getWorkspacesWithReadWriteVocabulary(vocabularyUri)
+            .stream()
+            .filter(ws -> !ws.getUri().equals(workspaceUri))
+            .collect(Collectors.toSet());
 
-            if (!wss.isEmpty()) {
-                throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
-                    wss.stream()
-                        .map(Asset::getUri).collect(Collectors.toList())
-                );
-            }
+        if (!wss.isEmpty()) {
+            throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
+                wss.stream()
+                    .map(Asset::getUri).collect(Collectors.toList())
+            );
         }
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,
                 vocabularyUri,
-                readOnly,
                 label
             );
         LOG.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);

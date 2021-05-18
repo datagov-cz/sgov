@@ -175,12 +175,10 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         final List<ValidationResult> validationResults = new ArrayList<>();
         for (VocabularyContext c : workspace
             .getVocabularyContexts()) {
-            if (!c.isReadonly()) {
-                final ValidationReport report = validateVocabulary(c.getUri().toString(),
-                    endpointUlozistePracovnichProstoru, validator, rules);
-                conforms = conforms && report.conforms();
-                validationResults.addAll(report.results());
-            }
+            final ValidationReport report = validateVocabulary(c.getUri().toString(),
+                endpointUlozistePracovnichProstoru, validator, rules);
+            conforms = conforms && report.conforms();
+            validationResults.addAll(report.results());
         }
         validationResults.sort(new ValidationResultSeverityComparator());
         boolean finalConforms = conforms;

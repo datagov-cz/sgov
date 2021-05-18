@@ -71,7 +71,7 @@ public class WorkspaceService {
     private String createPullRequestBody(final Workspace workspace) {
         return MessageFormat.format("Changed vocabularies: \n - {0}", workspace
             .getVocabularyContexts()
-            .stream().filter(vc -> !vc.isReadonly())
+            .stream()
             .map(c -> c.getBasedOnVocabularyVersion().toString() + " (kontext " + c.getUri() + ")")
             .collect(Collectors.joining("\n - "))
         );
@@ -85,10 +85,6 @@ public class WorkspaceService {
 
     private void publishContexts(Git git, File dir, Workspace workspace) {
         for (final VocabularyContext c : workspace.getVocabularyContexts()) {
-            if (c.isReadonly()) {
-                // TODO should not be needed once the export is deterministic
-                continue;
-            }
             final URI iri = c.getBasedOnVocabularyVersion();
             try {
                 final VocabularyInstance instance = new VocabularyInstance(iri.toString());
@@ -188,12 +184,10 @@ public class WorkspaceService {
      *
      * @param workspaceUri  URI of the workspace to connect the vocabulary context to.
      * @param vocabularyUri URI of the vocabulary to be attached to the workspace
-     * @param isReadOnly    true if the context should be created as read-only (no effect if the
-     *                      vocabulary already exists)
      * @return URI of the vocabulary context to create
      */
     public URI ensureVocabularyExistsInWorkspace(
-        URI workspaceUri, URI vocabularyUri, boolean isReadOnly, String label) {
+        URI workspaceUri, URI vocabularyUri, String label) {
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
         URI vocabularyContextUri =
             repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
@@ -210,7 +204,6 @@ public class WorkspaceService {
         ) {
             if (label != null) {
                 vocabularyContext = stub(vocabularyUri);
-                vocabularyContext.setReadonly(isReadOnly);
                 workspace.addRefersToVocabularyContexts(vocabularyContext);
                 repositoryService.update(workspace);
                 vocabularyContextUri =
@@ -222,7 +215,6 @@ public class WorkspaceService {
             }
         } else {
             vocabularyContext = stub(vocabularyUri);
-            vocabularyContext.setReadonly(isReadOnly);
             workspace.addRefersToVocabularyContexts(vocabularyContext);
             repositoryService.update(workspace);
             vocabularyContextUri = vocabularyContext.getUri();
@@ -240,10 +232,8 @@ public class WorkspaceService {
      */
     public Collection<Workspace> getWorkspacesWithReadWriteVocabulary(final URI vocabularyIri) {
         return repositoryService.findAll().stream()
-            .filter(ws -> ws.getVocabularyContexts()
-                .stream()
-                .filter(vc -> vc.getBasedOnVocabularyVersion().equals(vocabularyIri))
-                .anyMatch(vc -> !vc.isReadonly())
+            .filter(ws -> ws.getVocabularyContexts().stream()
+                .anyMatch(vc -> vc.getBasedOnVocabularyVersion().equals(vocabularyIri))
             ).collect(Collectors.toList());
     }
 
