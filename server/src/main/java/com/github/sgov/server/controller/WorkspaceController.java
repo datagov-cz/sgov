@@ -5,7 +5,6 @@ import com.github.sgov.server.model.Asset;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.WorkspaceService;
-import com.github.sgov.server.util.Constants;
 import com.github.sgov.server.util.Constants.QueryParams;
 import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jsonld.JsonLd;

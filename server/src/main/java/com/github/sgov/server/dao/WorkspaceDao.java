@@ -49,13 +49,16 @@ public class WorkspaceDao extends BaseDao<Workspace> {
 
     private final RepositoryConf properties;
 
+    private final DescriptorFactory descriptorFactory;
+
     /**
      * Constructor.
      */
     @Autowired
-    public WorkspaceDao(EntityManager em, RepositoryConf properties) {
+    public WorkspaceDao(EntityManager em, DescriptorFactory descriptorFactory, RepositoryConf properties) {
         super(Workspace.class, em);
         this.properties = properties;
+        this.descriptorFactory = descriptorFactory;
     }
 
     @Override
@@ -63,7 +66,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         Objects.requireNonNull(id);
         try {
             return Optional.ofNullable(
-                em.find(type, id, DescriptorFactory.workspaceDescriptor(id))
+                em.find(type, id, descriptorFactory.workspaceDescriptor(id))
             );
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
@@ -75,7 +78,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         Objects.requireNonNull(id);
         try {
             return Optional.ofNullable(
-                em.getReference(type, id, DescriptorFactory.workspaceDescriptor(id))
+                em.getReference(type, id, descriptorFactory.workspaceDescriptor(id))
             );
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
@@ -89,7 +92,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         try {
             // Evict possibly cached instance loaded from default context
             em.getEntityManagerFactory().getCache().evict(Workspace.class, entity.getUri(), null);
-            return em.merge(entity, DescriptorFactory.workspaceDescriptor(entity));
+            return em.merge(entity, descriptorFactory.workspaceDescriptor(entity));
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
@@ -105,7 +108,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
                 em.getMetamodel().entity(Workspace.class).getIRI().toURI()
             );
             entity.setUri(entityUri);
-            em.persist(entity, DescriptorFactory.workspaceDescriptor(entity));
+            em.persist(entity, descriptorFactory.workspaceDescriptor(entity));
         } catch (RuntimeException | OntoDriverException e) {
             throw new PersistenceException(e);
         }

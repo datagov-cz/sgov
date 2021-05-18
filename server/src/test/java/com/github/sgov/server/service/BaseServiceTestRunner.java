@@ -8,6 +8,7 @@ import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.environment.TransactionalTestRunner;
+import com.github.sgov.server.environment.config.TestDescriptorFactory;
 import com.github.sgov.server.environment.config.TestPersistenceConfig;
 import com.github.sgov.server.environment.config.TestServiceConfig;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +33,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
                 RepositoryConf.class,
                 UserConf.class,
                 ComponentsProperties.class,
-                JwtConf.class
+                JwtConf.class,
+                TestDescriptorFactory.class
         })
 @ActiveProfiles("test")
 public class BaseServiceTestRunner extends TransactionalTestRunner {

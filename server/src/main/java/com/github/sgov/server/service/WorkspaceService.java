@@ -10,7 +10,6 @@ import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.util.VocabularyFolder;
 import com.github.sgov.server.util.VocabularyInstance;
-import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -125,26 +124,20 @@ public class WorkspaceService {
         final String workspaceUriString = workspace.getUri().toString();
         final String branchName = createBranchName(workspaceUriString);
 
-        final File dir = Files.createTempDir();
-
-        try (final Git git = githubService.checkout(branchName, dir)) {
-            publishContexts(git, dir, workspace);
-
-            githubService.push(git);
-
-            try {
+        try {
+            final File dir = java.nio.file.Files.createTempDirectory("sgov").toFile();
+            try (final Git git = githubService.checkout(branchName, dir)) {
                 FileUtils.deleteDirectory(dir);
-            } catch (IOException e) {
-                throw new PublicationException("An exception occurred during publishing workspace.",
-                    e);
+                String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
+                        MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
+                                workspaceUriString),
+                        createPullRequestBody(workspace));
+
+                return URI.create(prUrl);
             }
-
-            String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
-                MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
-                    workspaceUriString),
-                createPullRequestBody(workspace));
-
-            return URI.create(prUrl);
+        } catch(IOException e) {
+            throw new PublicationException("An exception occurred during publishing workspace.",
+                    e);
         }
     }
 
