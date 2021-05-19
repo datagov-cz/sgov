@@ -11,8 +11,7 @@ import com.github.sgov.server.exception.VocabularyRegisteredinReadWriteException
 import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
 import cz.cvut.kbss.jsonld.exception.JsonLdException;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,16 +26,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
  * caught by this handler, logged and a reasonable error message is returned to the user.
  */
 @ControllerAdvice
+@Slf4j
 public class RestExceptionHandler {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     private static void logException(Throwable ex) {
         logException("Exception caught.", ex);
     }
 
     private static void logException(String message, Throwable ex) {
-        LOG.error(message, ex);
+        log.error(message, ex);
     }
 
     private static ErrorInfo errorInfo(HttpServletRequest request, Throwable e) {

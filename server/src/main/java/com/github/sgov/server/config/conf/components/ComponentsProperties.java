@@ -11,12 +11,9 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @Configuration
 @EnableConfigurationProperties
-//@ComponentScan(basePackageClasses = ComponentsConverter.class)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class ComponentsProperties {
-    // @Value("#{T(com.github.sgov.server.config.conf.components.ComponentsConverter)
-    // .convertStatic('${components}')}\"")
-    // private ComponentsConf componentsParsed;
+
     @Value("${components}")
     private String componentsRaw;
 

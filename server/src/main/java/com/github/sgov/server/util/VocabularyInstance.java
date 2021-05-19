@@ -2,7 +2,9 @@ package com.github.sgov.server.util;
 
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
+import lombok.Getter;
 
+@Getter
 public class VocabularyInstance {
 
 
@@ -53,18 +55,6 @@ public class VocabularyInstance {
           default:
               throw new AssertionError("Not covered vocabulary type: " + iri);
         }
-    }
-
-    public String getIri() {
-        return iri;
-    }
-
-    public String getFolder() {
-        return folder;
-    }
-
-    public String getConceptPrefix() {
-        return conceptPrefix;
     }
 
     public String getConceptNamespace() {

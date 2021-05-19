@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,7 +45,6 @@ import org.topbraid.shacl.validation.ValidationReport;
 @Slf4j
 public class WorkspaceController extends BaseController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WorkspaceController.class);
     private final WorkspaceService workspaceService;
 
     @Autowired
@@ -72,7 +69,7 @@ public class WorkspaceController extends BaseController {
     public ResponseEntity<Void> createWorkspace(
         @RequestBody Workspace workspace) {
         Workspace ws = workspaceService.persist(workspace);
-        LOG.debug("Workspace {} created.", ws);
+        log.debug("Workspace {} created.", ws);
         return ResponseEntity.created(
             generateLocation(ws.getUri(), Vocabulary.s_c_metadatovy_kontext)
         ).build();
@@ -97,7 +94,7 @@ public class WorkspaceController extends BaseController {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace workspace = workspaceService.findInferred(identifier);
-        LOG.info("Workspace {} " + workspace.getLastModified().getTime() + " : "
+        log.info("Workspace {} " + workspace.getLastModified().getTime() + " : "
             + workspace.getLastModifiedOrCreated().getTime(), workspace.getUri());
         return workspace;
     }
@@ -122,7 +119,7 @@ public class WorkspaceController extends BaseController {
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         verifyRequestAndEntityIdentifier(workspace, identifier);
         workspaceService.update(workspace);
-        LOG.debug("Workspace {} updated.", workspace);
+        log.debug("Workspace {} updated.", workspace);
     }
 
     /**
@@ -142,7 +139,7 @@ public class WorkspaceController extends BaseController {
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace toRemove = workspaceService.getRequiredReference(identifier);
         workspaceService.remove(identifier);
-        LOG.debug("Workspace {} deleted.", toRemove);
+        log.debug("Workspace {} deleted.", toRemove);
     }
 
     /**
@@ -244,7 +241,7 @@ public class WorkspaceController extends BaseController {
                     .setBasedOnVocabularyVersion(vocabularyUri)
                     .setLabel(label)
             );
-        LOG.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
+        log.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
         return ResponseEntity.created(
             generateLocation(vocabularyContextUri, Vocabulary.s_c_slovnikovy_kontext)
         ).build();
@@ -282,7 +279,7 @@ public class WorkspaceController extends BaseController {
                 workspaceUri,
                 vocabularyContext
             );
-        LOG.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
+        log.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
         return ResponseEntity.created(
             generateLocation(vocabularyContextUri, Vocabulary.s_c_slovnikovy_kontext)
         ).build();
@@ -309,7 +306,7 @@ public class WorkspaceController extends BaseController {
         final URI vocabularyId = resolveIdentifier(
             namespace, vocabularyFragment, Vocabulary.s_c_slovnikovy_kontext);
         VocabularyContext toRemove = workspaceService.removeVocabulary(workspaceId, vocabularyId);
-        LOG.debug("Vocabulary context {} deleted from workspace {}.", toRemove, workspaceId);
+        log.debug("Vocabulary context {} deleted from workspace {}.", toRemove, workspaceId);
     }
 
     /**
