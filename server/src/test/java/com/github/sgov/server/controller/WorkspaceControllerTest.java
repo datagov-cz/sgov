@@ -14,7 +14,6 @@ import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.WorkspaceService;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -45,11 +44,13 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         mocks = MockitoAnnotations.openMocks(this);
         super.setUp(sut);
         report = new ValidationReport() {
-            @Override public boolean conforms() {
+            @Override
+            public boolean conforms() {
                 return true;
             }
 
-            @Override public List<ValidationResult> results() {
+            @Override
+            public List<ValidationResult> results() {
                 return Collections.emptyList();
             }
         };

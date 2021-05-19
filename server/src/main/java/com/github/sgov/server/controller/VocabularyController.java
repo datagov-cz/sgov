@@ -1,6 +1,6 @@
 package com.github.sgov.server.controller;
 
-import com.github.sgov.server.model.VocabularyContext;
+import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.util.Constants;
 import cz.cvut.kbss.jsonld.JsonLd;
@@ -45,8 +45,8 @@ public class VocabularyController extends BaseController {
     @GetMapping(produces = {
         MediaType.APPLICATION_JSON_VALUE, JsonLd.MEDIA_TYPE})
     @ApiOperation(value = "Retrieve all vocabularies.")
-    public List<VocabularyContext> findAll(@RequestHeader
-                                                   Map<String, String> headers) {
+    public List<VocabularyDto> findAll(@RequestHeader
+                                           Map<String, String> headers) {
         final String lang;
         lang = headers.getOrDefault("Accept-Language", "cs");
         return vocabularyService.getVocabulariesAsContextDtos(lang);
@@ -56,8 +56,8 @@ public class VocabularyController extends BaseController {
      * Retrieve existing workspace.
      *
      * @param vocabularyFragment Localname of vocabulary id.
-     * @param namespace         Namespace used for resource identifier resolution. Optional, if not
-     *                          specified, the configured namespace is used.
+     * @param namespace          Namespace used for resource identifier resolution. Optional, if not
+     *                           specified, the configured namespace is used.
      * @return Workspace specified by workspaceFragment and optionally namespace.
      */
     @GetMapping(value = "/{vocabularyFragment}/imports",

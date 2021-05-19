@@ -1,5 +1,6 @@
 package com.github.sgov.server.service;
 
+import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.model.ChangeTrackingContext;
@@ -10,7 +11,6 @@ import com.github.sgov.server.service.repository.VocabularyService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.util.VocabularyFolder;
 import com.github.sgov.server.util.VocabularyInstance;
-import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -72,7 +72,7 @@ public class WorkspaceService {
     private String createPullRequestBody(final Workspace workspace) {
         return MessageFormat.format("Changed vocabularies: \n - {0}", workspace
             .getVocabularyContexts()
-            .stream().filter(vc -> !vc.isReadonly())
+            .stream()
             .map(c -> c.getBasedOnVocabularyVersion().toString() + " (kontext " + c.getUri() + ")")
             .collect(Collectors.joining("\n - "))
         );
@@ -86,10 +86,6 @@ public class WorkspaceService {
 
     private void publishContexts(Git git, File dir, Workspace workspace) {
         for (final VocabularyContext c : workspace.getVocabularyContexts()) {
-            if (c.isReadonly()) {
-                // TODO should not be needed once the export is deterministic
-                continue;
-            }
             final URI iri = c.getBasedOnVocabularyVersion();
             try {
                 final VocabularyInstance instance = new VocabularyInstance(iri.toString());
@@ -125,26 +121,20 @@ public class WorkspaceService {
         final String workspaceUriString = workspace.getUri().toString();
         final String branchName = createBranchName(workspaceUriString);
 
-        final File dir = Files.createTempDir();
-
-        try (final Git git = githubService.checkout(branchName, dir)) {
-            publishContexts(git, dir, workspace);
-
-            githubService.push(git);
-
-            try {
+        try {
+            final File dir = java.nio.file.Files.createTempDirectory("sgov").toFile();
+            try (final Git git = githubService.checkout(branchName, dir)) {
                 FileUtils.deleteDirectory(dir);
-            } catch (IOException e) {
-                throw new PublicationException("An exception occurred during publishing workspace.",
-                    e);
+                String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
+                    MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
+                        workspaceUriString),
+                    createPullRequestBody(workspace));
+
+                return URI.create(prUrl);
             }
-
-            String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
-                MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
-                    workspaceUriString),
-                createPullRequestBody(workspace));
-
-            return URI.create(prUrl);
+        } catch (IOException e) {
+            throw new PublicationException("An exception occurred during publishing workspace.",
+                e);
         }
     }
 
@@ -194,13 +184,12 @@ public class WorkspaceService {
      * part of the workspace, it is added to the workspace and its content is loaded.
      *
      * @param workspaceUri  URI of the workspace to connect the vocabulary context to.
-     * @param vocabularyUri URI of the vocabulary to be attached to the workspace
-     * @param isReadOnly    true if the context should be created as read-only (no effect if the
-     *                      vocabulary already exists)
+     * @param vocabularyContextDto vocabulary metadata
      * @return URI of the vocabulary context to create
      */
     public URI ensureVocabularyExistsInWorkspace(
-        URI workspaceUri, URI vocabularyUri, boolean isReadOnly, String label) {
+        final URI workspaceUri, final VocabularyContextDto vocabularyContextDto) {
+        final URI vocabularyUri = vocabularyContextDto.getBasedOnVocabularyVersion();
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
         URI vocabularyContextUri =
             repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
@@ -208,34 +197,41 @@ public class WorkspaceService {
             return vocabularyContextUri;
         }
 
-        VocabularyContext vocabularyContext;
-
         if (!vocabularyService.getVocabulariesAsContextDtos().stream()
             .anyMatch(vc ->
                 vc.getBasedOnVocabularyVersion().equals(vocabularyUri)
             )
         ) {
-            if (label != null) {
-                vocabularyContext = stub(vocabularyUri);
-                vocabularyContext.setReadonly(isReadOnly);
-                workspace.addRefersToVocabularyContexts(vocabularyContext);
-                repositoryService.update(workspace);
-                vocabularyContextUri =
-                    repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
-                vocabularyContext = vocabularyService.findRequired(vocabularyContextUri);
-                vocabularyService.createContext(vocabularyContext, label);
-            } else {
+            if (vocabularyContextDto.getLabel() == null) {
                 throw NotFoundException.create("Vocabulary", vocabularyUri);
             }
+            return createVocabularyContext(workspace, vocabularyContextDto);
         } else {
-            vocabularyContext = stub(vocabularyUri);
-            vocabularyContext.setReadonly(isReadOnly);
-            workspace.addRefersToVocabularyContexts(vocabularyContext);
-            repositoryService.update(workspace);
-            vocabularyContextUri = vocabularyContext.getUri();
-            vocabularyService.loadContext(vocabularyContext);
+            return loadVocabularyContextFromCache(workspace, vocabularyUri);
         }
+    }
 
+    private URI createVocabularyContext(Workspace workspace,
+                                        VocabularyContextDto vocabularyContextDto) {
+        URI vocabularyUri = vocabularyContextDto.getBasedOnVocabularyVersion();
+        URI vocabularyContextUri;
+        VocabularyContext vocabularyContext = stub(vocabularyUri);
+        workspace.addRefersToVocabularyContexts(vocabularyContext);
+        repositoryService.update(workspace);
+        vocabularyContextUri =
+            repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
+        vocabularyContext = vocabularyService.findRequired(vocabularyContextUri);
+        vocabularyService.createContext(vocabularyContext, vocabularyContextDto);
+        return vocabularyContextUri;
+    }
+
+    private URI loadVocabularyContextFromCache(Workspace workspace, URI vocabularyUri) {
+        URI vocabularyContextUri;
+        VocabularyContext vocabularyContext = stub(vocabularyUri);
+        workspace.addRefersToVocabularyContexts(vocabularyContext);
+        repositoryService.update(workspace);
+        vocabularyContextUri = vocabularyContext.getUri();
+        vocabularyService.loadContext(vocabularyContext);
         return vocabularyContextUri;
     }
 
@@ -247,10 +243,8 @@ public class WorkspaceService {
      */
     public Collection<Workspace> getWorkspacesWithReadWriteVocabulary(final URI vocabularyIri) {
         return repositoryService.findAll().stream()
-            .filter(ws -> ws.getVocabularyContexts()
-                .stream()
-                .filter(vc -> vc.getBasedOnVocabularyVersion().equals(vocabularyIri))
-                .anyMatch(vc -> !vc.isReadonly())
+            .filter(ws -> ws.getVocabularyContexts().stream()
+                .anyMatch(vc -> vc.getBasedOnVocabularyVersion().equals(vocabularyIri))
             ).collect(Collectors.toList());
     }
 
@@ -288,8 +282,8 @@ public class WorkspaceService {
     /**
      * Retrieves all direct dependent vocabularies for the given vocabulary in the given workspace.
      *
-     * @param workspaceId         Uri of a workspace.
-     * @param vocabularyId        Uri of a vocabulary context.
+     * @param workspaceId  Uri of a workspace.
+     * @param vocabularyId Uri of a vocabulary context.
      */
     public List<URI> getDependentsForVocabularyInWorkspace(URI workspaceId, URI vocabularyId) {
         final Workspace workspace = repositoryService.findRequired(workspaceId);

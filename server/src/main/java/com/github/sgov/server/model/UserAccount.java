@@ -1,7 +1,6 @@
 package com.github.sgov.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.annotations.CascadeType;
 import cz.cvut.kbss.jopa.model.annotations.FetchType;
@@ -9,71 +8,28 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
-import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
+@Data
 @OWLClass(iri = Vocabulary.s_c_uzivatel)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class UserAccount extends AbstractUser {
-
-    @OWLObjectProperty(iri = Vocabulary.s_p_ma_pracovni_metadatovy_kontext,
-            cascade = CascadeType.MERGE,
-            fetch = FetchType.EAGER)
-    private Workspace currentWorkspace;
 
     @NotBlank
     @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Vocabulary.s_p_ma_uzivatelske_jmeno)
     protected String username;
-
+    @OWLObjectProperty(iri = Vocabulary.s_p_ma_pracovni_metadatovy_kontext,
+        cascade = CascadeType.MERGE,
+        fetch = FetchType.EAGER)
+    private Workspace currentWorkspace;
     @NotBlank
     @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Vocabulary.s_p_ma_heslo)
     private String password;
-
-    /**
-     * Returns the password field - to be used for descriptors.
-     *
-     * @return password field
-     */
-    public static Field getPasswordField() {
-        try {
-            return UserAccount.class.getDeclaredField("password");
-        } catch (NoSuchFieldException e) {
-            throw new SGoVException("Fatal error! Unable to retrieve \"password\" field.", e);
-        }
-    }
-
-    /**
-     * Returns field currentWorkspace.
-     */
-    public static Field getCurrentWorkspaceField() {
-        try {
-            return UserAccount.class.getDeclaredField("currentWorkspace");
-        } catch (NoSuchFieldException e) {
-            throw new SGoVException(
-                "Fatal error! Unable to retrieve \"currentWorkspace\" field.", e
-            );
-        }
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     /**
      * Erases the password in this instance.
@@ -165,10 +121,6 @@ public class UserAccount extends AbstractUser {
     @JsonIgnore
     public Set<String> getTypes() {
         return types;
-    }
-
-    public Workspace getCurrentWorkspace() {
-        return currentWorkspace;
     }
 
     public void setCurrentWorkspace(Workspace currentWorkspace) {

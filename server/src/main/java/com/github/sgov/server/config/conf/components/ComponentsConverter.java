@@ -10,11 +10,6 @@ import org.yaml.snakeyaml.Yaml;
 @ConfigurationPropertiesBinding
 public class ComponentsConverter implements Converter<String, ComponentsConf> {
 
-    @Override
-    public ComponentsConf convert(String from) {
-        return convertStatic(from);
-    }
-
     /**
      * Converts a base64 string into ComponentsConf properties.
      *
@@ -24,5 +19,10 @@ public class ComponentsConverter implements Converter<String, ComponentsConf> {
     public static ComponentsConf convertStatic(String from) {
         final String componentsDecoded = new String(Base64.getDecoder().decode(from));
         return new ComponentsConf(new Yaml(new ComponentsConstructor()).load(componentsDecoded));
+    }
+
+    @Override
+    public ComponentsConf convert(String from) {
+        return convertStatic(from);
     }
 }

@@ -22,15 +22,15 @@ public class ComponentConf {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Map getMeta() {
         return meta;
     }
 
     public void setMeta(Map meta) {
         this.meta = meta;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

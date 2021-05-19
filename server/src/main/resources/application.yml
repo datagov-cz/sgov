@@ -46,7 +46,7 @@ persistence:
 
 keycloak:
   realm: assembly-line
-  resource: sgovServer
+  resource: al-sgov-server
   ## overrides components["al-auth-server"].url, which denotes the realm URL (auth-server-url denotes
   ## the keycloak server endpoint)
   # auth-server-url: # http://localhost/modelujeme/sluzby/auth-server

@@ -1,6 +1,8 @@
 package com.github.sgov.server.service.repository;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
+import com.github.sgov.server.controller.dto.VocabularyContextDto;
+import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
@@ -30,7 +32,7 @@ import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
-import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -107,7 +109,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
     }
 
 
-    public List<VocabularyContext> getVocabulariesAsContextDtos() {
+    public List<VocabularyDto> getVocabulariesAsContextDtos() {
         return getVocabulariesAsContextDtos(null);
     }
 
@@ -117,9 +119,9 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      * @param lang language to fetch the label in
      * @return vocabularies in the form of vocabulary context
      */
-    public List<VocabularyContext> getVocabulariesAsContextDtos(String lang) {
+    public List<VocabularyDto> getVocabulariesAsContextDtos(String lang) {
         try {
-            List<VocabularyContext> contexts = new ArrayList<>();
+            List<VocabularyDto> contexts = new ArrayList<>();
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
                     repositoryConf.getReleaseSparqlEndpointUrl()));
@@ -130,9 +132,9 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
                     + " ?g <" + DCTERMS.TITLE + "> ?label . "
                     + ((lang != null) ? "FILTER (lang(?label)='" + lang + "')" : "")
                     + " }} ORDER BY ?label");
-            final List<URI> uris = getWriteLockedVocabularies();
+            final Set<URI> uris = getWriteLockedVocabularies();
             query.evaluate().forEach(b -> {
-                final VocabularyContext c = new VocabularyContext();
+                final VocabularyDto c = new VocabularyDto();
                 final URI uri = URI.create(b.getValue("g").stringValue());
                 c.setBasedOnVocabularyVersion(uri);
                 c.setReadonly(uris.contains(uri));
@@ -152,10 +154,9 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      * Returns the list of vocabularies which are write-locked (i.e. they are writable in some
      * workspace).
      */
-    private List<URI> getWriteLockedVocabularies() {
-        final List<URI> result = new ArrayList<>();
+    private Set<URI> getWriteLockedVocabularies() {
+        final Set<URI> result = new HashSet<>();
         workspaceDao.findAll().forEach(w -> w.getVocabularyContexts().stream()
-            .filter(vc -> !vc.isReadonly())
             .forEach(vc -> result.add(vc.getBasedOnVocabularyVersion())));
         return result;
     }
@@ -187,7 +188,8 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      * @param vocabularyContext the vocabulary context to be loaded.
      */
     @Transactional
-    public void createContext(final VocabularyContext vocabularyContext, final String label) {
+    public void createContext(final VocabularyContext vocabularyContext,
+                              final VocabularyContextDto vocabularyContextDto) {
         final Set<Statement> statements = new HashSet<>();
         final HTTPRepository workspaceRepository = new HTTPRepository(
             repositoryConf.getUrl());
@@ -202,7 +204,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         VocabularyCreationHelper.createVocabulary(
             f,
             i,
-            label,
+            vocabularyContextDto,
             statements
         );
 
@@ -263,7 +265,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         conGitSsp.setNamespace("owl", OWL.NAMESPACE);
         conGitSsp.setNamespace("rdfs", RDFS.NAMESPACE);
         conGitSsp.setNamespace("dcterms", DCTERMS.NAMESPACE);
-        conGitSsp.setNamespace("xsd", XMLSchema.NAMESPACE);
+        conGitSsp.setNamespace("xsd", XSD.NAMESPACE);
         conGitSsp.setNamespace("bibo", "http://purl.org/ontology/bibo/");
         conGitSsp.setNamespace("vann", "http://purl.org/vocab/vann/");
         conGitSsp.setNamespace("z-sgov", "https://slovník.gov.cz/základní/");

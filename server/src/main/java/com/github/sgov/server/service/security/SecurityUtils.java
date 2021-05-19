@@ -78,6 +78,22 @@ public class SecurityUtils {
         }
     }
 
+    private static UserAccount resolveAccountFromKeycloakPrincipal(SecurityContext context) {
+        final KeycloakPrincipal<?> principal =
+            (KeycloakPrincipal<?>) context.getAuthentication().getPrincipal();
+        final AccessToken keycloakToken = principal.getKeycloakSecurityContext().getToken();
+        final UserAccount account = new UserAccount();
+        account.setFirstName(keycloakToken.getGivenName());
+        account.setLastName(keycloakToken.getFamilyName());
+        account.setUsername(keycloakToken.getPreferredUsername());
+        context.getAuthentication().getAuthorities().stream()
+            .map(ga -> UserRole.fromRoleName(ga.getAuthority()))
+            .filter(r -> !r.getType().isEmpty()).forEach(r -> account.addType(r.getType()));
+        account.setUri(IdentifierResolver
+            .generateUserIdentifier(keycloakToken.getSubject()));
+        return account;
+    }
+
     /**
      * Gets details of the currently authenticated user.
      *
@@ -120,21 +136,5 @@ public class SecurityUtils {
         context.setAuthentication(token);
         SecurityContextHolder.setContext(context);
         return token;
-    }
-
-    private static UserAccount resolveAccountFromKeycloakPrincipal(SecurityContext context) {
-        final KeycloakPrincipal<?> principal =
-            (KeycloakPrincipal<?>) context.getAuthentication().getPrincipal();
-        final AccessToken keycloakToken = principal.getKeycloakSecurityContext().getToken();
-        final UserAccount account = new UserAccount();
-        account.setFirstName(keycloakToken.getGivenName());
-        account.setLastName(keycloakToken.getFamilyName());
-        account.setUsername(keycloakToken.getPreferredUsername());
-        context.getAuthentication().getAuthorities().stream()
-            .map(ga -> UserRole.fromRoleName(ga.getAuthority()))
-            .filter(r -> !r.getType().isEmpty()).forEach(r -> account.addType(r.getType()));
-        account.setUri(IdentifierResolver
-            .generateUserIdentifier(keycloakToken.getSubject()));
-        return account;
     }
 }

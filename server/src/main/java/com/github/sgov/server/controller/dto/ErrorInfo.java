@@ -1,19 +1,26 @@
 package com.github.sgov.server.controller.dto;
 
+import lombok.Data;
+
 /**
  * Contains information about an error and can be send to client as JSON to let him know what is
  * wrong.
  */
+@Data
 public class ErrorInfo {
 
     private String message;
 
+    /**
+     * Gets error message identifier.
+     *
+     * <p>This identifier can be used by the UI to display a corresponding localized error message.
+     *
+     * @return Error message identifier
+     */
     private String messageId;
 
     private String requestUri;
-
-    public ErrorInfo() {
-    }
 
     public ErrorInfo(String requestUri) {
         this.requestUri = requestUri;
@@ -30,42 +37,5 @@ public class ErrorInfo {
         final ErrorInfo errorInfo = new ErrorInfo(requestUri);
         errorInfo.setMessage(message);
         return errorInfo;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    /**
-     * Gets error message identifier.
-     *
-     * <p>This identifier can be used by the UI to display a corresponding localized error message.
-     *
-     * @return Error message identifier
-     */
-    public String getMessageId() {
-        return messageId;
-    }
-
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
-    }
-
-    public String getRequestUri() {
-        return requestUri;
-    }
-
-    public void setRequestUri(String requestUri) {
-        this.requestUri = requestUri;
-    }
-
-    @Override
-    public String toString() {
-        return "ErrorInfo{" + requestUri + ", messageId=" + messageId + ", message='" + message
-            + "'}";
     }
 }

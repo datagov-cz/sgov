@@ -13,16 +13,15 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class UserConf {
 
-    public String userNamespace;
     public static String namespace;
+    public static String context;
+    public String userNamespace;
+    public String userContext;
 
     @Value("${user.namespace}")
     public void setUserNamespace(String namespace) {
         UserConf.namespace = namespace;
     }
-
-    public String userContext;
-    public static String context;
 
     @Value("${user.context}")
     public void setUserContext(String userContext) {
