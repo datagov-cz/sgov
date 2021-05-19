@@ -7,16 +7,14 @@ import cz.cvut.kbss.jopa.model.annotations.PostLoad;
 import cz.cvut.kbss.jopa.model.annotations.PrePersist;
 import cz.cvut.kbss.jopa.model.annotations.PreUpdate;
 import java.util.Date;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
  * Entity listener used to manage provenance data.
  */
+@Slf4j
 public class ProvenanceManager {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ProvenanceManager.class);
 
     private UserAccount getCurrent() {
         return SecurityUtils.getCurrentUser();
@@ -57,7 +55,7 @@ public class ProvenanceManager {
         assert instance != null;
 
         if (!SecurityUtils.authenticated()) {
-            LOG.trace("Removing provenance data of instance {} for anonymous access.", instance);
+            log.trace("Removing provenance data of instance {} for anonymous access.", instance);
             instance.setAuthor(null);
             instance.setLastEditor(null);
         }

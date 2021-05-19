@@ -7,7 +7,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @SpringBootApplication
 public class SGoVServiceApplication extends SpringBootServletInitializer {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SpringApplication.run(SGoVServiceApplication.class, args);
     }
 }

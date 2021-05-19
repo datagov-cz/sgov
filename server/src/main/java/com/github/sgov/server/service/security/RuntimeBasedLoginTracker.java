@@ -10,8 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
@@ -25,9 +24,9 @@ import org.springframework.context.ApplicationEventPublisherAware;
  * published for the application. A successful login resets the counter of unsuccessful attempts for
  * the user.
  */
+@Slf4j
 public class RuntimeBasedLoginTracker implements LoginTracker, ApplicationEventPublisherAware {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RuntimeBasedLoginTracker.class);
     private final Map<URI, AtomicInteger> counter = new ConcurrentHashMap<>();
     private ApplicationEventPublisher eventPublisher;
 
@@ -49,7 +48,7 @@ public class RuntimeBasedLoginTracker implements LoginTracker, ApplicationEventP
             // Do not emit multiple times
             return;
         }
-        LOG.warn("Unsuccessful login attempts limit exceeded by user {}. Locking the account.",
+        log.warn("Unsuccessful login attempts limit exceeded by user {}. Locking the account.",
             user);
         eventPublisher.publishEvent(new LoginAttemptsThresholdExceeded(user));
     }
