@@ -51,3 +51,7 @@ in Intellij Idea IDE following steps are recommended:
 `Settings/Editor/Code Style/Java/Import Scheme/Checkstyle configuration`.
 2) Install checkstyle plugin CheckStyle-IDEA
 3) Configure the plugin by adding `checkstyle.xml` into  `Settings/Other Settings/Checkstyle/Configuration file`
+ 
+
+Tento repozitář je udržován v rámci projektu OPZ č. CZ.03.4.74/0.0/0.0/15_025/0013983.
+![Evropská unie - Evropský sociální fond - Operační program Zaměstnanost](https://data.gov.cz/images/ozp_logo_cz.jpg)
