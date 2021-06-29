@@ -180,6 +180,8 @@ public class GithubRepositoryService {
     }
 
     private String createPullRequest(String fromBranch, String title, String body) {
+        log.debug("Trying to create a pull request from branch {}, with title {}", fromBranch,
+            title);
         final HttpResponse<JsonNode> prResponse =
             Unirest
                 .post("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/"
