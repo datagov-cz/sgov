@@ -8,6 +8,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
  * Service to managed workspaces.
  */
 @Service
+@Slf4j
 public class GithubRepositoryService {
 
     private final RepositoryConf repositoryConf;
@@ -49,7 +51,7 @@ public class GithubRepositoryService {
      */
     public Git checkout(String branchName, File dir) {
         try {
-            Git git = Git.cloneRepository()
+            final Git git = Git.cloneRepository()
                 .setURI(repositoryConf.getRemoteUrl())
                 .setDirectory(dir)
                 .call();
@@ -171,6 +173,7 @@ public class GithubRepositoryService {
         if (prGet.isSuccess() && prGet.getBody().getArray().length() > 0) {
             return prGet.getBody().getArray().getJSONObject(0).get("html_url").toString();
         } else {
+            log.error("Pull request cannot be obtained, reason {}, {}", prGet.getStatus(), prGet.getBody().toPrettyString());
             return null;
         }
     }
@@ -191,6 +194,7 @@ public class GithubRepositoryService {
         if (prResponse.isSuccess()) {
             return prResponse.getBody().getArray().getJSONObject(0).get("html_url").toString();
         } else {
+            log.error("Pull request cannot be obtained, reason {}, {}", prResponse.getStatus(), prResponse.getBody().toPrettyString());
             throw new PublicationException(
                 "An error occured during opening PR: " + prResponse.getStatus(), null);
         }
