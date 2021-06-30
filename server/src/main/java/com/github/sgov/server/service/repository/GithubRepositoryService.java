@@ -198,9 +198,9 @@ public class GithubRepositoryService {
             return prResponse.getBody().getArray().getJSONObject(0).get("html_url").toString();
         } else {
             log.error("Pull request cannot be created, reason {}-{} with body {}, "
-                    + "for branch {} and body {}",
+                    + "for branch {} with title {} and body {}",
                 prResponse.getStatus(), prResponse.getStatusText(),
-                prResponse.getBody().toPrettyString(), title, body);
+                prResponse.getBody().toPrettyString(), fromBranch, title, body);
             throw new PublicationException(
                 "An error occured during opening PR: " + prResponse.getStatus(), null);
         }
