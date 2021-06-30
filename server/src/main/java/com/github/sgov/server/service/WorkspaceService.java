@@ -124,6 +124,8 @@ public class WorkspaceService {
         try {
             final File dir = java.nio.file.Files.createTempDirectory("sgov").toFile();
             try (final Git git = githubService.checkout(branchName, dir)) {
+                publishContexts(git, dir, workspace);
+                githubService.push(git);
                 FileUtils.deleteDirectory(dir);
                 String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
                     MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
