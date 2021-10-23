@@ -7,8 +7,6 @@ management:
   endpoint:
     health:
       enabled: true
-    info:
-      enabled: true
 
 info.app:
   name: "SGoV Server"

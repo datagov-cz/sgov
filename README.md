@@ -1,6 +1,5 @@
 # SGoV
 This repository contains web services for SGoV workspace tools:
-- user management
 - user authentication
 - workspace validation
 
@@ -16,14 +15,14 @@ The project consists of the following modules:
 ## Proposing validation changes
 The best way to propose validation rule changes is to:
 
-1. create a new issue using template 'Validation Change Request' template. Describe (i) why a you request to change validation (to add a new rule/change an existing one),
+1. create a new issue using template 'Validation Change Request' template. Describe (i) why you request to change validation (to add a new rule/change an existing one),
 (ii) describe use-case/example. The issue is given a number <ISSUE>
 2. create a new branch of the form '<ISSUE>-<short-description>'
 3. implement the changes and create a pull request. If the pull request passes all automatic checks, ask one of the maintainers to approve.
 4. Once approved, merge PR into master
 
 ## Building
-You need to have Github token in order to build this project (as there is a Github Packages dependency). Check build.gradle for details.
+You need to have GitHub token in order to build this project (as there is a GitHub Packages dependency). Check build.gradle for details.
 You can specify host/port of the validated RDF4J repository in `server/src/main/resources/application.yml`
 
     gradle bootRun

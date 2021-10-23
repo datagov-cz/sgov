@@ -1,61 +1,127 @@
+buildscript {
+    repositories {
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+    dependencies {
+        classpath 'io.freefair.gradle:aspectj-plugin:3.8.4'
+    }
+}
+
 plugins {
-    id 'ru.vyarus.quality' version '4.2.2' apply false
+    id 'java'
+    id 'org.springframework.boot' version '2.5.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'io.freefair.aspectj.post-compile-weaving' version '6.2.0'
+    id 'io.freefair.lombok' version '6.2.0'
+    id 'nebula.lint' version '17.2.3'
+    id 'ru.vyarus.quality' version '4.2.2'
+    id 'maven-publish'
 }
 
 group 'com.github.sgov'
 def revision = 'git rev-list --count HEAD'.execute().text.trim()
 def hash = 'git rev-parse --short HEAD'.execute().text.trim()
-version = "1.0.0.r${revision}.${hash}";
+version = getDate() + "-r${revision}.${hash}"
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'ru.vyarus.quality'
-    apply plugin: 'maven-publish'
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMddHHmmss')
+    return formattedDate
+}
 
-    quality {
-        checkstyleVersion = '8.32'
-        checkstyle = true
-        spotbugs = false
-        pmd = false
-        configDir = 'config'
+gradleLint {
+    rules = ['unused-dependency']
+}
+
+quality {
+    checkstyleVersion = '8.32'
+    checkstyle = true
+    spotbugs = false
+    pmd = false
+    configDir = 'config'
+}
+
+processResources {
+    filesMatching('application.yml') {
+        expand(['version': project.version])
     }
+}
 
-    group parent.group
-    version parent.version
+compileJava {
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+}
 
-    processResources {
-        filesMatching('application.yml') {
-            expand(["version": project.version]);
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'com.github.sgov:sgov-validator:1.6.5'
+
+    implementation 'cz.cvut.kbss.jopa:jopa-impl:0.17.2'
+    implementation 'cz.cvut.kbss.jopa:ontodriver-sesame:0.17.2'
+    implementation 'cz.cvut.kbss.jsonld:jb4jsonld-jackson:0.8.8'
+    implementation 'com.github.ledsoft:jopa-spring-transaction:0.1.1'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:2.5.5'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.5'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.5.5'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.5.5'
+    implementation 'org.springframework.data:spring-data-commons:2.5.5'
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'com.konghq:unirest-java:3.13.0'
+    implementation 'org.topbraid:shacl:1.4.0'
+    runtimeOnly 'org.mitre.dsmiley.httpproxy:smiley-http-proxy-servlet:1.12'
+    implementation 'org.keycloak:keycloak-spring-boot-starter:15.0.2'
+
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
+
+    aspect 'cz.cvut.kbss.jopa:jopa-impl:0.17.2'
+
+    testImplementation 'org.apache.jena:jena-shacl:4.2.0'
+    testImplementation 'org.apache.jena:jena-fuseki-server:4.2.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    testImplementation('org.springframework.boot:spring-boot-starter-test:2.5.5') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+bootJar {
+    archiveFileName = "sgov-server-${project.version}.jar"
+}
+
+bootRun {
+    systemProperties = System.properties
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'GitHubPackages'
+        url = uri('https://maven.pkg.github.com/opendata-mvcr/sgov-validator')
+        credentials {
+            username = project.findProperty('gpr.user') ?: System.getenv('USERNAME')
+            password = project.findProperty('gpr.key') ?: System.getenv('TOKEN')
         }
     }
+}
 
+publishing {
     repositories {
-        jcenter()
         maven {
             name = 'GitHubPackages'
-            url = uri('https://maven.pkg.github.com/opendata-mvcr/sgov-validator')
+            url = uri('https://maven.pkg.github.com/opendata-mvcr/sgov')
             credentials {
                 username = project.findProperty('gpr.user') ?: System.getenv('USERNAME')
                 password = project.findProperty('gpr.key') ?: System.getenv('TOKEN')
             }
         }
     }
-
-    publishing {
-        repositories {
-            maven {
-                name = 'GitHubPackages'
-                url = uri('https://maven.pkg.github.com/opendata-mvcr/sgov')
-                credentials {
-                    username = project.findProperty('gpr.user') ?: System.getenv('USERNAME')
-                    password = project.findProperty('gpr.key') ?: System.getenv('TOKEN')
-                }
-            }
-        }
-        publications {
-            gpr(MavenPublication) {
-                from(components.java)
-            }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
         }
     }
 }

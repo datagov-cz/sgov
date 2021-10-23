@@ -1,7 +1,7 @@
 package com.github.sgov.server.controller;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+//import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -76,7 +76,7 @@ class UserControllerSecurityTest extends BaseControllerTestRunner {
         // used
         this.mockMvc =
             MockMvcBuilders.webAppContextSetup(context)
-                .apply(springSecurity(springSecurityFilterChain))
+//                .apply(springSecurity(springSecurityFilterChain))
                 .build();
     }
 
