@@ -20,9 +20,9 @@ public enum VocabularyType {
     DSGOV("datový", "d-sgov",
         "/([-ěščřžýáíéóúůďťňa-z0-9]+)");
 
-    String iriLocalName;
-    String prefix;
-    String idRegex;
+    private final String iriLocalName;
+    private final String prefix;
+    private final String idRegex;
 
     VocabularyType(String iriLocalName, String prefix, String idRegex) {
         this.iriLocalName = iriLocalName;

@@ -56,8 +56,8 @@ public class IdentifierResolver {
     /**
      * Extracts namespace from the specified URI.
      *
-     * <p>Namespace in this case means the part of the URI up to the last forward slash or hash
-     * tag, whichever comes later.
+     * <p>Namespace in this case means the part of the URI up to the last forward slash or hash-tag,
+     * whichever comes later.
      *
      * @param uri URI to extract namespace from
      * @return Identifier namespace
@@ -130,18 +130,5 @@ public class IdentifierResolver {
             ns += "/";
         }
         return URI.create(ns + fragment);
-    }
-
-    /**
-     * Builds an identifier from a namespace loaded from application configuration and the specified
-     * fragment.
-     *
-     * @param fragment Normalized string unique in the loaded namespace
-     * @return Identifier
-     * @see #resolveIdentifier(String, String)
-     */
-    public static URI resolveUserIdentifier(String fragment) {
-        Objects.requireNonNull(UserConf.namespace);
-        return resolveIdentifier(UserConf.namespace, fragment);
     }
 }

@@ -1,6 +1,5 @@
 package com.github.sgov.server.environment.config;
 
-import com.github.sgov.server.config.conf.JwtConf;
 import com.github.sgov.server.service.security.SecurityUtils;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,7 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
  */
 @Configuration
 @EnableWebSecurity
-@ContextConfiguration(classes = {JwtConf.class, SecurityUtils.class})
+@ContextConfiguration(classes = {SecurityUtils.class})
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ActiveProfiles("test")
 public class TestRestSecurityConfig extends WebSecurityConfigurerAdapter {

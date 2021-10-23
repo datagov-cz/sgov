@@ -12,8 +12,10 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @OWLClass(iri = Vocabulary.s_c_uzivatel)
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class UserAccount extends AbstractUser {
@@ -35,7 +37,7 @@ public class UserAccount extends AbstractUser {
      * Erases the password in this instance.
      *
      * <p>This should be used for security reasons when passing the instance throughout the
-     * application and especially when it to be send from the REST API to the client.
+     * application and especially when it to be sent from the REST API to the client.
      */
     public void erasePassword() {
         this.password = null;

@@ -26,7 +26,7 @@ import org.topbraid.shacl.validation.ValidationReport;
 @Service
 public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace> {
 
-    WorkspaceDao workspaceDao;
+    private final WorkspaceDao workspaceDao;
 
     /**
      * Creates a new repository service.
@@ -63,7 +63,7 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
      * Finds workspace with the specified id and returns it with all its inferred properties.
      *
      * <p>This method guarantees to return a matching
-     * instance. If no such object isfound, a {@link NotFoundException} is thrown.
+     * instance. If no such object is found, a {@link NotFoundException} is thrown.
      *
      * @param id Identifier of the workspace to load
      * @return The matching workspace

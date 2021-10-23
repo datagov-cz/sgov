@@ -8,7 +8,7 @@ public class ComponentConf {
 
     private String name;
 
-    private Map meta;
+    private Map<?, ?> meta;
 
     public String getUrl() {
         return url;
@@ -26,11 +26,11 @@ public class ComponentConf {
         this.name = name;
     }
 
-    public Map getMeta() {
+    public Map<?, ?> getMeta() {
         return meta;
     }
 
-    public void setMeta(Map meta) {
+    public void setMeta(Map<?, ?> meta) {
         this.meta = meta;
     }
 }

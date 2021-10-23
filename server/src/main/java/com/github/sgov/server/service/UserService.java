@@ -13,7 +13,7 @@ public class UserService {
     /**
      * Retrieves currently logged in user.
      *
-     * @return Currently logged in user's account
+     * @return Currently logged-in user's account
      */
     public UserAccount getCurrent() {
         final UserAccount account = SecurityUtils.getCurrentUser();

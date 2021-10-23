@@ -1,6 +1,5 @@
 package com.github.sgov.server.service;
 
-import com.github.sgov.server.config.conf.JwtConf;
 import com.github.sgov.server.config.conf.PersistenceConf;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.config.conf.UserConf;
@@ -33,7 +32,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
                 RepositoryConf.class,
                 UserConf.class,
                 ComponentsProperties.class,
-                JwtConf.class,
                 TestDescriptorFactory.class
         })
 @ActiveProfiles("test")

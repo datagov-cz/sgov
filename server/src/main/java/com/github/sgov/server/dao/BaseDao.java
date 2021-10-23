@@ -5,7 +5,6 @@ import com.github.sgov.server.model.util.EntityToOwlClassMapper;
 import com.github.sgov.server.model.util.HasIdentifier;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -65,16 +64,6 @@ public abstract class BaseDao<T extends HasIdentifier> implements GenericDao<T> 
         Objects.requireNonNull(entity);
         try {
             em.persist(entity);
-        } catch (RuntimeException e) {
-            throw new PersistenceException(e);
-        }
-    }
-
-    @Override
-    public void persist(Collection<T> entities) {
-        Objects.requireNonNull(entities);
-        try {
-            entities.forEach(em::persist);
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }

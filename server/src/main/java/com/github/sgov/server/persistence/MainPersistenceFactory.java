@@ -76,7 +76,7 @@ public class MainPersistenceFactory {
         // OPTIMIZATION: Always use statement retrieval with unbound property. Should spare
         // repository queries
         properties.put(SesameOntoDriverProperties.SESAME_LOAD_ALL_THRESHOLD, "1");
-        this.emf = Persistence.createEntityManagerFactory("termitPU", properties);
+        this.emf = Persistence.createEntityManagerFactory("sgovPU", properties);
     }
 
     @PreDestroy

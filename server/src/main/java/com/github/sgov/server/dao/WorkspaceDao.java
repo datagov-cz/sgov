@@ -115,30 +115,8 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         }
     }
 
-    /**
-     * Returns all workspace IRIs.
-     *
-     * @return list of workspace IRIs.
-     */
-    public List<String> getAllWorkspaceIris() {
-        final String uri = properties.getUrl();
-        final HttpResponse<JsonObject> response =
-            Unirest.post(uri).header("Content-type", "application/sparql-query")
-                .header("Accept", "application/sparql-results+json")
-                .body("SELECT ?iri WHERE { ?iri  a <" + Vocabulary.s_c_metadatovy_kontext
-                    + "> }")
-                .asObject(JsonObject.class);
-
-        final List<String> list = new ArrayList<>();
-        response.getBody().getAsJsonObject("results").getAsJsonArray("bindings")
-            .forEach(b -> list.add(
-                ((JsonObject) b).getAsJsonObject("iri").getAsJsonPrimitive("value")
-                    .getAsString()));
-        return list;
-    }
-
     private ValidationReport validateVocabulary(final String v,
-                                                final String endpointUlozistePracovnichProstoru,
+                                                final String endpoint,
                                                 final Validator validator,
                                                 final Set<URL> rules)
         throws IOException {
@@ -147,7 +125,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
             "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
         log.debug("- getting all statements for the vocabularies using query {}", query);
         final QueryExecution e = QueryExecutionFactory
-            .sparqlService(endpointUlozistePracovnichProstoru, query.asQuery());
+            .sparqlService(endpoint, query.asQuery());
         final Model m = e.execConstruct();
         log.debug("- found {} statements. Now validating", m.listStatements().toSet().size());
         final Model dataModel =
@@ -171,13 +149,13 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         rules.addAll(validator.getVocabularyRules());
         OntDocumentManager.getInstance().setProcessImports(false);
 
-        final String endpointUlozistePracovnichProstoru = properties.getUrl();
+        final String endpoint = properties.getUrl();
 
         final List<ValidationResult> validationResults = new ArrayList<>();
         for (VocabularyContext c : workspace
             .getVocabularyContexts()) {
             final ValidationReport report = validateVocabulary(c.getUri().toString(),
-                endpointUlozistePracovnichProstoru, validator, rules);
+                endpoint, validator, rules);
             conforms = conforms && report.conforms();
             validationResults.addAll(report.results());
         }
@@ -221,7 +199,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
                     + "WHERE {\n"
                     + "    GRAPH ?vc { \n"
                     + "        ?s a <" + Vocabulary.s_c_slovnik + "> .\n"
-                    + "        ?s <" + DCTERMS.TITLE.toString() + "> ?label .\n"
+                    + "        ?s <" + DCTERMS.TITLE + "> ?label .\n"
                     + "        FILTER langMatches( lang(?label), \"" + language + "\" )\n"
                     + "    }    \n"
                     + "} VALUES (?vc) {\n"

@@ -36,8 +36,4 @@ public class SgovAssemblyLineKeycloakSpringBootConfigResolver
 
         return keycloakDeployment;
     }
-
-    void setAdapterConfig(AdapterConfig adapterConfig) {
-        this.adapterConfig = adapterConfig;
-    }
 }

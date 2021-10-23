@@ -36,7 +36,8 @@ public class VocabularyFolder {
 
     private File getFile(String type, String suffix) {
         return new File(folder,
-            getVocabularyId() + "-" + type + getSuffixString(suffix) + ".ttl");
+            getVocabularyId() + "-" + type + getSuffixString(suffix)
+                + Constants.Turtle.FILE_EXTENSION);
     }
 
     public File getVocabularyFile(String suffix) {
@@ -49,10 +50,6 @@ public class VocabularyFolder {
 
     public File getModelFile(String suffix) {
         return getFile("model", suffix);
-    }
-
-    public File getCompactModelFile(String suffix) {
-        return getFile("model-kompaktní", suffix);
     }
 
     public File getFolder() {

@@ -2,7 +2,6 @@ package com.github.sgov.server.dao;
 
 import com.github.sgov.server.model.util.HasIdentifier;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,13 +47,6 @@ public interface GenericDao<T extends HasIdentifier> {
      * @param entity Entity to persist
      */
     void persist(T entity);
-
-    /**
-     * Persists the specified instances.
-     *
-     * @param entities Entities to persist
-     */
-    void persist(Collection<T> entities);
 
     /**
      * Updates the specified entity.

@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-import com.github.sgov.server.config.conf.JwtConf;
 import com.github.sgov.server.controller.util.RestExceptionHandler;
 import com.github.sgov.server.environment.Environment;
 import com.github.sgov.server.environment.Generator;
@@ -48,7 +47,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class,
     classes = {
-        JwtConf.class,
         TestRestSecurityConfig.class,
         UserControllerSecurityTest.Config.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)

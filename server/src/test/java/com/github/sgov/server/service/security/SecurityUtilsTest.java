@@ -1,7 +1,6 @@
 package com.github.sgov.server.service.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.sgov.server.environment.Environment;
@@ -18,16 +17,12 @@ import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 
 class SecurityUtilsTest extends BaseServiceTestRunner {
-
-    @Autowired
-    private SecurityUtils sut;
 
     private UserAccount user;
 
@@ -44,14 +39,14 @@ class SecurityUtilsTest extends BaseServiceTestRunner {
     @Test
     void getCurrentUserReturnsCurrentlyLoggedInUser() {
         Environment.setCurrentUser(user);
-        final UserAccount result = sut.getCurrentUser();
+        final UserAccount result = SecurityUtils.getCurrentUser();
         assertEquals(user, result);
     }
 
     @Test
     void getCurrentUserSupportsExtractingCurrentUserFromKeycloakToken() {
         setKeycloakToken();
-        final UserAccount result = sut.getCurrentUser();
+        final UserAccount result = SecurityUtils.getCurrentUser();
         assertEquals(user.getUsername(), result.getUsername());
     }
 
@@ -71,22 +66,6 @@ class SecurityUtilsTest extends BaseServiceTestRunner {
                 SecurityConstants.ROLE_USER), null), true,
                 Collections.singleton(new SimpleGrantedAuthority(SecurityConstants.ROLE_USER))));
         SecurityContextHolder.setContext(context);
-    }
-
-    @Test
-    void getCurrentUserDetailsReturnsEmptyOptionalWhenNoUserIsLoggedIn() {
-        assertFalse(sut.getCurrentUserDetails().isPresent());
-    }
-
-    @Test
-    void isAuthenticatedReturnsFalseForUnauthenticatedUser() {
-        assertFalse(sut.isAuthenticated());
-    }
-
-    @Test
-    void isAuthenticatedReturnsTrueForAuthenticatedUser() {
-        Environment.setCurrentUser(user);
-        assertTrue(sut.isAuthenticated());
     }
 
     @Test

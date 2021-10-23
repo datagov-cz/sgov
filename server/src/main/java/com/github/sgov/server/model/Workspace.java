@@ -17,8 +17,10 @@ import java.util.Optional;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @OWLClass(iri = Vocabulary.s_c_metadatovy_kontext)
 @JsonLdAttributeOrder({"uri", "label", "author", "lastEditor"})
 @EntityListeners(ProvenanceManager.class)

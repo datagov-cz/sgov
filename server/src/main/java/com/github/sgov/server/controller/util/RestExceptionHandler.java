@@ -154,7 +154,7 @@ public class RestExceptionHandler {
      * Publication Exception.
      */
     @ExceptionHandler(VocabularyRegisteredinReadWriteException.class)
-    public ResponseEntity<ErrorInfo> vocabularyAlreadyRegisteredinReadWriteException(
+    public ResponseEntity<ErrorInfo> vocabularyAlreadyRegisteredInReadWriteException(
         HttpServletRequest request,
         VocabularyRegisteredinReadWriteException e) {
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);

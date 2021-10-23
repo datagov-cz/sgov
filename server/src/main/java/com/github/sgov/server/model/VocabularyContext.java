@@ -15,8 +15,10 @@ import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
 import java.net.URI;
 import java.util.Set;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @OWLClass(iri = Vocabulary.s_c_slovnikovy_kontext)
 @JsonLdAttributeOrder({"uri", "label", "basedOnVocabularyVersion", "changeTrackingContext"})
 public class VocabularyContext extends AbstractEntity implements Context, HasTypes {

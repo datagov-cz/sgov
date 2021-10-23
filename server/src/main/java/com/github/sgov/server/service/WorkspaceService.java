@@ -73,7 +73,7 @@ public class WorkspaceService {
         return MessageFormat.format("Changed vocabularies: \n - {0}", workspace
             .getVocabularyContexts()
             .stream()
-            .map(c -> c.getBasedOnVocabularyVersion().toString() + " (kontext " + c.getUri() + ")")
+            .map(c -> c.getBasedOnVocabularyVersion().toString() + " (context " + c.getUri() + ")")
             .collect(Collectors.joining("\n - "))
         );
     }
@@ -199,8 +199,8 @@ public class WorkspaceService {
             return vocabularyContextUri;
         }
 
-        if (!vocabularyService.getVocabulariesAsContextDtos().stream()
-            .anyMatch(vc ->
+        if (vocabularyService.getVocabulariesAsContextDtos().stream()
+            .noneMatch(vc ->
                 vc.getBasedOnVocabularyVersion().equals(vocabularyUri)
             )
         ) {

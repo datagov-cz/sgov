@@ -26,17 +26,14 @@ import org.springframework.stereotype.Service;
 public class GithubRepositoryService {
 
     private final RepositoryConf repositoryConf;
-    private final SecurityUtils securityUtils;
     private final CredentialsProvider credentialsProvider;
 
     /**
-     * Creates a new Github repository service.
+     * Creates a new GitHub repository service.
      */
     @Autowired
-    public GithubRepositoryService(final RepositoryConf repositoryConf,
-                                   final SecurityUtils securityUtils) {
+    public GithubRepositoryService(final RepositoryConf repositoryConf) {
         this.repositoryConf = repositoryConf;
-        this.securityUtils = securityUtils;
         this.credentialsProvider = new UsernamePasswordCredentialsProvider(
             repositoryConf.getGithubUserToken(), "");
     }
@@ -45,8 +42,8 @@ public class GithubRepositoryService {
      * Checks out the given branch {@param branchName} from SSP repo into {@param dir}.
      *
      * @param branchName name of the branch to be checked out
-     * @param dir        directory to checkout the repo into
-     * @return JGit object to work with
+     * @param dir        directory to check out the repo into
+     * @return           a JGit object to work with
      * @throws PublicationException if an error during cloning/checking out occurs
      */
     public Git checkout(String branchName, File dir) {
@@ -109,10 +106,10 @@ public class GithubRepositoryService {
 
             git.commit()
                 .setAll(true)
-                .setAuthor(securityUtils.getCurrentUser().getFirstName()
-                        + " " + securityUtils
+                .setAuthor(SecurityUtils.getCurrentUser().getFirstName()
+                        + " " + SecurityUtils
                         .getCurrentUser().getLastName(),
-                    securityUtils.getCurrentUser().getUsername())
+                    SecurityUtils.getCurrentUser().getUsername())
                 .setMessage(
                     message)
                 .call();
@@ -202,7 +199,7 @@ public class GithubRepositoryService {
                 prResponse.getStatus(), prResponse.getStatusText(),
                 prResponse.getBody().toPrettyString(), fromBranch, title, body);
             throw new PublicationException(
-                "An error occured during opening PR: " + prResponse.getStatus(), null);
+                "An error occurred during opening PR: " + prResponse.getStatus(), null);
         }
     }
 }

@@ -51,7 +51,7 @@ public class VocabularyController extends BaseController {
     /**
      * Retrieve existing workspace.
      *
-     * @param vocabularyFragment Localname of vocabulary id.
+     * @param vocabularyFragment local name of vocabulary id.
      * @param namespace          Namespace used for resource identifier resolution. Optional, if not
      *                           specified, the configured namespace is used.
      * @return Workspace specified by workspaceFragment and optionally namespace.

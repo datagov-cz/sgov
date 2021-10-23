@@ -188,7 +188,7 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
 
     /**
      * Override this method to plug custom behavior into the transactional cycle of {@link
-     * #update(HasIdentifier)} )}.
+     * #update(HasIdentifier)}}.
      *
      * <p>The default behavior is to validate the specified instance and ensure its existence in
      * the repository.
@@ -204,10 +204,10 @@ public abstract class BaseRepositoryService<T extends HasIdentifier> {
 
     /**
      * Override this method to plug custom behavior into the transactional cycle of {@link
-     * #update(HasIdentifier)} )}.
+     * #update(HasIdentifier)}}.
      *
      * @param instance The updated instance which will be returned by {@link #update(HasIdentifier)}
-     *                 )}, not {@code null}
+     *                 , not {@code null}
      */
     protected void postUpdate(@NonNull T instance) {
         // Do nothing

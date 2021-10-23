@@ -15,8 +15,6 @@ import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.User;
 import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
 import cz.cvut.kbss.jopa.model.EntityManager;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -108,16 +106,6 @@ class BaseDaoTest extends BaseDaoTestRunner {
             final User user = Generator.generateUser();
             transactional(() -> sut.persist(user));
         });
-        assertThat(e.getCause(), is(instanceOf(OWLPersistenceException.class)));
-    }
-
-    @Test
-    void exceptionDuringCollectionPersistIsWrappedInPersistenceException() {
-        final List<User> users = Collections.singletonList(Generator.generateUserWithId());
-        transactional(() -> sut.persist(users));
-
-        final PersistenceException e = assertThrows(PersistenceException.class,
-            () -> transactional(() -> sut.persist(users)));
         assertThat(e.getCause(), is(instanceOf(OWLPersistenceException.class)));
     }
 

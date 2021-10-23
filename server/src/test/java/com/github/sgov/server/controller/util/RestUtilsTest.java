@@ -34,53 +34,6 @@ class RestUtilsTest {
     }
 
     @Test
-    void createLocationHeaderFromCurrentUriWithQueryParamAddsQueryParameterWithValueToRequestUri() {
-        final MockHttpServletRequest mockRequest =
-            new MockHttpServletRequest(HttpMethod.GET.toString(),
-                "/vocabularies");
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
-        final URI id = Generator.generateUri();
-
-        final URI result = RestUtils.createLocationFromCurrentUriWithQueryParam("id", id);
-        assertThat(result.toString(), endsWith("/vocabularies?id=" + id));
-    }
-
-    @Test
-    void getCookieExtractsCookieValueFromRequest() {
-        final MockHttpServletRequest mockRequest =
-            new MockHttpServletRequest(HttpMethod.GET.toString(),
-                "/vocabularies");
-        mockRequest
-            .setCookies(
-                new Cookie(SecurityConstants.REMEMBER_ME_COOKIE_NAME, Boolean.TRUE.toString()));
-
-        final Optional<String> result =
-            RestUtils.getCookie(mockRequest, SecurityConstants.REMEMBER_ME_COOKIE_NAME);
-        assertTrue(result.isPresent());
-        assertTrue(Boolean.parseBoolean(result.get()));
-    }
-
-    @Test
-    void getCookieReturnsEmptyOptionalWhenCookieIsNotFound() {
-        final MockHttpServletRequest mockRequest =
-            new MockHttpServletRequest(HttpMethod.GET.toString(),
-                "/vocabularies");
-        mockRequest
-            .setCookies(
-                new Cookie(SecurityConstants.REMEMBER_ME_COOKIE_NAME, Boolean.TRUE.toString()));
-
-        final Optional<String> result = RestUtils.getCookie(mockRequest, "unknown-cookie");
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    void urlEncodeEncodesSpecifiedStringWithUtf8UrlEncoding() throws Exception {
-        final String value = Generator.generateUri().toString();
-        Assertions.assertEquals(URLEncoder.encode(value, StandardCharsets.UTF_8.name()),
-            RestUtils.urlEncode(value));
-    }
-
-    @Test
     void createLocationHeaderFromCurrentUriWithPathAndQueryCreatesLocationHeader() {
         final MockHttpServletRequest mockRequest =
             new MockHttpServletRequest(HttpMethod.GET.toString(),

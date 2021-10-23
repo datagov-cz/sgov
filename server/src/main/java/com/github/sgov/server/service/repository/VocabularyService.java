@@ -156,7 +156,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      */
     private Set<URI> getWriteLockedVocabularies() {
         final Set<URI> result = new HashSet<>();
-        workspaceDao.findAll().forEach(w -> w.getVocabularyContexts().stream()
+        workspaceDao.findAll().forEach(w -> w.getVocabularyContexts()
             .forEach(vc -> result.add(vc.getBasedOnVocabularyVersion())));
         return result;
     }

@@ -18,7 +18,7 @@ import org.eclipse.rdf4j.model.vocabulary.VANN;
 public final class VocabularyCreationHelper {
 
     public static final String LANGUAGE = "cs";
-    private static String BIBO_STATUS = "http://purl.org/ontology/bibo/status";
+    private static final String BIBO_STATUS = "http://purl.org/ontology/bibo/status";
 
     private static void addCommon(ValueFactory f,
                                   IRI iri,
@@ -44,12 +44,11 @@ public final class VocabularyCreationHelper {
      * Creates a vocabulary skeleton as RDF4J statements.
      *
      * @param f          RDF4J value factory
-     * @param vocabulary vocabulary vocabulary
+     * @param vocabulary vocabulary
      * @param vocabularyContextDto  vocabulary context data
      * @param statements set of output statements
-     * @return vocabulary resource
      */
-    public static IRI createVocabulary(ValueFactory f,
+    public static void createVocabulary(ValueFactory f,
                                        VocabularyInstance vocabulary,
                                        VocabularyContextDto vocabularyContextDto,
                                        Set<Statement> statements) {
@@ -82,7 +81,5 @@ public final class VocabularyCreationHelper {
             statements.add(f.createStatement(s, DCTERMS.DESCRIPTION,
                 f.createLiteral(description, LANGUAGE)));
         }
-
-        return s;
     }
 }

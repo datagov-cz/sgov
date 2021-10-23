@@ -41,14 +41,10 @@ public final class Vocabulary {
         + "uživatel";
     public static final String s_c_administrator = WORKSPACE_NAMESPACE
         + "administrátor";
-    public static final String s_c_omezeny_uzivatel = WORKSPACE_NAMESPACE
-        + "omezený-uživatel";
     public static final String s_c_uzamceny_uzivatel = WORKSPACE_NAMESPACE
         + "uzamčený-uživatel";
     public static final String s_c_zablokovany_uzivatel = WORKSPACE_NAMESPACE
         + "zablokovaný-uživatel";
-    public static final String s_p_ma_puvodni_heslo = WORKSPACE_NAMESPACE
-        + "má-původní-heslo";
     public static final String s_p_pouziva_pojmy_ze_slovniku = TERMIT_NAMESPACE
         + "pojem/používá-pojmy-ze-slovníku";
     public static final String s_p_ma_heslo = DATA_DESCRIPTION_NAMESPACE

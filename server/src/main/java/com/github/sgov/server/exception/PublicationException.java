@@ -1,7 +1,7 @@
 package com.github.sgov.server.exception;
 
 /**
- * Indicates that publication to Github failed.
+ * Indicates that publication to GitHub failed.
  */
 public class PublicationException extends SGoVException {
 

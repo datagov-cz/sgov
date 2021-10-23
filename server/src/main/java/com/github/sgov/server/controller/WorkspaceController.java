@@ -78,7 +78,7 @@ public class WorkspaceController extends BaseController {
     /**
      * Retrieve existing workspace.
      *
-     * @param workspaceFragment Localname of workspace id.
+     * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @return Workspace specified by workspaceFragment and optionally namespace.
@@ -103,7 +103,7 @@ public class WorkspaceController extends BaseController {
      * Update existing workspace.
      *
      * @param workspace         Workspace that will be updated.
-     * @param workspaceFragment Localname of workspace id.
+     * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      */
@@ -125,7 +125,7 @@ public class WorkspaceController extends BaseController {
     /**
      * Delete existing workspace.
      *
-     * @param workspaceFragment Localname of workspace id.
+     * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      */
@@ -145,7 +145,7 @@ public class WorkspaceController extends BaseController {
     /**
      * Retrieve all vocabulary contexts stored within workspace.
      *
-     * @param workspaceFragment Localname of workspace id.
+     * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @return Set of vocabulary contexts.
@@ -168,7 +168,7 @@ public class WorkspaceController extends BaseController {
     /**
      * Get vocabularies dependent on the current vocabulary in the given workspace.
      *
-     * @param workspaceFragment localname of the workspace
+     * @param workspaceFragment local name of the workspace
      * @param vocabularyIri     IRI of the vocabulary.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
@@ -213,7 +213,7 @@ public class WorkspaceController extends BaseController {
      * the label is provided, a new vocabulary is created, otherwise an existing one is loaded.
      * </p>
      *
-     * @param workspaceFragment Localname of workspace id.
+     * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @param vocabularyUri     Uri of a vocabulary for which context should be created.
@@ -255,7 +255,7 @@ public class WorkspaceController extends BaseController {
      * the label is provided, a new vocabulary is created, otherwise an existing one is loaded.
      * </p>
      *
-     * @param workspaceFragment Localname of workspace id.
+     * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @param vocabularyContext vocabularyContext to create/load
@@ -288,8 +288,8 @@ public class WorkspaceController extends BaseController {
     /**
      * Delete vocabulary from a workspace.
      *
-     * @param workspaceFragment  Localname of workspace id.
-     * @param vocabularyFragment Localname of vocabulary context id.
+     * @param workspaceFragment  local name of workspace id.
+     * @param vocabularyFragment local name of vocabulary context id.
      * @param namespace          Namespace used for resource identifier resolution. Optional, if not
      *                           specified, the configured namespace is used.
      */
@@ -312,7 +312,7 @@ public class WorkspaceController extends BaseController {
     /**
      * Validates a workspace.
      *
-     * @param workspaceFragment Localname of workspace id.
+     * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @return set of validation results
@@ -351,7 +351,7 @@ public class WorkspaceController extends BaseController {
     /**
      * Publishes a workspace.
      *
-     * @param workspaceFragment Localname of workspace id.
+     * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      */

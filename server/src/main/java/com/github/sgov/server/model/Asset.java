@@ -5,11 +5,13 @@ import cz.cvut.kbss.jopa.model.annotations.Id;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import java.net.URI;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Represents basic info about an asset managed by the application.
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
 public abstract class Asset extends HasProvenanceData implements HasIdentifier {
 

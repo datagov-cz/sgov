@@ -5,17 +5,11 @@ import com.github.sgov.server.security.model.AuthenticationToken;
 import com.github.sgov.server.security.model.SGoVUserDetails;
 import com.github.sgov.server.security.model.UserRole;
 import com.github.sgov.server.service.IdentifierResolver;
-import java.text.MessageFormat;
-import java.util.Objects;
-import java.util.Optional;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -43,23 +37,6 @@ public class SecurityUtils {
     public static boolean authenticated() {
         final SecurityContext context = SecurityContextHolder.getContext();
         return context.getAuthentication() != null && context.getAuthentication().isAuthenticated();
-    }
-
-    /**
-     * Verifies that the specified user is enabled and not locked.
-     *
-     * @param user User to check
-     */
-    public static void verifyAccountStatus(UserAccount user) {
-        Objects.requireNonNull(user);
-        if (user.isLocked()) {
-            throw new LockedException(
-                MessageFormat.format("Account of user {0} is locked.", user));
-        }
-        if (!user.isEnabled()) {
-            throw new DisabledException(
-                MessageFormat.format("Account of user {0} is disabled.", user));
-        }
     }
 
     /**
@@ -92,49 +69,5 @@ public class SecurityUtils {
         account.setUri(IdentifierResolver
             .generateUserIdentifier(keycloakToken.getSubject()));
         return account;
-    }
-
-    /**
-     * Gets details of the currently authenticated user.
-     *
-     * <p>If no user is logged in, an empty {@link Optional} is returned.
-     *
-     * @return Currently authenticated user details
-     */
-    public Optional<SGoVUserDetails> getCurrentUserDetails() {
-        final SecurityContext context = SecurityContextHolder.getContext();
-        if (context.getAuthentication() != null
-            && context.getAuthentication().getDetails() instanceof SGoVUserDetails) {
-            return Optional.of((SGoVUserDetails) context.getAuthentication().getDetails());
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Proxy for authenticated.
-     *
-     * @see #authenticated()
-     */
-    public boolean isAuthenticated() {
-        return authenticated();
-    }
-
-    /**
-     * Creates an authentication token based on the specified user details and sets it to the
-     * current thread's security context.
-     *
-     * @param userDetails Details of the user to set as current
-     * @return The generated authentication token
-     */
-    public AuthenticationToken setCurrentUser(SGoVUserDetails userDetails) {
-        final AuthenticationToken token = new AuthenticationToken(userDetails.getAuthorities(),
-            userDetails);
-        token.setAuthenticated(true);
-
-        final SecurityContext context = new SecurityContextImpl();
-        context.setAuthentication(token);
-        SecurityContextHolder.setContext(context);
-        return token;
     }
 }

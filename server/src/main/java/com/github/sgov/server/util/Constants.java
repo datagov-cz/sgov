@@ -42,24 +42,6 @@ public class Constants {
          */
         public static final String VOCABULARY_IRI = "vocabularyIri";
 
-        /**
-         * HTTP request query parameter denoting page number.
-         *
-         * <p>Used for paging in collections of results.
-         *
-         * @see #PAGE_SIZE
-         */
-        public static final String PAGE = "page";
-
-        /**
-         * HTTP request query parameter denoting page size.
-         *
-         * <p>Used for paging in collections of results.
-         *
-         * @see #PAGE
-         */
-        public static final String PAGE_SIZE = "size";
-
         private QueryParams() {
             throw new AssertionError();
         }
