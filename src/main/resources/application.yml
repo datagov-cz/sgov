@@ -4,8 +4,13 @@ application:
 management:
   endpoints:
     enabled-by-default: false
+    web:
+      exposure:
+        include: "health,info"
   endpoint:
     health:
+      enabled: true
+    info:
       enabled: true
 
 info.app:
