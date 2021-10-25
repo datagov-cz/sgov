@@ -1,0 +1,83 @@
+application:
+  version: ${version}
+
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      enabled: true
+    info:
+      enabled: true
+
+info.app:
+  name: "SGoV Server"
+  description: "This is the SGoV Server, see https://github.com/opendata-mvcr/sgov for details."
+  version: ${version}
+
+spring:
+  output:
+    ansi:
+      enabled: DETECT
+
+server:
+  port: 8080
+  servlet:
+    contextPath: /modelujeme/sluzby/sgov-server
+
+components:
+
+repository:
+  # overrides components['al-db-server'].url
+  #  url: # http://localhost/modelujeme/sluzby/db-server/repositories/assembly-line
+  releaseSparqlEndpointUrl: https://slovník.gov.cz/sparql
+  githubRepo: ssp
+  githubOrganization: opendata-mvcr
+  ## required
+  githubUserToken:
+
+user:
+  context: https://slovník.gov.cz/uživatel
+  namespace: https://slovník.gov.cz/uživatel/
+
+persistence:
+  driver: cz.cvut.kbss.ontodriver.sesame.SesameDataSource
+  language: cs
+
+keycloak:
+  realm: assembly-line
+  resource: al-sgov-server
+  ## overrides components["al-auth-server"].url, which denotes the realm URL (auth-server-url denotes
+  ## the keycloak server endpoint)
+  # auth-server-url: # http://localhost/modelujeme/sluzby/auth-server
+  ssl-required: none
+  bearer-only: false
+  use-resource-role-mappings: true
+  cors: true
+  cors-max-age: 1000
+  cors-allowed-methods: POST,PUT,DELETE,GET,HEAD
+  cors-exposed-headers: WWW-Authenticate,Location
+  enable-basic-auth: false
+  expose-token: true
+  verify-token-audience: false
+  connection-pool-size: 20
+  disable-trust-manager: false
+  allow-any-hostname: false
+  token-minimum-time-to-live: 0
+  min-time-between-jwks-requests: 10
+  public-key-cache-ttl: 86400
+  public-client: false
+  ## required
+  # realm-key:
+  #  credentials: {
+  #    secret:
+  #  }
+
+logging:
+  pattern:
+    console: "%d{dd-MM-yyyy HH:mm:ss.SSS} [%X{username}] [thread] %-5level %logger{36} - %msg %n%throwable"
+  level:
+    root: INFO
