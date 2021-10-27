@@ -1,5 +1,7 @@
 package com.github.sgov.server.service.repository;
 
+import static com.github.sgov.server.util.Constants.SERIALIZATION_LANGUAGE;
+
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.controller.dto.VocabularyDto;
@@ -8,10 +10,10 @@ import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
+import com.github.sgov.server.util.Utils;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyCreationHelper;
 import com.github.sgov.server.util.VocabularyFolder;
-import com.github.sgov.server.util.VocabularyInstance;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -58,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Service to managed workspaces.
  */
 @Service
-public class VocabularyService extends BaseRepositoryService<VocabularyContext> {
+public class VocabularyRepositoryService extends BaseRepositoryService<VocabularyContext> {
 
     private final RepositoryConf repositoryConf;
 
@@ -70,10 +72,10 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      * Creates a new repository service.
      */
     @Autowired
-    public VocabularyService(@Qualifier("validatorFactoryBean") Validator validator,
-                             RepositoryConf repositoryConf,
-                             VocabularyDao vocabularyDao,
-                             WorkspaceDao workspaceDao) {
+    public VocabularyRepositoryService(@Qualifier("validatorFactoryBean") Validator validator,
+                                       RepositoryConf repositoryConf,
+                                       VocabularyDao vocabularyDao,
+                                       WorkspaceDao workspaceDao) {
         super(validator);
         this.repositoryConf = repositoryConf;
         this.vocabularyDao = vocabularyDao;
@@ -156,8 +158,8 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
      */
     private Set<URI> getWriteLockedVocabularies() {
         final Set<URI> result = new HashSet<>();
-        workspaceDao.findAll().forEach(w -> w.getVocabularyContexts()
-            .forEach(vc -> result.add(vc.getBasedOnVocabularyVersion())));
+        workspaceDao.findAll().forEach(w -> w.getAssetContexts()
+            .forEach(vc -> result.add(vc.getBasedOnVersion())));
         return result;
     }
 
@@ -197,15 +199,14 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
 
         final ValueFactory f = connection2.getValueFactory();
         final IRI vocabulary = f.createIRI(vocabularyContext
-            .getBasedOnVocabularyVersion().toString());
-
-        final VocabularyInstance i = new VocabularyInstance(vocabulary.toString());
+            .getBasedOnVersion().toString());
 
         VocabularyCreationHelper.createVocabulary(
             f,
-            i,
+            vocabulary.toString(),
             vocabularyContextDto,
-            statements
+            statements,
+            SERIALIZATION_LANGUAGE
         );
 
         populateContext(vocabularyContext, statements);
@@ -235,7 +236,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
     GraphQueryResult loadContext(
         final VocabularyContext vocabularyContext,
         final RepositoryConnection connection) {
-        URI vocabularyVersion = vocabularyContext.getBasedOnVocabularyVersion();
+        URI vocabularyVersion = vocabularyContext.getBasedOnVersion();
         GraphQuery query = connection
             .prepareGraphQuery("PREFIX : <"
                 + vocabularyVersion
@@ -316,9 +317,10 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
         final ValueFactory fsspRepo = conGitSsp.getValueFactory();
         final IRI ctxVocabulary = fsspRepo.createIRI(vocabularyVersionUrl);
 
-        conGitSsp.setNamespace(folder.getVocabularyId() + "-pojem",
+        final String vocabularyId = Utils.getVocabularyId(vocabularyVersionUrl);
+        conGitSsp.setNamespace(vocabularyId + "-pojem",
             ctxVocabulary.toString() + "/pojem/");
-        conGitSsp.setNamespace(folder.getVocabularyId(), ctxVocabulary + "/");
+        conGitSsp.setNamespace(vocabularyId, ctxVocabulary + "/");
 
         conWorkspace.getStatements(ctxVocabulary, null, null, ctxWorkspaceVocabulary)
             .forEach(s -> conGitSsp.add(s, ctxVocabulary));
@@ -384,7 +386,7 @@ public class VocabularyService extends BaseRepositoryService<VocabularyContext> 
             final RepositoryConnection cWorkspaceRepo = workspaceRepo.getConnection();
 
             final String vocabularyVersionUrl =
-                vocabularyContext.getBasedOnVocabularyVersion().toString();
+                vocabularyContext.getBasedOnVersion().toString();
 
             final IRI ctxWorkspaceVocabulary =
                 cWorkspaceRepo.getValueFactory().createIRI(vocabularyContext.getUri().toString());

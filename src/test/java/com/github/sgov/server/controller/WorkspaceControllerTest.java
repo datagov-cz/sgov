@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.Workspace;
+import com.github.sgov.server.service.WorkspacePublicationService;
 import com.github.sgov.server.service.WorkspaceService;
 import java.net.URI;
 import java.util.Arrays;
@@ -30,10 +31,15 @@ import org.topbraid.shacl.validation.ValidationResult;
 class WorkspaceControllerTest extends BaseControllerTestRunner {
 
     private final URI workspaceUri = URI.create("https://example.org/test");
+
     @InjectMocks
     private WorkspaceController sut;
+
     @Mock
     private WorkspaceService workspaceService;
+
+    @Mock
+    private WorkspacePublicationService workspacePublicationService;
 
     private ValidationReport report;
 
@@ -104,7 +110,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
 
     @Test
     void publishWithNonExistingIriReturns404() throws Exception {
-        BDDMockito.given(workspaceService.publish(workspaceUri))
+        BDDMockito.given(workspacePublicationService.publish(workspaceUri))
             .willThrow(new NotFoundException(""));
 
         mockMvc.perform(post("/workspaces/test/publish")
@@ -114,7 +120,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
 
     @Test
     void publishWithExistingIriSuceeds() throws Exception {
-        BDDMockito.given(workspaceService.publish(workspaceUri))
+        BDDMockito.given(workspacePublicationService.publish(workspaceUri))
             .willReturn(workspaceUri);
 
         mockMvc.perform(post("/workspaces/test/publish")

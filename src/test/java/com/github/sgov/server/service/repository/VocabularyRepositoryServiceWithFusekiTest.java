@@ -24,11 +24,11 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class,
-    classes = {VocabularyService.class})
+    classes = {VocabularyRepositoryService.class})
 class VocabularyRepositoryServiceWithFusekiTest extends BaseServiceTestRunner {
 
     @Autowired
-    private VocabularyService sut;
+    private VocabularyRepositoryService sut;
 
     @Autowired
     private RepositoryConf repositoryConf;

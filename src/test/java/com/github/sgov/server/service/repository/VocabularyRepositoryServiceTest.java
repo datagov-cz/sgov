@@ -19,11 +19,11 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class,
-    classes = {VocabularyService.class})
+    classes = {VocabularyRepositoryService.class})
 class VocabularyRepositoryServiceTest extends BaseServiceTestRunner {
 
     @Autowired
-    private VocabularyService sut;
+    private VocabularyRepositoryService sut;
 
     @Test
     void getWriterReturnsDeterministicWriter() {

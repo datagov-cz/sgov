@@ -95,7 +95,7 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         final Optional<URI> vocabularyContextUri = workspace
             .getVocabularyContexts()
             .stream()
-            .filter(vc -> vc.getBasedOnVocabularyVersion().equals(vocabularyUri))
+            .filter(vc -> vc.getBasedOnVersion().equals(vocabularyUri))
             .map(AbstractEntity::getUri)
             .findFirst();
         return vocabularyContextUri.orElse(null);

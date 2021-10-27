@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class VocabularyInstanceTest {
+public class UtilsTest {
 
     public static Stream<Arguments> provideInvalidVocabularyIris() {
         return Stream.of(
@@ -19,27 +19,27 @@ public class VocabularyInstanceTest {
 
     public static Stream<Arguments> provideValidVocabularyIris() {
         return Stream.of(
-            Arguments.of("content/z-sgov", "https://slovník.gov.cz/základní"),
-            Arguments.of("content/v-sgov", "https://slovník.gov.cz/veřejný-sektor"),
-            Arguments.of("content/g-sgov/g-sgov-a", "https://slovník.gov.cz/generický/a"),
-            Arguments.of("content/l-sgov/l-sgov-sbírka-1-2",
+            Arguments.of("z-sgov", "https://slovník.gov.cz/základní"),
+            Arguments.of("v-sgov", "https://slovník.gov.cz/veřejný-sektor"),
+            Arguments.of("g-sgov-a", "https://slovník.gov.cz/generický/a"),
+            Arguments.of("l-sgov-sbírka-1-2",
                 "https://slovník.gov.cz/legislativní/sbírka/1/2"),
-            Arguments.of("content/a-sgov/a-sgov-a", "https://slovník.gov.cz/agendový/a"),
-            Arguments.of("content/d-sgov/d-sgov-a", "https://slovník.gov.cz/datový/a")
+            Arguments.of("a-sgov-a", "https://slovník.gov.cz/agendový/a"),
+            Arguments.of("d-sgov-a", "https://slovník.gov.cz/datový/a")
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideValidVocabularyIris")
-    public void allVocabularyTypesResolveVocabularyFoldersCorrectly(final String expectedFolder,
-                                                                    final String vocabularyIri) {
-        Assertions.assertEquals(expectedFolder, new VocabularyInstance(vocabularyIri).getFolder());
+    public void allVocabularyTypesResolveVocabularyIdentifiersCorrectly(final String expectedFolder,
+                                                                        final String vocabularyIri) {
+        Assertions.assertEquals(expectedFolder, Utils.getVocabularyId(vocabularyIri));
     }
 
     @ParameterizedTest
     @MethodSource("provideInvalidVocabularyIris")
-    public void invalidVocabularyIrisResultInNullFolderfinal(String vocabularyIri) {
+    public void invalidVocabularyIrisResultInNullVocabularyId(String vocabularyIri) {
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> new VocabularyInstance(vocabularyIri).getFolder());
+            () -> Utils.getVocabularyId(vocabularyIri));
     }
 }
