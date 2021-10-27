@@ -10,15 +10,8 @@ import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
-import com.github.sgov.server.util.Utils;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyCreationHelper;
-import com.github.sgov.server.util.VocabularyFolder;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -30,27 +23,14 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
-import org.eclipse.rdf4j.model.vocabulary.OWL;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.model.vocabulary.SKOS;
-import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
 import org.eclipse.rdf4j.rio.ParserConfig;
-import org.eclipse.rdf4j.rio.RDFWriter;
-import org.eclipse.rdf4j.rio.WriterConfig;
 import org.eclipse.rdf4j.rio.helpers.BasicParserSettings;
-import org.eclipse.rdf4j.rio.helpers.BasicWriterSettings;
-import org.eclipse.rdf4j.rio.turtle.ArrangedWriter;
-import org.eclipse.rdf4j.rio.turtle.TurtleWriter;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -236,168 +216,14 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     GraphQueryResult loadContext(
         final VocabularyContext vocabularyContext,
         final RepositoryConnection connection) {
-        URI vocabularyVersion = vocabularyContext.getBasedOnVersion();
-        GraphQuery query = connection
+        final URI vocabularyVersion = vocabularyContext.getBasedOnVersion();
+        final GraphQuery query = connection
             .prepareGraphQuery("PREFIX : <"
                 + vocabularyVersion
                 + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} FILTER(?g IN (<"
                 + vocabularyVersion
                 + ">,:glosář,:model))}");
         return query.evaluate();
-    }
-
-    /**
-     * Returns a writer which outputs the same Model in the same form all the time.
-     *
-     * @param w writer to wrap
-     * @return deterministic RDFWriter
-     */
-    public RDFWriter getDeterministicWriter(final Writer w) {
-        RDFWriter writer = new ArrangedWriter(
-            new TurtleWriter(w), 100);
-        writer.setWriterConfig(new WriterConfig()
-            .set(BasicWriterSettings.PRETTY_PRINT, true)
-            .set(BasicWriterSettings.INLINE_BLANK_NODES, true));
-        return writer;
-    }
-
-    private void addNamespaces(RepositoryConnection conGitSsp) {
-        conGitSsp.setNamespace("rdf", RDF.NAMESPACE);
-        conGitSsp.setNamespace("owl", OWL.NAMESPACE);
-        conGitSsp.setNamespace("rdfs", RDFS.NAMESPACE);
-        conGitSsp.setNamespace("dcterms", DCTERMS.NAMESPACE);
-        conGitSsp.setNamespace("xsd", XSD.NAMESPACE);
-        conGitSsp.setNamespace("bibo", "http://purl.org/ontology/bibo/");
-        conGitSsp.setNamespace("vann", "http://purl.org/vocab/vann/");
-        conGitSsp.setNamespace("z-sgov", "https://slovník.gov.cz/základní/");
-        conGitSsp.setNamespace("z-sgov-pojem",
-            "https://slovník.gov.cz/základní/pojem/");
-        conGitSsp.setNamespace("vann", "http://purl.org/vocab/vann/");
-        conGitSsp.setNamespace("a-popis-dat-pojem",
-            "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/");
-        conGitSsp.setNamespace("skos",
-            "http://www.w3.org/2004/02/skos/core#");
-    }
-
-    /**
-     * Decides whether a statement belongs to a glossary or to a model. All statements with
-     * predicate or object in SKOS namespace are considered glossary triples.
-     *
-     * @param statement statement statement to check
-     * @return true if the statement should be put to glossary, false otherwise
-     */
-    private boolean isGlossaryTriple(Statement statement) {
-        return ((statement.getObject() instanceof IRI)
-            && ((IRI) statement.getObject()).getNamespace().equals(SKOS.NAMESPACE))
-            || statement.getPredicate().getNamespace().equals(SKOS.NAMESPACE);
-    }
-
-    /**
-     * Stores a vocabulary into the given vocabulary folder.
-     *
-     * @param conWorkspace           given workspace repository
-     * @param vocabularyVersionUrl   required vocabulary version
-     * @param ctxWorkspaceVocabulary context to export
-     * @param folder                 vocabulary folder
-     * @throws FileNotFoundException whenever the respective files cannot be found in the vocabulary
-     *                               folder
-     */
-    private void storeRepo(RepositoryConnection conWorkspace,
-                           String vocabularyVersionUrl,
-                           IRI ctxWorkspaceVocabulary,
-                           VocabularyFolder folder
-    ) throws IOException {
-
-        final MemoryStore sspStore = new MemoryStore();
-        final Repository sspRepo = new SailRepository(sspStore);
-        final RepositoryConnection conGitSsp = sspRepo.getConnection();
-
-        addNamespaces(conGitSsp);
-
-        final ValueFactory fsspRepo = conGitSsp.getValueFactory();
-        final IRI ctxVocabulary = fsspRepo.createIRI(vocabularyVersionUrl);
-
-        final String vocabularyId = Utils.getVocabularyId(vocabularyVersionUrl);
-        conGitSsp.setNamespace(vocabularyId + "-pojem",
-            ctxVocabulary.toString() + "/pojem/");
-        conGitSsp.setNamespace(vocabularyId, ctxVocabulary + "/");
-
-        conWorkspace.getStatements(ctxVocabulary, null, null, ctxWorkspaceVocabulary)
-            .forEach(s -> conGitSsp.add(s, ctxVocabulary));
-
-        final IRI ctxGlossary = fsspRepo.createIRI(vocabularyVersionUrl + "/glosář");
-        conWorkspace.getStatements(ctxGlossary, null, null, ctxWorkspaceVocabulary)
-            .forEach(s -> conGitSsp.add(s, ctxGlossary));
-
-        final IRI ctxModel = fsspRepo.createIRI(vocabularyVersionUrl + "/model");
-        conWorkspace.getStatements(ctxModel, null, null, ctxWorkspaceVocabulary)
-            .forEach(s -> conGitSsp.add(s, ctxModel));
-
-        conWorkspace.getStatements(null, null, null, ctxWorkspaceVocabulary)
-            .stream()
-            // triples already processed
-            .filter(s -> !s.getSubject().equals(ctxVocabulary))
-            .filter(s -> !s.getSubject().equals(ctxGlossary))
-            .filter(s -> !s.getSubject().equals(ctxModel))
-            // triples belonging to tools
-            .filter(s -> !s.getPredicate().stringValue()
-                .startsWith(Vocabulary.ONTOGRAPHER_NAMESPACE))
-            .filter(s -> !s.getObject().stringValue()
-                .startsWith(Vocabulary.ONTOGRAPHER_NAMESPACE))
-            .filter(s -> !s.getPredicate().stringValue()
-                .startsWith(Vocabulary.TERMIT_NAMESPACE))
-            .filter(s -> !s.getObject().stringValue()
-                .startsWith(Vocabulary.TERMIT_NAMESPACE))
-            // all the rest belongs either to glossary or to model
-            .forEach(s ->
-                conGitSsp.add(s, isGlossaryTriple(s) ? ctxGlossary : ctxModel)
-            );
-
-        if (!folder.getFolder().exists()) {
-            folder.getFolder().mkdirs();
-        }
-
-        final File vocFile = folder.getVocabularyFile("");
-        conGitSsp.export(getDeterministicWriter(new FileWriter(vocFile)), ctxVocabulary);
-
-        final File gloFile = folder.getGlossaryFile("");
-        conGitSsp.export(getDeterministicWriter(new FileWriter(gloFile)), ctxGlossary);
-
-        final File modFile = folder.getModelFile("");
-        conGitSsp.export(getDeterministicWriter(new FileWriter(modFile)), ctxModel);
-
-        conGitSsp.close();
-        conWorkspace.close();
-    }
-
-    /**
-     * Stores the given vocabulary context into the given vocabulary folder.
-     *
-     * @param vocabularyContext the vocabulary context to be loaded.
-     * @param vocabularyFolder  folder to store the context into.
-     */
-    @Transactional
-    public void storeContext(final VocabularyContext vocabularyContext,
-                             final VocabularyFolder vocabularyFolder) {
-        try {
-            final SPARQLRepository workspaceRepo =
-                new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
-                    repositoryConf.getUrl()));
-            final RepositoryConnection cWorkspaceRepo = workspaceRepo.getConnection();
-
-            final String vocabularyVersionUrl =
-                vocabularyContext.getBasedOnVersion().toString();
-
-            final IRI ctxWorkspaceVocabulary =
-                cWorkspaceRepo.getValueFactory().createIRI(vocabularyContext.getUri().toString());
-
-            storeRepo(cWorkspaceRepo,
-                vocabularyVersionUrl,
-                ctxWorkspaceVocabulary,
-                vocabularyFolder);
-        } catch (URISyntaxException | IOException e) {
-            throw new SGoVException(e);
-        }
     }
 
     @Override

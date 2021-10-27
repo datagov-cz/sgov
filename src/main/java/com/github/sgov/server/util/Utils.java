@@ -7,20 +7,47 @@ import java.util.regex.Matcher;
 
 public class Utils {
 
+    public static final String CONTENT_ROOT = "content";
+
     /**
      * Creates a new vocabulary folder for the given vocabulary.
      *
-     * @param root          Root folder for vocabularies (root of SSP repo)
+     * @param root          Root folder for vocabularies
      * @param vocabularyIri IRI of the vocabulary
-     * @return vocabulary folder for the given vocabulary
+     * @return folder for the given vocabulary
      */
     public static VocabularyFolder getVocabularyFolder(final File root,
                                                        final String vocabularyIri) {
         return new VocabularyFolder(
-            Paths.get(root.getAbsolutePath() + "/" + GitLayout.getVocabularyFolder(vocabularyIri))
+            Paths.get(root.getAbsolutePath() + "/"
+                    + (CONTENT_ROOT + "/vocabularies/" + getVocabularyId(vocabularyIri)))
                 .toFile());
     }
 
+    /**
+     * Creates a new asset folder for the given asset.
+     *
+     * @param root          Root folder for assets
+     * @param assetIri      IRI of the asset
+     * @return folder for the given asset
+     */
+    public static AssetFolder getAssetFolder(final File root,
+                                             final String assetIri) {
+        return new AssetFolder(
+            Paths.get(root.getAbsolutePath() + "/"
+                   + (CONTENT_ROOT + "/assets/" + getAssetId(assetIri)))
+                .toFile());
+    }
+
+    /**
+     * Gets id of the asset with the given IRI.
+     *
+     * @param iri of the asset
+     * @return identifier of the given asset
+     */
+    public static String getAssetId(final String iri) {
+        return iri.substring(iri.lastIndexOf("/") + 1);
+    }
 
     /**
      * Gets identifier of a new vocabulary, given its IRI.

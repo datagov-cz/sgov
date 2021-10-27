@@ -11,7 +11,8 @@ public final class Vocabulary {
     public static final String TERMIT_NAMESPACE =
         "http://onto.fel.cvut.cz/ontologies/application/termit/";
 
-    public static final String BIBO_STATUS = "http://purl.org/ontology/bibo/status";
+    public static final String BIBO_NAMESPACE = "http://purl.org/ontology/bibo/";
+    public static final String VANN_NAMESPACE = "http://purl.org/vocab/vann/";
 
     public static final String SLOVNIK_GOV_CZ = "https://slovník.gov.cz";
     public static final String WORKSPACE_NAMESPACE =

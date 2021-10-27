@@ -2,40 +2,22 @@ package com.github.sgov.server.util;
 
 import java.io.File;
 
-public class VocabularyFolder {
-
-    private final File folder;
+public class VocabularyFolder extends Folder {
 
     public VocabularyFolder(File folder) {
-        this.folder = folder;
+        super(folder);
     }
 
-
-    private String getVocabularyId() {
-        final String p = folder.getAbsolutePath();
-        return p.substring(p.lastIndexOf("/") + 1);
+    public File getVocabularyFile() {
+        return getFile("slovník", "");
     }
 
-    private File getFile(String type, String suffix) {
-        return new File(folder,
-            getVocabularyId() + "-" + type + (suffix.isEmpty() ? "" : "-" + suffix)
-                + Constants.Turtle.FILE_EXTENSION);
+    public File getGlossaryFile() {
+        return getFile("glosář", "");
     }
 
-    public File getVocabularyFile(String suffix) {
-        return getFile("slovník", suffix);
-    }
-
-    public File getGlossaryFile(String suffix) {
-        return getFile("glosář", suffix);
-    }
-
-    public File getModelFile(String suffix) {
-        return getFile("model", suffix);
-    }
-
-    public File getFolder() {
-        return folder;
+    public File getModelFile() {
+        return getFile("model", "");
     }
 
     /**
@@ -44,7 +26,7 @@ public class VocabularyFolder {
      * @return array of files
      */
     public File[] toPruneAllExceptCompact() {
-        return folder.listFiles((file, s) -> (
+        return getFolder().listFiles((file, s) -> (
             s.contains("-model")
                 || s.contains("-glosář")
                 || s.contains("-slovník")

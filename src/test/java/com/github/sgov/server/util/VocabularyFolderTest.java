@@ -14,7 +14,7 @@ public class VocabularyFolderTest {
         final VocabularyFolder dir =
             Utils
                 .getVocabularyFolder(f, "https://slovník.gov.cz/základní");
-        Assertions.assertEquals(f + "/content/z-sgov", dir.getFolder().toString());
+        Assertions.assertEquals(f + "/content/vocabularies/z-sgov", dir.getFolder().toString());
     }
 
     @Test
@@ -23,6 +23,6 @@ public class VocabularyFolderTest {
         final VocabularyFolder dir =
             Utils.getVocabularyFolder(f,
                 "https://slovník.gov.cz/veřejný-sektor");
-        Assertions.assertEquals(f + "/content/v-sgov", dir.getFolder().toString());
+        Assertions.assertEquals(f + "/content/vocabularies/v-sgov", dir.getFolder().toString());
     }
 }

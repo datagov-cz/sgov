@@ -3,11 +3,14 @@ package com.github.sgov.server.service;
 import static com.github.sgov.server.service.WorkspaceUtils.createPullRequestBody;
 
 import com.github.sgov.server.exception.PublicationException;
+import com.github.sgov.server.model.AssetContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import com.github.sgov.server.service.repository.GitPublicationService;
 import com.github.sgov.server.service.repository.GithubRepositoryService;
 import com.github.sgov.server.service.repository.VocabularyRepositoryService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
+import com.github.sgov.server.util.AssetFolder;
 import com.github.sgov.server.util.Utils;
 import com.github.sgov.server.util.VocabularyFolder;
 import java.io.File;
@@ -34,16 +37,20 @@ public class WorkspacePublicationService {
 
     private final VocabularyRepositoryService vocabularyService;
 
+    private final GitPublicationService publicationService;
+
     /**
      * Constructor.
      */
     @Autowired
     public WorkspacePublicationService(final GithubRepositoryService githubService,
                                        final VocabularyRepositoryService vocabularyService,
-                                       final WorkspaceRepositoryService repositoryService) {
+                                       final WorkspaceRepositoryService repositoryService,
+                                       final GitPublicationService publicationService) {
         this.githubService = githubService;
         this.vocabularyService = vocabularyService;
         this.repositoryService = repositoryService;
+        this.publicationService = publicationService;
     }
 
     /**
@@ -60,6 +67,7 @@ public class WorkspacePublicationService {
             final File dir = java.nio.file.Files.createTempDirectory("sgov").toFile();
             try (final Git git = githubService.checkout(branchName, dir)) {
                 publishVocabularyContexts(git, dir, workspace);
+                publishAssetContexts(git, dir, workspace);
                 githubService.push(git);
                 FileUtils.deleteDirectory(dir);
                 String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
@@ -80,8 +88,8 @@ public class WorkspacePublicationService {
             final URI iri = c.getBasedOnVersion();
             try {
                 final VocabularyFolder folder = Utils.getVocabularyFolder(dir, iri.toString());
-                clearVocabularyFolder(git, folder);
-                vocabularyService.storeContext(c, folder);
+                deleteFilesFromGit(git, folder.toPruneAllExceptCompact());
+                publicationService.storeContext(c, folder);
                 githubService.commit(git, MessageFormat.format(
                     "Publishing vocabulary {0} in workspace {1} ({2})", iri,
                     workspace.getLabel(), workspace.getUri().toString()));
@@ -91,8 +99,23 @@ public class WorkspacePublicationService {
         }
     }
 
-    private void clearVocabularyFolder(Git git, VocabularyFolder folder) {
-        final File[] files = folder.toPruneAllExceptCompact();
+    private void publishAssetContexts(Git git, File dir, Workspace workspace) {
+        for (final AssetContext c : workspace.getAssetContexts()) {
+            final URI iri = c.getBasedOnVersion();
+            try {
+                final AssetFolder folder = Utils.getAssetFolder(dir, iri.toString());
+                deleteFilesFromGit(git, folder.getAssetFile().listFiles());
+                publicationService.storeContext(c, folder);
+                githubService.commit(git, MessageFormat.format(
+                    "Publishing vocabulary {0} in workspace {1} ({2})", iri,
+                    workspace.getLabel(), workspace.getUri().toString()));
+            } catch (IllegalArgumentException e) {
+                throw new PublicationException("Invalid vocabulary IRI " + iri);
+            }
+        }
+    }
+
+    private void deleteFilesFromGit(final Git git, final File[] files) {
         if (files != null) {
             Arrays.stream(files).forEach(
                 file -> githubService.delete(git, file)
