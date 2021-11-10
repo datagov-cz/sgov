@@ -7,6 +7,9 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -21,4 +24,10 @@ public class VocabularyContext extends TrackableContext {
         cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)
     private ChangeTrackingContext changeTrackingContext;
+
+    @ParticipationConstraints
+    @OWLObjectProperty(iri = Vocabulary.s_p_ma_prilohu,
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+        fetch = FetchType.EAGER)
+    private Set<URI> assets = new HashSet<>();
 }

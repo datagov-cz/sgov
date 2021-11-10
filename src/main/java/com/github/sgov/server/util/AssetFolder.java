@@ -9,6 +9,6 @@ public class AssetFolder extends Folder {
     }
 
     public File getAssetFile() {
-        return getFile("diagram", "");
+        return getFile("příloha", "");
     }
 }

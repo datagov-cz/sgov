@@ -144,6 +144,13 @@ public class GitPublicationService {
             cWorkspaceRepo.getStatements(ctxModel, null, null, ctxWorkspaceEntity)
                 .forEach(s -> conGitSsp.add(s, ctxModel));
 
+            final IRI maAsset = fsspRepo.createIRI(Vocabulary.s_p_ma_prilohu);
+            final IRI ctxAssets = fsspRepo.createIRI(versionUrl + "/přílohy");
+            context.getAssets().forEach(asset ->
+                conGitSsp.add(ctxVocabulary, maAsset, fsspRepo.createIRI(asset.toString()),
+                    ctxAssets)
+            );
+
             cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)
                 .stream()
                 // triples already processed
@@ -172,6 +179,8 @@ public class GitPublicationService {
                 ctxGlossary);
             conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getModelFile())),
                 ctxModel);
+            conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getAssetsFile())),
+                ctxAssets);
 
             conGitSsp.close();
             cWorkspaceRepo.close();

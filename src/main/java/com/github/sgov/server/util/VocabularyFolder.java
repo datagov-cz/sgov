@@ -20,6 +20,10 @@ public class VocabularyFolder extends Folder {
         return getFile("model", "");
     }
 
+    public File getAssetsFile() {
+        return getFile("přílohy", "");
+    }
+
     /**
      * Return all non-compact vocabulary files - to be deleted upon update.
      *
@@ -30,6 +34,7 @@ public class VocabularyFolder extends Folder {
             s.contains("-model")
                 || s.contains("-glosář")
                 || s.contains("-slovník")
+                || s.contains("-přílohy")
         ) && !s.endsWith("-compact.ttl"));
     }
 }

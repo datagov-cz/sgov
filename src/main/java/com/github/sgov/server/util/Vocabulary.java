@@ -21,7 +21,7 @@ public final class Vocabulary {
         "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/";
 
     public static final String s_c_metadatovy_kontext = WORKSPACE_NAMESPACE + "metadatový-kontext";
-    public static final String s_c_assetovy_kontext = WORKSPACE_NAMESPACE + "assetový-kontext";
+    public static final String s_c_prilohovy_kontext = WORKSPACE_NAMESPACE + "přílohový-kontext";
     public static final String s_c_slovnikovy_kontext = WORKSPACE_NAMESPACE + "slovníkový-kontext";
     public static final String s_c_slovnikovy_kontext_pouze_pro_cteni =
         WORKSPACE_NAMESPACE + "slovníkový-kontext-pouze-pro-čtení";
@@ -30,14 +30,16 @@ public final class Vocabulary {
 
     public static final String s_p_odkazuje_na_kontext = WORKSPACE_NAMESPACE
         + "odkazuje-na-kontext";
-    public static final String s_p_odkazuje_na_assetovy_kontext = WORKSPACE_NAMESPACE
-        + "odkazuje-na-assetový-kontext";
+    public static final String s_p_odkazuje_na_prilohovy_kontext = WORKSPACE_NAMESPACE
+        + "odkazuje-na-přílohový-kontext";
     public static final String s_p_vychazi_z_verze = WORKSPACE_NAMESPACE + "vychází-z-verze";
     public static final String s_p_ma_pracovni_metadatovy_kontext =
         WORKSPACE_NAMESPACE + "má-pracovní-metadatový-kontext";
     public static final String s_p_meni_verzi = WORKSPACE_NAMESPACE + "mění-verzi";
     public static final String s_p_ma_kontext_sledovani_zmen = WORKSPACE_NAMESPACE
         + "má-kontext-sledování-změn";
+    public static final String s_p_ma_prilohu = WORKSPACE_NAMESPACE
+        + "má-přílohu";
 
     public static final String s_c_uzivatel = DATA_DESCRIPTION_NAMESPACE
         + "uživatel";

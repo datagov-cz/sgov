@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 
 public class Utils {
 
-    public static final String CONTENT_ROOT = "content";
+    public static final String CONTENT_ROOT = "obsah";
 
     /**
      * Creates a new vocabulary folder for the given vocabulary.
@@ -20,7 +20,7 @@ public class Utils {
                                                        final String vocabularyIri) {
         return new VocabularyFolder(
             Paths.get(root.getAbsolutePath() + "/"
-                    + (CONTENT_ROOT + "/vocabularies/" + getVocabularyId(vocabularyIri)))
+                    + (CONTENT_ROOT + "/slovníky/" + getVocabularyId(vocabularyIri)))
                 .toFile());
     }
 
@@ -35,7 +35,7 @@ public class Utils {
                                              final String assetIri) {
         return new AssetFolder(
             Paths.get(root.getAbsolutePath() + "/"
-                   + (CONTENT_ROOT + "/assets/" + getAssetId(assetIri)))
+                   + (CONTENT_ROOT + "/přílohy/" + getAssetId(assetIri)))
                 .toFile());
     }
 

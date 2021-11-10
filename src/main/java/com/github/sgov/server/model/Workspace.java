@@ -38,7 +38,7 @@ public class Workspace extends Asset implements Context {
         fetch = FetchType.EAGER)
     private Set<VocabularyContext> vocabularyContexts;
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_assetovy_kontext,
+    @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_prilohovy_kontext,
         cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)
     private Set<AssetContext> assetContexts;
@@ -57,6 +57,9 @@ public class Workspace extends Asset implements Context {
      * Returns all vocabulary contexts of this workspace.
      */
     public Set<AssetContext> getAssetContexts() {
+        if (assetContexts == null) {
+            this.assetContexts = new HashSet<>();
+        }
         return assetContexts;
     }
 
