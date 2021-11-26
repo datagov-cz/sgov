@@ -24,9 +24,9 @@ public class WorkspaceUtils {
         String prBody = MessageFormat.format("Changed vocabularies: \n - {0}",
             render(workspace.getVocabularyContexts()));
 
-        if (!workspace.getAssetContexts().isEmpty()) {
-            prBody = prBody + "\n" + MessageFormat.format("Changed assets: \n - {0}",
-                render(workspace.getAssetContexts())
+        if (!workspace.getAttachmentContexts().isEmpty()) {
+            prBody = prBody + "\n" + MessageFormat.format("Changed attachments: \n - {0}",
+                render(workspace.getAttachmentContexts())
             );
         }
         return prBody;

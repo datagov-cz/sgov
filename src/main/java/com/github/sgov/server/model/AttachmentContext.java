@@ -6,5 +6,5 @@ import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
 
 @OWLClass(iri = Vocabulary.s_c_prilohovy_kontext)
 @JsonLdAttributeOrder({"uri", "label", "basedOnVersion"})
-public class AssetContext extends TrackableContext {
+public class AttachmentContext extends TrackableContext {
 }

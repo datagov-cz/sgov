@@ -13,39 +13,39 @@ public class Utils {
      * Creates a new vocabulary folder for the given vocabulary.
      *
      * @param root          Root folder for vocabularies
-     * @param vocabularyIri IRI of the vocabulary
+     * @param iri IRI of the vocabulary
      * @return folder for the given vocabulary
      */
     public static VocabularyFolder getVocabularyFolder(final File root,
-                                                       final String vocabularyIri) {
+                                                       final String iri) {
         return new VocabularyFolder(
             Paths.get(root.getAbsolutePath() + "/"
-                    + (CONTENT_ROOT + "/vocabularies/" + getVocabularyId(vocabularyIri)))
+                    + (CONTENT_ROOT + "/vocabularies/" + getVocabularyId(iri)))
                 .toFile());
     }
 
     /**
-     * Creates a new asset folder for the given asset.
+     * Creates a new attachment folder for the given attachment.
      *
-     * @param root          Root folder for assets
-     * @param assetIri      IRI of the asset
-     * @return folder for the given asset
+     * @param root          Root folder for attachments
+     * @param iri IRI of the attachment
+     * @return folder for the given attachment
      */
-    public static AssetFolder getAssetFolder(final File root,
-                                             final String assetIri) {
-        return new AssetFolder(
+    public static AttachmentFolder getAttachmentFolder(final File root,
+                                                       final String iri) {
+        return new AttachmentFolder(
             Paths.get(root.getAbsolutePath() + "/"
-                   + (CONTENT_ROOT + "/attachments/" + getAssetId(assetIri)))
+                   + (CONTENT_ROOT + "/attachments/" + getAttachmentId(iri)))
                 .toFile());
     }
 
     /**
-     * Gets id of the asset with the given IRI.
+     * Gets id of the attachment with the given IRI.
      *
-     * @param iri of the asset
-     * @return identifier of the given asset
+     * @param iri of the attachment
+     * @return identifier of the given attachment
      */
-    public static String getAssetId(final String iri) {
+    public static String getAttachmentId(final String iri) {
         return iri.substring(iri.lastIndexOf("/") + 1);
     }
 

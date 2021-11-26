@@ -20,7 +20,7 @@ public class VocabularyFolder extends Folder {
         return getFile("model", "");
     }
 
-    public File getAssetsFile() {
+    public File getAttachmentsFile() {
         return getFile("přílohy", "");
     }
 

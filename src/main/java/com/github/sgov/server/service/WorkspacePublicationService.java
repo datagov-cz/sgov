@@ -3,14 +3,14 @@ package com.github.sgov.server.service;
 import static com.github.sgov.server.service.WorkspaceUtils.createPullRequestBody;
 
 import com.github.sgov.server.exception.PublicationException;
-import com.github.sgov.server.model.AssetContext;
+import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.GitPublicationService;
 import com.github.sgov.server.service.repository.GithubRepositoryService;
 import com.github.sgov.server.service.repository.VocabularyRepositoryService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
-import com.github.sgov.server.util.AssetFolder;
+import com.github.sgov.server.util.AttachmentFolder;
 import com.github.sgov.server.util.Utils;
 import com.github.sgov.server.util.VocabularyFolder;
 import java.io.File;
@@ -67,7 +67,7 @@ public class WorkspacePublicationService {
             final File dir = java.nio.file.Files.createTempDirectory("sgov").toFile();
             try (final Git git = githubService.checkout(branchName, dir)) {
                 publishVocabularyContexts(git, dir, workspace);
-                publishAssetContexts(git, dir, workspace);
+                publishAttachmentContexts(git, dir, workspace);
                 githubService.push(git);
                 FileUtils.deleteDirectory(dir);
                 String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
@@ -99,12 +99,12 @@ public class WorkspacePublicationService {
         }
     }
 
-    private void publishAssetContexts(Git git, File dir, Workspace workspace) {
-        for (final AssetContext c : workspace.getAssetContexts()) {
+    private void publishAttachmentContexts(Git git, File dir, Workspace workspace) {
+        for (final AttachmentContext c : workspace.getAttachmentContexts()) {
             final URI iri = c.getBasedOnVersion();
             try {
-                final AssetFolder folder = Utils.getAssetFolder(dir, iri.toString());
-                deleteFilesFromGit(git, folder.getAssetFile().listFiles());
+                final AttachmentFolder folder = Utils.getAttachmentFolder(dir, iri.toString());
+                deleteFilesFromGit(git, folder.getAttachmentFile().listFiles());
                 publicationService.storeContext(c, folder);
                 githubService.commit(git, MessageFormat.format(
                     "Publishing vocabulary {0} in workspace {1} ({2})", iri,

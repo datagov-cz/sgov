@@ -7,9 +7,9 @@ import static com.github.sgov.server.util.Vocabulary.VANN_NAMESPACE;
 
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.exception.SGoVException;
-import com.github.sgov.server.model.AssetContext;
+import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.VocabularyContext;
-import com.github.sgov.server.util.AssetFolder;
+import com.github.sgov.server.util.AttachmentFolder;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Utils;
 import com.github.sgov.server.util.Vocabulary;
@@ -144,11 +144,11 @@ public class GitPublicationService {
             cWorkspaceRepo.getStatements(ctxModel, null, null, ctxWorkspaceEntity)
                 .forEach(s -> conGitSsp.add(s, ctxModel));
 
-            final IRI maAsset = fsspRepo.createIRI(Vocabulary.s_p_ma_prilohu);
-            final IRI ctxAssets = fsspRepo.createIRI(versionUrl + "/přílohy");
-            context.getAssets().forEach(asset ->
-                conGitSsp.add(ctxVocabulary, maAsset, fsspRepo.createIRI(asset.toString()),
-                    ctxAssets)
+            final IRI hasAttachment = fsspRepo.createIRI(Vocabulary.s_p_ma_prilohu);
+            final IRI ctxAttachments = fsspRepo.createIRI(versionUrl + "/přílohy");
+            context.getAttachments().forEach(attachment ->
+                conGitSsp.add(ctxVocabulary, hasAttachment, fsspRepo.createIRI(attachment.toString()),
+                    ctxAttachments)
             );
 
             cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)
@@ -179,8 +179,8 @@ public class GitPublicationService {
                 ctxGlossary);
             conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getModelFile())),
                 ctxModel);
-            conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getAssetsFile())),
-                ctxAssets);
+            conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getAttachmentsFile())),
+                ctxAttachments);
 
             conGitSsp.close();
             cWorkspaceRepo.close();
@@ -196,8 +196,8 @@ public class GitPublicationService {
      * @param folder  folder to store the context into.
      */
     @Transactional
-    public void storeContext(final AssetContext context,
-                             final AssetFolder folder) {
+    public void storeContext(final AttachmentContext context,
+                             final AttachmentFolder folder) {
         try {
             final SPARQLRepository workspaceRepo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
@@ -213,16 +213,16 @@ public class GitPublicationService {
             final RepositoryConnection conGitSsp = getSsp();
 
             final ValueFactory fsspRepo = conGitSsp.getValueFactory();
-            final IRI ctxAsset = fsspRepo.createIRI(versionUrl);
-            conGitSsp.setNamespace(Utils.getAssetId(versionUrl), ctxAsset + "/");
+            final IRI ctxAttachment = fsspRepo.createIRI(versionUrl);
+            conGitSsp.setNamespace(Utils.getAttachmentId(versionUrl), ctxAttachment + "/");
 
             cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)
-                .forEach(s -> conGitSsp.add(s, ctxAsset));
+                .forEach(s -> conGitSsp.add(s, ctxAttachment));
 
             folder.getFolder().mkdirs();
 
-            final File file = folder.getAssetFile();
-            conGitSsp.export(getDeterministicWriter(new FileWriter(file)), ctxAsset);
+            final File file = folder.getAttachmentFile();
+            conGitSsp.export(getDeterministicWriter(new FileWriter(file)), ctxAttachment);
 
             conGitSsp.close();
             cWorkspaceRepo.close();

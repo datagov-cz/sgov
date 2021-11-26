@@ -29,5 +29,5 @@ public class VocabularyContext extends TrackableContext {
     @OWLObjectProperty(iri = Vocabulary.s_p_ma_prilohu,
         cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)
-    private Set<URI> assets = new HashSet<>();
+    private Set<URI> attachments = new HashSet<>();
 }
