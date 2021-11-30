@@ -4,20 +4,22 @@ import static com.github.sgov.server.service.WorkspaceUtils.createPullRequestBod
 
 import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.model.AttachmentContext;
-import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.GitPublicationService;
 import com.github.sgov.server.service.repository.GithubRepositoryService;
-import com.github.sgov.server.service.repository.VocabularyRepositoryService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import com.github.sgov.server.util.AttachmentFolder;
 import com.github.sgov.server.util.Utils;
+import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyFolder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -35,8 +37,6 @@ public class WorkspacePublicationService {
 
     private final GithubRepositoryService githubService;
 
-    private final VocabularyRepositoryService vocabularyService;
-
     private final GitPublicationService publicationService;
 
     /**
@@ -44,11 +44,9 @@ public class WorkspacePublicationService {
      */
     @Autowired
     public WorkspacePublicationService(final GithubRepositoryService githubService,
-                                       final VocabularyRepositoryService vocabularyService,
                                        final WorkspaceRepositoryService repositoryService,
                                        final GitPublicationService publicationService) {
         this.githubService = githubService;
-        this.vocabularyService = vocabularyService;
         this.repositoryService = repositoryService;
         this.publicationService = publicationService;
     }
@@ -84,11 +82,22 @@ public class WorkspacePublicationService {
     }
 
     private void publishVocabularyContexts(Git git, File dir, Workspace workspace) {
-        for (final VocabularyContext c : workspace.getVocabularyContexts()) {
+        // changes might come from tools
+        repositoryService.flush();
+        workspace.getAttachmentContexts().stream().forEach(ac -> {
+            if (ac.getBasedOnVersion() == null) {
+                ac.setBasedOnVersion(URI.create(Vocabulary.s_c_priloha + "/" + UUID.randomUUID()));
+            }
+        });
+        final Set<URI> attachments = workspace.getAttachmentContexts().stream()
+            .map(ac -> ac.getBasedOnVersion())
+            .collect(Collectors.toSet());
+        workspace.getVocabularyContexts().forEach(c -> {
             final URI iri = c.getBasedOnVersion();
             try {
                 final VocabularyFolder folder = Utils.getVocabularyFolder(dir, iri.toString());
                 deleteFilesFromGit(git, folder.toPruneAllExceptCompact());
+                c.setAttachments(attachments);
                 publicationService.storeContext(c, folder);
                 githubService.commit(git, MessageFormat.format(
                     "Publishing vocabulary {0} in workspace {1} ({2})", iri,
@@ -96,7 +105,7 @@ public class WorkspacePublicationService {
             } catch (IllegalArgumentException e) {
                 throw new PublicationException("Invalid vocabulary IRI " + iri);
             }
-        }
+        });
     }
 
     private void publishAttachmentContexts(Git git, File dir, Workspace workspace) {

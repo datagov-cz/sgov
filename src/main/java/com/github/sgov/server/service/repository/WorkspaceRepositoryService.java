@@ -129,4 +129,8 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
                                                            final URI vocabularyUri) {
         return workspaceDao.getDependentsForVocabularyInWorkspace(workspace, vocabularyUri);
     }
+
+    public void flush() {
+        workspaceDao.flush();
+    }
 }

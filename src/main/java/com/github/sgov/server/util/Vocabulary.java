@@ -73,6 +73,7 @@ public final class Vocabulary {
     public static final String s_p_ma_model = DATA_DESCRIPTION_NAMESPACE + "má-model";
     public static final String s_c_glosar = DATA_DESCRIPTION_NAMESPACE + "glosář";
     public static final String s_c_model = DATA_DESCRIPTION_NAMESPACE + "model";
+    public static final String s_c_priloha = DATA_DESCRIPTION_NAMESPACE + "příloha";
 
     private Vocabulary() {
     }

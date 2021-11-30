@@ -26,7 +26,7 @@ public class TrackableContext extends AbstractEntity implements Context, HasType
     @OWLAnnotationProperty(iri = DC.Terms.TITLE)
     private String label;
 
-    @ParticipationConstraints(nonEmpty = true)
+    @ParticipationConstraints
     @OWLObjectProperty(iri = Vocabulary.s_p_vychazi_z_verze)
     private URI basedOnVersion;
 }

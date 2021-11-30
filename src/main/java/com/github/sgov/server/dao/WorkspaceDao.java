@@ -264,4 +264,8 @@ public class WorkspaceDao extends BaseDao<Workspace> {
             throw new PersistenceException(e);
         }
     }
+
+    public void flush() {
+        em.getEntityManagerFactory().getCache().evictAll();
+    }
 }

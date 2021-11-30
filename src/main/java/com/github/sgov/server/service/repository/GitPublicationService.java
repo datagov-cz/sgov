@@ -147,8 +147,8 @@ public class GitPublicationService {
             final IRI hasAttachment = fsspRepo.createIRI(Vocabulary.s_p_ma_prilohu);
             final IRI ctxAttachments = fsspRepo.createIRI(versionUrl + "/přílohy");
             context.getAttachments().forEach(attachment ->
-                conGitSsp.add(ctxVocabulary, hasAttachment, fsspRepo.createIRI(attachment.toString()),
-                    ctxAttachments)
+                conGitSsp.add(ctxVocabulary, hasAttachment,
+                    fsspRepo.createIRI(attachment.toString()), ctxAttachments)
             );
 
             cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)

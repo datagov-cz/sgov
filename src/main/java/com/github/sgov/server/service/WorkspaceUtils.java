@@ -1,5 +1,6 @@
 package com.github.sgov.server.service;
 
+import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.TrackableContext;
 import com.github.sgov.server.model.VocabularyContext;
@@ -25,9 +26,9 @@ public class WorkspaceUtils {
             render(workspace.getVocabularyContexts()));
 
         if (!workspace.getAttachmentContexts().isEmpty()) {
-            prBody = prBody + "\n" + MessageFormat.format("Changed attachments: \n - {0}",
-                render(workspace.getAttachmentContexts())
-            );
+            prBody += "\n\n";
+            prBody += MessageFormat.format("Changed attachments: \n - {0}",
+                render(workspace.getAttachmentContexts()));
         }
         return prBody;
     }
@@ -52,15 +53,27 @@ public class WorkspaceUtils {
     /**
      * Creates a stub of a vocabulary context, based on the vocabulary URI.
      *
-     * @param vocabularyUri URI of the vocabulary to create a stub for.
+     * @param uri URI of the vocabulary to create a stub for.
      * @return vocabulary context
      */
-    public static VocabularyContext stub(URI vocabularyUri) {
-        final VocabularyContext vocabularyContext = new VocabularyContext();
-        vocabularyContext.setBasedOnVersion(vocabularyUri);
+    public static VocabularyContext stub(final URI uri) {
+        final VocabularyContext context = new VocabularyContext();
+        context.setBasedOnVersion(uri);
         final ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
-        changeTrackingContext.setChangesVocabularyVersion(vocabularyUri);
-        vocabularyContext.setChangeTrackingContext(changeTrackingContext);
-        return vocabularyContext;
+        changeTrackingContext.setChangesVocabularyVersion(uri);
+        context.setChangeTrackingContext(changeTrackingContext);
+        return context;
+    }
+
+    /**
+     * Creates a stub of a attachment context, based on the attachment URI.
+     *
+     * @param uri URI of the attachment to create a stub for.
+     * @return vocabulary context
+     */
+    public static AttachmentContext attachmentStub(final URI uri) {
+        final AttachmentContext context = new AttachmentContext();
+        context.setBasedOnVersion(uri);
+        return context;
     }
 }

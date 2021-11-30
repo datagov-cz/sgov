@@ -1,9 +1,11 @@
 package com.github.sgov.server.service;
 
+import static com.github.sgov.server.service.WorkspaceUtils.attachmentStub;
 import static com.github.sgov.server.service.WorkspaceUtils.stub;
 
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.exception.NotFoundException;
+import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
@@ -136,12 +138,15 @@ public class WorkspaceService {
     }
 
     private URI loadVocabularyContextFromCache(Workspace workspace, URI vocabularyUri) {
-        URI vocabularyContextUri;
-        VocabularyContext vocabularyContext = stub(vocabularyUri);
+        final VocabularyContext vocabularyContext = stub(vocabularyUri);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
+        final URI vocabularyContextUri = vocabularyContext.getUri();
+        final List<URI> attachments = vocabularyService.loadContext(workspace, vocabularyContext);
+        attachments.forEach(attachmentUri -> {
+            final AttachmentContext attachmentContext = attachmentStub(attachmentUri);
+            workspace.addAttachmentContext(attachmentContext);
+        });
         repositoryService.update(workspace);
-        vocabularyContextUri = vocabularyContext.getUri();
-        vocabularyService.loadContext(vocabularyContext);
         return vocabularyContextUri;
     }
 

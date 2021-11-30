@@ -41,7 +41,7 @@ public class Workspace extends Asset implements Context {
     @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_prilohovy_kontext,
         cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)
-    private Set<AttachmentContext> attachments;
+    private Set<AttachmentContext> attachmentContexts;
 
     /**
      * Returns all vocabulary contexts of this workspace.
@@ -57,10 +57,10 @@ public class Workspace extends Asset implements Context {
      * Returns all vocabulary contexts of this workspace.
      */
     public Set<AttachmentContext> getAttachmentContexts() {
-        if (attachments == null) {
-            this.attachments = new HashSet<>();
+        if (attachmentContexts == null) {
+            this.attachmentContexts = new HashSet<>();
         }
-        return attachments;
+        return attachmentContexts;
     }
 
     /**
@@ -81,10 +81,10 @@ public class Workspace extends Asset implements Context {
      * @param context attachment context to add.
      */
     public void addAttachmentContext(AttachmentContext context) {
-        if (attachments == null) {
-            this.attachments = new HashSet<>();
+        if (attachmentContexts == null) {
+            this.attachmentContexts = new HashSet<>();
         }
-        addContext(context, attachments);
+        addContext(context, attachmentContexts);
     }
 
     private <T extends TrackableContext> void addContext(T context, Collection<T> collection) {

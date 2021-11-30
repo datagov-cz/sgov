@@ -9,6 +9,7 @@ import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.VocabularyContext;
+import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyCreationHelper;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.Validator;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
@@ -146,9 +148,9 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     /**
      * Reloads the given vocabulary context from the source endpoint.
      *
-     * @param vocabularyContext the vocabulary context to be loaded.
+     * @param uri the context to be populated.
      */
-    private void populateContext(final VocabularyContext vocabularyContext,
+    private void populateContext(final String uri,
                                  final Iterable<? extends Statement> statements) {
         final HTTPRepository workspaceRepository = new HTTPRepository(
             repositoryConf.getUrl());
@@ -159,7 +161,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         connection2.begin();
         final ValueFactory f = connection2.getValueFactory();
         connection2.add(statements,
-            f.createIRI(vocabularyContext.getUri().toString()));
+            f.createIRI(uri));
         connection2.commit();
         connection2.close();
     }
@@ -189,7 +191,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
             SERIALIZATION_LANGUAGE
         );
 
-        populateContext(vocabularyContext, statements);
+        populateContext(vocabularyContext.getUri().toString(), statements);
         connection2.close();
     }
 
@@ -197,17 +199,28 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
      * Reloads the given vocabulary context from the source endpoint.
      *
      * @param vocabularyContext the vocabulary context to be loaded.
+     *
+     * @return list of attachment ids related to the vocabulary
      */
     @Transactional
-    public void loadContext(final VocabularyContext vocabularyContext) {
+    public List<URI> loadContext(final Workspace workspace,
+                                 final VocabularyContext vocabularyContext) {
         try {
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
                     repositoryConf.getReleaseSparqlEndpointUrl()));
             final RepositoryConnection connection = repo.getConnection();
-            final GraphQueryResult result = loadContext(vocabularyContext, connection);
-            populateContext(vocabularyContext, result);
+            final String vocabularyIri = vocabularyContext.getBasedOnVersion().toString();
+            populateContext(vocabularyContext.getUri().toString(),
+                loadContext(vocabularyContext, connection));
+            final GraphQueryResult r = loadAttachments(vocabularyIri, connection);
+            populateContext(workspace.getUri().toString(), r);
             connection.close();
+            final IRI hasAttachment = repo.getValueFactory().createIRI(Vocabulary.s_p_ma_prilohu);
+            return r.stream()
+                .filter(s -> s.getPredicate().equals(hasAttachment))
+                .map(s -> URI.create(s.getObject().stringValue()))
+                .collect(Collectors.toList());
         } catch (URISyntaxException e) {
             throw new SGoVException(e);
         }
@@ -222,7 +235,17 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
                 + vocabularyVersion
                 + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} FILTER(?g IN (<"
                 + vocabularyVersion
-                + ">,:glosář,:model))}");
+                + ">,:glosář,:model,:mapování,:přílohy))}");
+        return query.evaluate();
+    }
+
+    GraphQueryResult loadAttachments(
+        final String vocabularyVersion,
+        final RepositoryConnection connection) {
+        final GraphQuery query = connection
+            .prepareGraphQuery("PREFIX : <"
+                + vocabularyVersion
+                + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH :přílohy {?s ?p ?o} }");
         return query.evaluate();
     }
 
