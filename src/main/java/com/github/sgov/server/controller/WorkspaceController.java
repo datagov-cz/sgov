@@ -5,6 +5,7 @@ import com.github.sgov.server.exception.VocabularyRegisteredinReadWriteException
 import com.github.sgov.server.model.Asset;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import com.github.sgov.server.service.WorkspacePublicationService;
 import com.github.sgov.server.service.WorkspaceService;
 import com.github.sgov.server.util.Constants.QueryParams;
 import com.github.sgov.server.util.Vocabulary;
@@ -47,9 +48,13 @@ public class WorkspaceController extends BaseController {
 
     private final WorkspaceService workspaceService;
 
+    private final WorkspacePublicationService workspacePublicationService;
+
     @Autowired
-    public WorkspaceController(WorkspaceService workspaceService) {
+    public WorkspaceController(WorkspaceService workspaceService,
+                               WorkspacePublicationService workspacePublicationService) {
         this.workspaceService = workspaceService;
+        this.workspacePublicationService = workspacePublicationService;
     }
 
     @GetMapping(produces = {
@@ -372,7 +377,7 @@ public class WorkspaceController extends BaseController {
     ) {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        URI id = workspaceService.publish(identifier);
+        URI id = workspacePublicationService.publish(identifier);
         log.info("Workspace published at {}", id);
         return ResponseEntity.created(
             id

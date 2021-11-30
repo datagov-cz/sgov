@@ -12,17 +12,17 @@ public class VocabularyFolderTest {
     public void testGetsVocabularyFolderForZSGoVIri() throws IOException {
         final File f = Files.createTempDirectory(getClass().getName()).toFile();
         final VocabularyFolder dir =
-            VocabularyFolder
-                .ofVocabularyIri(f, new VocabularyInstance("https://slovník.gov.cz/základní"));
-        Assertions.assertEquals(f + "/content/z-sgov", dir.getFolder().toString());
+            Utils
+                .getVocabularyFolder(f, "https://slovník.gov.cz/základní");
+        Assertions.assertEquals(f + "/content/vocabularies/z-sgov", dir.getFolder().toString());
     }
 
     @Test
     public void testGetsVocabularyFolderForVSGoVIri() throws IOException {
         final File f = Files.createTempDirectory(getClass().getName()).toFile();
         final VocabularyFolder dir =
-            VocabularyFolder.ofVocabularyIri(f,
-                new VocabularyInstance("https://slovník.gov.cz/veřejný-sektor"));
-        Assertions.assertEquals(f + "/content/v-sgov", dir.getFolder().toString());
+            Utils.getVocabularyFolder(f,
+                "https://slovník.gov.cz/veřejný-sektor");
+        Assertions.assertEquals(f + "/content/vocabularies/v-sgov", dir.getFolder().toString());
     }
 }

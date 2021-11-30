@@ -1,59 +1,27 @@
 package com.github.sgov.server.util;
 
 import java.io.File;
-import java.nio.file.Paths;
 
-public class VocabularyFolder {
+public class VocabularyFolder extends Folder {
 
-    private final File folder;
-
-    private VocabularyFolder(File folder) {
-        this.folder = folder;
+    public VocabularyFolder(File folder) {
+        super(folder);
     }
 
-    /**
-     * Creates a new vocabulary folder for the given vocabulary.
-     *
-     * @param root     Root folder for vocabularies (root of SSP repo)
-     * @param instance vocabulary
-     * @return vocabulary folder for the given vocabulary
-     */
-    public static VocabularyFolder ofVocabularyIri(final File root,
-                                                   final VocabularyInstance instance) {
-        return new VocabularyFolder(
-            Paths.get(root.getAbsolutePath() + "/" + instance.getFolder())
-                .toFile());
+    public File getVocabularyFile() {
+        return getFile("slovník", "");
     }
 
-    public String getVocabularyId() {
-        final String p = folder.getAbsolutePath();
-        return p.substring(p.lastIndexOf("/") + 1);
+    public File getGlossaryFile() {
+        return getFile("glosář", "");
     }
 
-    private String getSuffixString(String suffix) {
-        return (suffix.isEmpty() ? "" : "-" + suffix);
+    public File getModelFile() {
+        return getFile("model", "");
     }
 
-    private File getFile(String type, String suffix) {
-        return new File(folder,
-            getVocabularyId() + "-" + type + getSuffixString(suffix)
-                + Constants.Turtle.FILE_EXTENSION);
-    }
-
-    public File getVocabularyFile(String suffix) {
-        return getFile("slovník", suffix);
-    }
-
-    public File getGlossaryFile(String suffix) {
-        return getFile("glosář", suffix);
-    }
-
-    public File getModelFile(String suffix) {
-        return getFile("model", suffix);
-    }
-
-    public File getFolder() {
-        return folder;
+    public File getAttachmentsFile() {
+        return getFile("přílohy", "");
     }
 
     /**
@@ -62,10 +30,11 @@ public class VocabularyFolder {
      * @return array of files
      */
     public File[] toPruneAllExceptCompact() {
-        return folder.listFiles((file, s) -> (
+        return getFolder().listFiles((file, s) -> (
             s.contains("-model")
                 || s.contains("-glosář")
                 || s.contains("-slovník")
+                || s.contains("-přílohy")
         ) && !s.endsWith("-compact.ttl"));
     }
 }

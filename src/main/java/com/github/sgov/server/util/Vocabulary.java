@@ -11,6 +11,9 @@ public final class Vocabulary {
     public static final String TERMIT_NAMESPACE =
         "http://onto.fel.cvut.cz/ontologies/application/termit/";
 
+    public static final String BIBO_NAMESPACE = "http://purl.org/ontology/bibo/";
+    public static final String VANN_NAMESPACE = "http://purl.org/vocab/vann/";
+
     public static final String SLOVNIK_GOV_CZ = "https://slovník.gov.cz";
     public static final String WORKSPACE_NAMESPACE =
         "https://slovník.gov.cz/datový/pracovní-prostor/pojem/";
@@ -18,6 +21,7 @@ public final class Vocabulary {
         "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/";
 
     public static final String s_c_metadatovy_kontext = WORKSPACE_NAMESPACE + "metadatový-kontext";
+    public static final String s_c_prilohovy_kontext = WORKSPACE_NAMESPACE + "přílohový-kontext";
     public static final String s_c_slovnikovy_kontext = WORKSPACE_NAMESPACE + "slovníkový-kontext";
     public static final String s_c_slovnikovy_kontext_pouze_pro_cteni =
         WORKSPACE_NAMESPACE + "slovníkový-kontext-pouze-pro-čtení";
@@ -26,16 +30,16 @@ public final class Vocabulary {
 
     public static final String s_p_odkazuje_na_kontext = WORKSPACE_NAMESPACE
         + "odkazuje-na-kontext";
+    public static final String s_p_odkazuje_na_prilohovy_kontext = WORKSPACE_NAMESPACE
+        + "odkazuje-na-přílohový-kontext";
     public static final String s_p_vychazi_z_verze = WORKSPACE_NAMESPACE + "vychází-z-verze";
     public static final String s_p_ma_pracovni_metadatovy_kontext =
         WORKSPACE_NAMESPACE + "má-pracovní-metadatový-kontext";
-    public static final String s_p_obsahuje_slovnik = WORKSPACE_NAMESPACE
-        + "obsahuje-slovník";
     public static final String s_p_meni_verzi = WORKSPACE_NAMESPACE + "mění-verzi";
-    public static final String s_p_je_technickym_kontextem_slovniku =
-        WORKSPACE_NAMESPACE + "je-technickým-kontextem-slovníku";
     public static final String s_p_ma_kontext_sledovani_zmen = WORKSPACE_NAMESPACE
         + "má-kontext-sledování-změn";
+    public static final String s_p_ma_prilohu = WORKSPACE_NAMESPACE
+        + "má-přílohu";
 
     public static final String s_c_uzivatel = DATA_DESCRIPTION_NAMESPACE
         + "uživatel";
@@ -69,6 +73,7 @@ public final class Vocabulary {
     public static final String s_p_ma_model = DATA_DESCRIPTION_NAMESPACE + "má-model";
     public static final String s_c_glosar = DATA_DESCRIPTION_NAMESPACE + "glosář";
     public static final String s_c_model = DATA_DESCRIPTION_NAMESPACE + "model";
+    public static final String s_c_priloha = DATA_DESCRIPTION_NAMESPACE + "příloha";
 
     private Vocabulary() {
     }

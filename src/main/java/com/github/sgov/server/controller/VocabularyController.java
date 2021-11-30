@@ -1,7 +1,7 @@
 package com.github.sgov.server.controller;
 
 import com.github.sgov.server.controller.dto.VocabularyDto;
-import com.github.sgov.server.service.repository.VocabularyService;
+import com.github.sgov.server.service.repository.VocabularyRepositoryService;
 import com.github.sgov.server.util.Constants;
 import cz.cvut.kbss.jsonld.JsonLd;
 import io.swagger.annotations.Api;
@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 public class VocabularyController extends BaseController {
 
-    private final VocabularyService vocabularyService;
+    private final VocabularyRepositoryService vocabularyService;
 
     @Autowired
-    public VocabularyController(VocabularyService vocabularyService) {
+    public VocabularyController(VocabularyRepositoryService vocabularyService) {
         this.vocabularyService = vocabularyService;
     }
 
