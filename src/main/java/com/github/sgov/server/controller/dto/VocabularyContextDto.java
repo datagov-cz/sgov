@@ -21,5 +21,5 @@ public class VocabularyContextDto {
     private String description;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_vychazi_z_verze)
-    private URI basedOnVocabularyVersion;
+    private URI basedOnVersion;
 }

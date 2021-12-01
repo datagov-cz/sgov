@@ -16,7 +16,7 @@ import lombok.Data;
 
 @Data
 @OWLClass(iri = Vocabulary.s_c_slovnikovy_kontext)
-@JsonLdAttributeOrder({"uri", "label", "basedOnVocabularyVersion", "changeTrackingContext"})
+@JsonLdAttributeOrder({"uri", "label", "basedOnVersion", "changeTrackingContext"})
 public class VocabularyDto implements HasTypes {
 
     @Id
@@ -29,7 +29,7 @@ public class VocabularyDto implements HasTypes {
     private String label;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_vychazi_z_verze)
-    private URI basedOnVocabularyVersion;
+    private URI basedOnVersion;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_ma_kontext_sledovani_zmen)
     private ChangeTrackingContext changeTrackingContext;

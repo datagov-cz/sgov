@@ -101,7 +101,7 @@ public class WorkspaceService {
      */
     public URI ensureVocabularyExistsInWorkspace(
         final URI workspaceUri, final VocabularyContextDto vocabularyContextDto) {
-        final URI vocabularyUri = vocabularyContextDto.getBasedOnVocabularyVersion();
+        final URI vocabularyUri = vocabularyContextDto.getBasedOnVersion();
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
         URI vocabularyContextUri =
             repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
@@ -111,7 +111,7 @@ public class WorkspaceService {
 
         if (vocabularyService.getVocabulariesAsContextDtos().stream()
             .noneMatch(vc ->
-                vc.getBasedOnVocabularyVersion().equals(vocabularyUri)
+                vc.getBasedOnVersion().equals(vocabularyUri)
             )
         ) {
             if (vocabularyContextDto.getLabel() == null) {
@@ -125,7 +125,7 @@ public class WorkspaceService {
 
     private URI createVocabularyContext(Workspace workspace,
                                         VocabularyContextDto vocabularyContextDto) {
-        URI vocabularyUri = vocabularyContextDto.getBasedOnVocabularyVersion();
+        URI vocabularyUri = vocabularyContextDto.getBasedOnVersion();
         URI vocabularyContextUri;
         VocabularyContext vocabularyContext = stub(vocabularyUri);
         workspace.addRefersToVocabularyContexts(vocabularyContext);

@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @OWLClass(iri = Vocabulary.s_c_slovnikovy_kontext)
-@JsonLdAttributeOrder({"uri", "label", "basedOnVocabularyVersion", "changeTrackingContext"})
+@JsonLdAttributeOrder({"uri", "label", "basedOnVersion", "changeTrackingContext"})
 public class VocabularyContext extends TrackableContext {
 
     @ParticipationConstraints(nonEmpty = true)

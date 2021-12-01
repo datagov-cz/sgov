@@ -120,7 +120,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
             query.evaluate().forEach(b -> {
                 final VocabularyDto c = new VocabularyDto();
                 final URI uri = URI.create(b.getValue("g").stringValue());
-                c.setBasedOnVocabularyVersion(uri);
+                c.setBasedOnVersion(uri);
                 c.setReadonly(uris.contains(uri));
                 if (b.hasBinding("label")) {
                     c.setLabel(b.getValue("label").stringValue());
