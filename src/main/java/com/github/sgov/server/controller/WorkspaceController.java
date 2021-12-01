@@ -243,7 +243,7 @@ public class WorkspaceController extends BaseController {
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,
                 new VocabularyContextDto()
-                    .setBasedOnVocabularyVersion(vocabularyUri)
+                    .setBasedOnVersion(vocabularyUri)
                     .setLabel(label)
             );
         log.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
@@ -277,7 +277,7 @@ public class WorkspaceController extends BaseController {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
 
-        checkNotLoaded(workspaceUri, vocabularyContext.getBasedOnVocabularyVersion());
+        checkNotLoaded(workspaceUri, vocabularyContext.getBasedOnVersion());
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(

@@ -64,7 +64,7 @@ class VocabularyRepositoryServiceWithFusekiTest extends BaseServiceTestRunner {
 
         Assertions.assertEquals(new HashSet<>(Arrays.asList(vocabularies)),
             contexts.stream().map(c ->
-                c.getBasedOnVocabularyVersion().toString()).collect(Collectors.toSet())
+                c.getBasedOnVersion().toString()).collect(Collectors.toSet())
         );
 
         server.stop();
