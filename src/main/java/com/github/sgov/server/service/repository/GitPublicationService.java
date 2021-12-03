@@ -133,43 +133,34 @@ public class GitPublicationService {
                 ctxVocabulary.toString() + "/pojem/");
             conGitSsp.setNamespace(vocabularyId, ctxVocabulary + "/");
 
-            cWorkspaceRepo.getStatements(ctxVocabulary, null, null, ctxWorkspaceEntity)
-                .forEach(s -> conGitSsp.add(s, ctxVocabulary));
-
-            final IRI ctxGlossary = fsspRepo.createIRI(versionUrl + "/glosář");
-            cWorkspaceRepo.getStatements(ctxGlossary, null, null, ctxWorkspaceEntity)
-                .forEach(s -> conGitSsp.add(s, ctxGlossary));
-
             final IRI ctxModel = fsspRepo.createIRI(versionUrl + "/model");
-            cWorkspaceRepo.getStatements(ctxModel, null, null, ctxWorkspaceEntity)
-                .forEach(s -> conGitSsp.add(s, ctxModel));
+            final IRI ctxGlossary = fsspRepo.createIRI(versionUrl + "/glosář");
 
             final IRI hasAttachment = fsspRepo.createIRI(Vocabulary.s_p_ma_prilohu);
             final IRI ctxAttachments = fsspRepo.createIRI(versionUrl + "/přílohy");
+
+            cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)
+                .stream()
+                .forEach(s -> {
+                    if (s.getSubject().equals(ctxVocabulary)) {
+                        if (s.getPredicate().equals(hasAttachment)) {
+                            // do not add old ones. They should reflect the current change.
+                        } else {
+                            conGitSsp.add(s, ctxVocabulary);
+                        }
+                    } else if (s.getSubject().equals(ctxModel)) {
+                        conGitSsp.add(s, ctxModel);
+                    } else if (s.getSubject().equals(ctxGlossary)) {
+                        conGitSsp.add(s, ctxGlossary);
+                    } else {
+                        conGitSsp.add(s, isGlossaryTriple(s) ? ctxGlossary : ctxModel);
+                    }
+                });
+
             context.getAttachments().forEach(attachment ->
                 conGitSsp.add(ctxVocabulary, hasAttachment,
                     fsspRepo.createIRI(attachment.toString()), ctxAttachments)
             );
-
-            cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)
-                .stream()
-                // triples already processed
-                .filter(s -> !s.getSubject().equals(ctxVocabulary))
-                .filter(s -> !s.getSubject().equals(ctxGlossary))
-                .filter(s -> !s.getSubject().equals(ctxModel))
-                // triples belonging to tools
-                .filter(s -> !s.getPredicate().stringValue()
-                    .startsWith(Vocabulary.ONTOGRAPHER_NAMESPACE))
-                .filter(s -> !s.getObject().stringValue()
-                    .startsWith(Vocabulary.ONTOGRAPHER_NAMESPACE))
-                .filter(s -> !s.getPredicate().stringValue()
-                    .startsWith(Vocabulary.TERMIT_NAMESPACE))
-                .filter(s -> !s.getObject().stringValue()
-                    .startsWith(Vocabulary.TERMIT_NAMESPACE))
-                // all the rest belongs either to glossary or to model
-                .forEach(s ->
-                    conGitSsp.add(s, isGlossaryTriple(s) ? ctxGlossary : ctxModel)
-                );
 
             folder.getFolder().mkdirs();
 
