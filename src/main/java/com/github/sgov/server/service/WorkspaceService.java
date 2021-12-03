@@ -142,8 +142,8 @@ public class WorkspaceService {
             vocabularyUri, workspace.getUri());
         final VocabularyContext vocabularyContext = stub(vocabularyUri);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
-        final URI vocabularyContextUri = vocabularyContext.getUri();
         repositoryService.update(workspace);
+        final URI vocabularyContextUri = vocabularyContext.getUri();
         vocabularyService.loadContext(vocabularyContext);
         log.info("Found attachments {}", vocabularyContext.getAttachments());
         vocabularyContext.getAttachments().forEach(attachmentUri -> {
