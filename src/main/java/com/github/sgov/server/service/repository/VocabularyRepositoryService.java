@@ -2,14 +2,12 @@ package com.github.sgov.server.service.repository;
 
 import static com.github.sgov.server.util.Constants.SERIALIZATION_LANGUAGE;
 
-
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
-import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.TrackableContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
@@ -19,7 +17,6 @@ import com.github.sgov.server.util.VocabularyCreationHelper;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -203,11 +200,9 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
      * Reloads the given vocabulary context from the source endpoint.
      *
      * @param context the vocabulary context to be loaded.
-     * @return list of attachment ids related to the vocabulary
      */
     @Transactional
-    public void loadContext(final Workspace workspace,
-                                 final TrackableContext context) {
+    public void loadContext(final TrackableContext context) {
         try {
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
@@ -217,11 +212,10 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
                 populateContext(context.getUri().toString(),
                     loadContext(context, connection));
 
-                if ( context instanceof VocabularyContext) {
+                if (context instanceof VocabularyContext) {
                     final VocabularyContext vocabularyContext = (VocabularyContext) context;
                     final GraphQueryResult r = loadAttachments(iri, connection);
                     final Set<Statement> set = r.stream().collect(Collectors.toSet());
-//                    populateContext(workspace.getUri().toString(), set);
                     final IRI hasAttachment =
                         repo.getValueFactory().createIRI(Vocabulary.s_p_ma_prilohu);
                     final Set<URI> attachments = set.stream()
@@ -245,7 +239,8 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
                 + version
                 + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} FILTER(?g IN (<"
                 + version
-                + ">" + ((context instanceof VocabularyContext) ? ",:glosář,:model,:mapování,:přílohy" : "")
+                + ">" + ((context instanceof VocabularyContext)
+                    ? ",:glosář,:model,:mapování,:přílohy" : "")
                 + "))}");
         return query.evaluate();
     }

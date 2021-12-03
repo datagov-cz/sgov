@@ -142,15 +142,15 @@ public class GitPublicationService {
             cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)
                 .stream()
                 .forEach(s -> {
-                    if ( s.getSubject().equals(ctxVocabulary) ) {
+                    if (s.getSubject().equals(ctxVocabulary)) {
                         if (s.getPredicate().equals(hasAttachment)) {
                             // do not add old ones. They should reflect the current change.
                         } else {
                             conGitSsp.add(s, ctxVocabulary);
                         }
-                    } else if ( s.getSubject().equals(ctxModel) ) {
+                    } else if (s.getSubject().equals(ctxModel)) {
                         conGitSsp.add(s, ctxModel);
-                    } else if ( s.getSubject().equals(ctxGlossary) ) {
+                    } else if (s.getSubject().equals(ctxGlossary)) {
                         conGitSsp.add(s, ctxGlossary);
                     } else {
                         conGitSsp.add(s, isGlossaryTriple(s) ? ctxGlossary : ctxModel);

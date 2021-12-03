@@ -144,14 +144,14 @@ public class WorkspaceService {
         workspace.addRefersToVocabularyContexts(vocabularyContext);
         final URI vocabularyContextUri = vocabularyContext.getUri();
         repositoryService.update(workspace);
-        vocabularyService.loadContext(workspace, vocabularyContext);
+        vocabularyService.loadContext(vocabularyContext);
         log.info("Found attachments {}", vocabularyContext.getAttachments());
         vocabularyContext.getAttachments().forEach(attachmentUri -> {
             log.info("Adding attachment {}", attachmentUri);
             final AttachmentContext attachmentContext = attachmentStub(attachmentUri);
             workspace.addAttachmentContext(attachmentContext);
             repositoryService.update(workspace);
-            vocabularyService.loadContext(workspace, attachmentContext);
+            vocabularyService.loadContext(attachmentContext);
         });
         return vocabularyContextUri;
     }
