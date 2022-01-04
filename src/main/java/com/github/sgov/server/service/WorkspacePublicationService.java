@@ -59,6 +59,10 @@ public class WorkspacePublicationService {
      */
     public URI publish(URI workspaceUri) {
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
+        log.info("Publishing workspace {} with vocabularies {} and attachments {}",
+            workspace.getUri(),
+            workspace.getVocabularyContexts(),
+            workspace.getAttachmentContexts());
         final String branchName = WorkspaceUtils.createBranchName(workspace);
 
         try {
@@ -69,7 +73,8 @@ public class WorkspacePublicationService {
                 githubService.push(git);
                 FileUtils.deleteDirectory(dir);
                 String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
-                    MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
+                    MessageFormat.format("Publishing workspace {0} ({1})",
+                        workspace.getLabel(),
                         workspace.getUri()),
                     createPullRequestBody(workspace));
 
@@ -93,6 +98,7 @@ public class WorkspacePublicationService {
             .map(ac -> ac.getBasedOnVersion())
             .collect(Collectors.toSet());
         workspace.getVocabularyContexts().forEach(c -> {
+            log.info("Publishing vocabulary context {}", c);
             final URI iri = c.getBasedOnVersion();
             try {
                 final VocabularyFolder folder = Utils.getVocabularyFolder(dir, iri.toString());
@@ -110,13 +116,14 @@ public class WorkspacePublicationService {
 
     private void publishAttachmentContexts(Git git, File dir, Workspace workspace) {
         for (final AttachmentContext c : workspace.getAttachmentContexts()) {
+            log.info("Publishing attachment context {}", c);
             final URI iri = c.getBasedOnVersion();
             try {
                 final AttachmentFolder folder = Utils.getAttachmentFolder(dir, iri.toString());
                 deleteFilesFromGit(git, folder.getAttachmentFile().listFiles());
                 publicationService.storeContext(c, folder);
                 githubService.commit(git, MessageFormat.format(
-                    "Publishing vocabulary {0} in workspace {1} ({2})", iri,
+                    "Publishing attachment {0} in workspace {1} ({2})", iri,
                     workspace.getLabel(), workspace.getUri().toString()));
             } catch (IllegalArgumentException e) {
                 throw new PublicationException("Invalid vocabulary IRI " + iri);

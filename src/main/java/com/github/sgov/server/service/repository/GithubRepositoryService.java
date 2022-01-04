@@ -3,6 +3,7 @@ package com.github.sgov.server.service.repository;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.service.security.SecurityUtils;
+import com.github.sgov.server.util.Constants;
 import java.io.File;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
@@ -156,9 +157,9 @@ public class GithubRepositoryService {
     }
 
     private String getLatestPullRequestForBranch(String fromBranch) {
-        final HttpResponse<JsonNode> prGet =
+        final HttpResponse<JsonNode> prResponse =
             Unirest
-                .get("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/"
+                .get(Constants.GITHUB_API_REPOS + repositoryConf.getGithubOrganization() + "/"
                     + repositoryConf.getGithubRepo() + "/pulls")
                 .header("Authorization", "Bearer " + repositoryConf.getGithubUserToken())
                 .queryString("state", "open")
@@ -167,11 +168,12 @@ public class GithubRepositoryService {
                 .queryString("sort", "updated")
                 .queryString("direction", "desc")
                 .asJson();
-        if (prGet.isSuccess() && prGet.getBody().getArray().length() > 0) {
-            return prGet.getBody().getArray().getJSONObject(0).get("html_url").toString();
+        if (prResponse.isSuccess() && prResponse.getBody().getArray().length() > 0) {
+            return prResponse.getBody().getArray().getJSONObject(0).get("html_url").toString();
         } else {
-            log.error("Pull request cannot be obtained, reason {}, {}", prGet.getStatus(),
-                prGet.getBody().toPrettyString());
+            log.debug("Pull request cannot be obtained, returning '{}' ({}) with body {}",
+                prResponse.getStatusText(), prResponse.getStatus(),
+                prResponse.getBody().toPrettyString());
             return null;
         }
     }
@@ -181,7 +183,7 @@ public class GithubRepositoryService {
             title);
         final HttpResponse<JsonNode> prResponse =
             Unirest
-                .post("https://api.github.com/repos/" + repositoryConf.getGithubOrganization() + "/"
+                .post(Constants.GITHUB_API_REPOS + repositoryConf.getGithubOrganization() + "/"
                     + repositoryConf.getGithubRepo() + "/pulls")
                 .header("Authorization", "Bearer " + repositoryConf.getGithubUserToken())
                 .body(new JSONObject()
@@ -194,9 +196,9 @@ public class GithubRepositoryService {
         if (prResponse.isSuccess()) {
             return prResponse.getBody().getArray().getJSONObject(0).get("html_url").toString();
         } else {
-            log.error("Pull request cannot be created, reason {}-{} with body {}, "
+            log.error("Pull request cannot be created, returning '{}' ({}) with body {}, "
                     + "for branch {} with title {} and body {}",
-                prResponse.getStatus(), prResponse.getStatusText(),
+                prResponse.getStatusText(), prResponse.getStatus(),
                 prResponse.getBody().toPrettyString(), fromBranch, title, body);
             throw new PublicationException(
                 "An error occurred during opening PR: " + prResponse.getStatus(), null);
