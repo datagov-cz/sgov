@@ -59,6 +59,7 @@ public class WorkspacePublicationService {
      */
     public URI publish(URI workspaceUri) {
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
+        log.info("Publishing workspace {} with vocabularies {} and attachments {}", workspace.getUri(), workspace.getVocabularyContexts(), workspace.getAttachmentContexts() );
         final String branchName = WorkspaceUtils.createBranchName(workspace);
 
         try {
@@ -93,6 +94,7 @@ public class WorkspacePublicationService {
             .map(ac -> ac.getBasedOnVersion())
             .collect(Collectors.toSet());
         workspace.getVocabularyContexts().forEach(c -> {
+            log.info("Publishing vocabulary context {}", c);
             final URI iri = c.getBasedOnVersion();
             try {
                 final VocabularyFolder folder = Utils.getVocabularyFolder(dir, iri.toString());
@@ -110,6 +112,7 @@ public class WorkspacePublicationService {
 
     private void publishAttachmentContexts(Git git, File dir, Workspace workspace) {
         for (final AttachmentContext c : workspace.getAttachmentContexts()) {
+            log.info("Publishing attachment context {}", c);
             final URI iri = c.getBasedOnVersion();
             try {
                 final AttachmentFolder folder = Utils.getAttachmentFolder(dir, iri.toString());

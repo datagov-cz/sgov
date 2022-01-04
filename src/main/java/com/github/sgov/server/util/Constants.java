@@ -8,6 +8,7 @@ public class Constants {
     public static final String SERIALIZATION_LANGUAGE = "cs";
 
     public static final String CC_BY_SA_4 = "https://creativecommons.org/licenses/by-sa/4.0";
+    public static final String GITHUB_API_REPOS = "https://api.github.com/repos/";
 
     public static final class Turtle {
 
