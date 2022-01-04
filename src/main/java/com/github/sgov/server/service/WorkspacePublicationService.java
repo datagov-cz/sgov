@@ -58,6 +58,8 @@ public class WorkspacePublicationService {
      * @return GitHub PR URL
      */
     public URI publish(URI workspaceUri) {
+        // flushing to reload workspace instance which might have been modified externally.
+        repositoryService.flush();
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
         log.info("Publishing workspace {} with vocabularies {} and attachments {}",
             workspace.getUri(),
