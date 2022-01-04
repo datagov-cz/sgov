@@ -6,8 +6,6 @@ package com.github.sgov.server.util;
 @SuppressWarnings("checkstyle:ConstantName")
 public final class Vocabulary {
 
-    public static final String ONTOGRAPHER_NAMESPACE =
-        "http://onto.fel.cvut.cz/ontologies/application/ontoGrapher/";
     public static final String TERMIT_NAMESPACE =
         "http://onto.fel.cvut.cz/ontologies/application/termit/";
 
