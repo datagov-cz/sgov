@@ -116,7 +116,7 @@ public class WorkspacePublicationService {
                 deleteFilesFromGit(git, folder.getAttachmentFile().listFiles());
                 publicationService.storeContext(c, folder);
                 githubService.commit(git, MessageFormat.format(
-                    "Publishing vocabulary {0} in workspace {1} ({2})", iri,
+                    "Publishing attachment {0} in workspace {1} ({2})", iri,
                     workspace.getLabel(), workspace.getUri().toString()));
             } catch (IllegalArgumentException e) {
                 throw new PublicationException("Invalid vocabulary IRI " + iri);
