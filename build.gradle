@@ -58,21 +58,21 @@ test {
 
 dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.32'
-    implementation 'com.github.sgov:sgov-validator:1.6.5'
+    implementation 'com.github.sgov:sgov-validator:1.6.6'
 
     implementation 'cz.cvut.kbss.jopa:jopa-impl:0.17.2'
     implementation 'cz.cvut.kbss.jopa:ontodriver-sesame:0.17.2'
     implementation 'cz.cvut.kbss.jsonld:jb4jsonld-jackson:0.8.8'
     implementation 'com.github.ledsoft:jopa-spring-transaction:0.1.1'
 
-    implementation 'org.springframework.boot:spring-boot-starter-actuator:2.5.6'
-    implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.6'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket:2.5.6'
-    implementation 'org.springframework.boot:spring-boot-starter-security:2.5.6'
-    implementation 'org.springframework.data:spring-data-commons:2.5.5'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:2.6.2'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.2'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:2.6.2'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.6.2'
+    implementation 'org.springframework.data:spring-data-commons:2.6.0'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'com.konghq:unirest-java:3.13.3'
-    implementation 'org.topbraid:shacl:1.4.0'
+    implementation 'org.topbraid:shacl:1.3.2'
     runtimeOnly 'org.mitre.dsmiley.httpproxy:smiley-http-proxy-servlet:1.12'
     implementation 'org.keycloak:keycloak-spring-boot-starter:15.0.2'
 
@@ -80,8 +80,8 @@ dependencies {
 
     aspect 'cz.cvut.kbss.jopa:jopa-impl:0.17.2'
 
-    testImplementation 'org.apache.jena:jena-shacl:4.2.0'
-    testImplementation 'org.apache.jena:jena-fuseki-server:4.2.0'
+    testImplementation 'org.apache.jena:jena-shacl:3.17.0'
+    testImplementation 'org.apache.jena:jena-fuseki-server:3.17.0'
     testImplementation('org.springframework.boot:spring-boot-starter-test:2.5.6') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

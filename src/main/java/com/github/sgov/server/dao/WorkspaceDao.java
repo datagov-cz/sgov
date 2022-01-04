@@ -126,10 +126,10 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         log.debug("- getting all statements for the vocabularies using query {}", query);
         final QueryExecution e = QueryExecutionFactory
             .sparqlService(endpoint, query.asQuery());
-        final Model m = e.execConstruct();
-        log.debug("- found {} statements. Now validating", m.listStatements().toSet().size());
         final Model dataModel =
-            ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF, m);
+            ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF);
+        e.execConstruct(dataModel);
+        log.debug("- done, now validating");
         return validator.validate(dataModel, rules);
     }
 
@@ -145,7 +145,15 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         final Validator validator = new Validator();
         boolean conforms = true;
         rules.addAll(validator.getGlossaryRules());
-        rules.addAll(validator.getModelRules());
+        rules.addAll(validator.getModelRules().stream()
+            .filter(r -> !r.getPath().contains("m2.ttl"))
+            .filter(r -> !r.getPath().contains("m3.ttl"))
+            .filter(r -> !r.getPath().contains("m4.ttl"))
+            .filter(r -> !r.getPath().contains("m5.ttl"))
+            .filter(r -> !r.getPath().contains("m6.ttl"))
+            .filter(r -> !r.getPath().contains("m7.ttl"))
+            .collect(Collectors.toSet())
+        );
         rules.addAll(validator.getVocabularyRules());
         OntDocumentManager.getInstance().setProcessImports(false);
 
