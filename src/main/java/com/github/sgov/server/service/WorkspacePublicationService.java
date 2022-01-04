@@ -59,7 +59,10 @@ public class WorkspacePublicationService {
      */
     public URI publish(URI workspaceUri) {
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
-        log.info("Publishing workspace {} with vocabularies {} and attachments {}", workspace.getUri(), workspace.getVocabularyContexts(), workspace.getAttachmentContexts() );
+        log.info("Publishing workspace {} with vocabularies {} and attachments {}",
+            workspace.getUri(),
+            workspace.getVocabularyContexts(),
+            workspace.getAttachmentContexts());
         final String branchName = WorkspaceUtils.createBranchName(workspace);
 
         try {
@@ -70,7 +73,8 @@ public class WorkspacePublicationService {
                 githubService.push(git);
                 FileUtils.deleteDirectory(dir);
                 String prUrl = githubService.createOrUpdatePullRequestToMaster(branchName,
-                    MessageFormat.format("Publishing workspace {0} ({1})", workspace.getLabel(),
+                    MessageFormat.format("Publishing workspace {0} ({1})",
+                        workspace.getLabel(),
                         workspace.getUri()),
                     createPullRequestBody(workspace));
 
