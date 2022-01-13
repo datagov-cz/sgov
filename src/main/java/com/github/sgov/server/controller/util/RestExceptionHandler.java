@@ -151,7 +151,7 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Publication Exception.
+     * Vocabulary Already Registered for Editing Exception.
      */
     @ExceptionHandler(VocabularyRegisteredinReadWriteException.class)
     public ResponseEntity<ErrorInfo> vocabularyAlreadyRegisteredInReadWriteException(
