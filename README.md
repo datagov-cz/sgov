@@ -22,7 +22,8 @@ The best way to propose validation rule changes is to:
 4. Once approved, merge PR into master
 
 ## Building
-You need to have GitHub token in order to build this project (as there is a GitHub Packages dependency). Check build.gradle for details.
+You need to have GitHub token in order to build this project (as there is a GitHub Packages dependency). Check build.gradle for details. 
+Once You generate PAT on GitHub, You can specify it using `gpr.user` and `gpr.key` in your `~/.gradle/gradle.properties`.
 You can specify host/port of the validated RDF4J repository in `server/src/main/resources/application.yml`
 
     gradle bootRun
@@ -39,6 +40,8 @@ Now you can run the server like
 ## IDE configuration
 
 ### Intellij Idea
+
+In settings, configure Gradle to use JDK 11.
 
 To manage source code it is recommended to install plugins:
  - [Lombok](https://plugins.jetbrains.com/plugin/6317-lombok) 
