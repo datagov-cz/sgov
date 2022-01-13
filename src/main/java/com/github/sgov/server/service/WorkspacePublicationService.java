@@ -6,6 +6,7 @@ import com.github.sgov.server.config.conf.FeatureConf;
 import com.github.sgov.server.exception.FeatureDisabledException;
 import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.model.AttachmentContext;
+import com.github.sgov.server.model.TrackableContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.GitPublicationService;
 import com.github.sgov.server.service.repository.GithubRepositoryService;
@@ -103,13 +104,13 @@ public class WorkspacePublicationService {
     private void publishVocabularyContexts(Git git, File dir, Workspace workspace) {
         // changes might come from tools
         repositoryService.flush();
-        workspace.getAttachmentContexts().stream().forEach(ac -> {
+        workspace.getAttachmentContexts().forEach(ac -> {
             if (ac.getBasedOnVersion() == null) {
                 ac.setBasedOnVersion(URI.create(Vocabulary.s_c_priloha + "/" + UUID.randomUUID()));
             }
         });
         final Set<URI> attachments = workspace.getAttachmentContexts().stream()
-            .map(ac -> ac.getBasedOnVersion())
+            .map(TrackableContext::getBasedOnVersion)
             .collect(Collectors.toSet());
         workspace.getVocabularyContexts().forEach(c -> {
             log.info("Publishing vocabulary context {}", c);
