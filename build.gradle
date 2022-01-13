@@ -34,7 +34,7 @@ gradleLint {
 }
 
 quality {
-    checkstyleVersion = '8.32'
+    checkstyleVersion = '9.2'
     checkstyle = true
     spotbugs = false
     pmd = false
