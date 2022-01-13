@@ -49,9 +49,9 @@ To manage source code it is recommended to install plugins:
  
 Static code analysis rules are defined in file `./config/checkstyle/checkstyle.xml`. In order to set up this checkstyle
 in Intellij Idea IDE following steps are recommended:
-1) Import the file into project checkstyle scheme using 
+1) Install checkstyle plugin CheckStyle-IDEA
+2) Import the file into project checkstyle scheme using 
 `Settings/Editor/Code Style/Java/Import Scheme/Checkstyle configuration`.
-2) Install checkstyle plugin CheckStyle-IDEA
 3) Configure the plugin by adding `checkstyle.xml` into  `Settings/Other Settings/Checkstyle/Configuration file`
  
 -----
