@@ -2,6 +2,8 @@ package com.github.sgov.server.service;
 
 import static com.github.sgov.server.service.WorkspaceUtils.createPullRequestBody;
 
+import com.github.sgov.server.config.conf.FeatureConf;
+import com.github.sgov.server.exception.FeatureDisabledException;
 import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.Workspace;
@@ -24,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 /**
@@ -39,16 +42,20 @@ public class WorkspacePublicationService {
 
     private final GitPublicationService publicationService;
 
+    private final FeatureConf featureConf;
+
     /**
      * Constructor.
      */
     @Autowired
     public WorkspacePublicationService(final GithubRepositoryService githubService,
                                        final WorkspaceRepositoryService repositoryService,
-                                       final GitPublicationService publicationService) {
+                                       final GitPublicationService publicationService,
+                                       final FeatureConf featureConf) {
         this.githubService = githubService;
         this.repositoryService = repositoryService;
         this.publicationService = publicationService;
+        this.featureConf = featureConf;
     }
 
     /**
@@ -58,6 +65,11 @@ public class WorkspacePublicationService {
      * @return GitHub PR URL
      */
     public URI publish(URI workspaceUri) {
+        if (featureConf.isDemo()) {
+            throw new FeatureDisabledException("Publishing is disabled in configuration (see '"
+                    + featureConf.getClass().getAnnotation(ConfigurationProperties.class).value()
+                    + "' option.)");
+        }
         // flushing to reload workspace instance which might have been modified externally.
         repositoryService.flush();
         final Workspace workspace = repositoryService.findRequired(workspaceUri);

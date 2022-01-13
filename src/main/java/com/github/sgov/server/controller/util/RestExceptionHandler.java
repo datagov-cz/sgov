@@ -2,6 +2,7 @@ package com.github.sgov.server.controller.util;
 
 import com.github.sgov.server.controller.dto.ErrorInfo;
 import com.github.sgov.server.exception.AuthorizationException;
+import com.github.sgov.server.exception.FeatureDisabledException;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.exception.PublicationException;
@@ -148,6 +149,16 @@ public class RestExceptionHandler {
                                                           PublicationException e) {
         logException("Publication exception caught.", e);
         return new ResponseEntity<>(errorInfo(request, e), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Feature Disabled Exception.
+     */
+    @ExceptionHandler(FeatureDisabledException.class)
+    public ResponseEntity<ErrorInfo> publicationException(HttpServletRequest request,
+                                                          FeatureDisabledException e) {
+        logException("Feature disabled exception caught.", e);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
     }
 
     /**
