@@ -67,9 +67,7 @@ public class WorkspacePublicationService {
      */
     public URI publish(URI workspaceUri) {
         if (featureConf.isDemo()) {
-            throw new FeatureDisabledException("Publishing is disabled in configuration (see '"
-                    + featureConf.getClass().getAnnotation(ConfigurationProperties.class).value()
-                    + "' option.)");
+            throw new FeatureDisabledException("Publishing is disabled by configuration.");
         }
         // flushing to reload workspace instance which might have been modified externally.
         repositoryService.flush();

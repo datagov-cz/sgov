@@ -158,7 +158,7 @@ public class RestExceptionHandler {
     public ResponseEntity<ErrorInfo> publicationException(HttpServletRequest request,
                                                           FeatureDisabledException e) {
         logException("Feature disabled exception caught.", e);
-        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.NOT_FOUND);
     }
 
     /**
