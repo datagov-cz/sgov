@@ -49,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class GitPublicationService {
 
+    public static final String NS_TERMIT = "http://onto.fel.cvut.cz/ontologies/application/termit";
     private final RepositoryConf repositoryConf;
 
     /**
@@ -99,7 +100,8 @@ public class GitPublicationService {
     private boolean isGlossaryTriple(final Statement statement) {
         return ((statement.getObject() instanceof IRI)
             && ((IRI) statement.getObject()).getNamespace().equals(SKOS.NAMESPACE))
-            || statement.getPredicate().getNamespace().equals(SKOS.NAMESPACE);
+            || statement.getPredicate().getNamespace().equals(SKOS.NAMESPACE)
+            || statement.getPredicate().getNamespace().equals(DCTERMS.NAMESPACE);
     }
 
     /**
