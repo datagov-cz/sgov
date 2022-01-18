@@ -106,17 +106,17 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         mockMvc.perform(get("/workspaces/test/validate")
             .param("namespace", "https://example.org/")
             .header("Accept-language", "cs"))
-            .andExpect(status().is4xxClientError());
+            .andExpect(status().isNotFound());
     }
 
     @Test
-    void publishWithFeatureDemoReturns409() throws Exception {
+    void publishWithFeatureDemoReturns404() throws Exception {
         BDDMockito.given(workspacePublicationService.publish(workspaceUri))
                 .willThrow(new FeatureDisabledException(""));
 
         mockMvc.perform(post("/workspaces/test/publish")
                         .param("namespace", "https://example.org/"))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -126,7 +126,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
 
         mockMvc.perform(post("/workspaces/test/publish")
             .param("namespace", "https://example.org/"))
-            .andExpect(status().is4xxClientError());
+            .andExpect(status().isNotFound());
     }
 
     @Test
