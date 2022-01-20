@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
+import com.github.sgov.server.exception.FeatureDisabledException;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.WorkspacePublicationService;
@@ -105,7 +106,17 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
         mockMvc.perform(get("/workspaces/test/validate")
             .param("namespace", "https://example.org/")
             .header("Accept-language", "cs"))
-            .andExpect(status().is4xxClientError());
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void publishWithFeatureDemoReturns404() throws Exception {
+        BDDMockito.given(workspacePublicationService.publish(workspaceUri))
+                .willThrow(new FeatureDisabledException(""));
+
+        mockMvc.perform(post("/workspaces/test/publish")
+                        .param("namespace", "https://example.org/"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -115,7 +126,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
 
         mockMvc.perform(post("/workspaces/test/publish")
             .param("namespace", "https://example.org/"))
-            .andExpect(status().is4xxClientError());
+            .andExpect(status().isNotFound());
     }
 
     @Test

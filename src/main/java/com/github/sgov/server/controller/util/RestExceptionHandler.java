@@ -2,6 +2,7 @@ package com.github.sgov.server.controller.util;
 
 import com.github.sgov.server.controller.dto.ErrorInfo;
 import com.github.sgov.server.exception.AuthorizationException;
+import com.github.sgov.server.exception.FeatureDisabledException;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.exception.PublicationException;
@@ -151,7 +152,17 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Publication Exception.
+     * Feature Disabled Exception.
+     */
+    @ExceptionHandler(FeatureDisabledException.class)
+    public ResponseEntity<ErrorInfo> publicationException(HttpServletRequest request,
+                                                          FeatureDisabledException e) {
+        logException("Feature disabled exception caught.", e);
+        return new ResponseEntity<>(errorInfo(request, e), HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Vocabulary Already Registered for Editing Exception.
      */
     @ExceptionHandler(VocabularyRegisteredinReadWriteException.class)
     public ResponseEntity<ErrorInfo> vocabularyAlreadyRegisteredInReadWriteException(
