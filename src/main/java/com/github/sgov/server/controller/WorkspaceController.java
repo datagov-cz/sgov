@@ -195,20 +195,6 @@ public class WorkspaceController extends BaseController {
         return workspaceService.getDependentsForVocabularyInWorkspace(workspaceId, vocabularyId);
     }
 
-    private void checkNotLoaded(final URI workspaceUri, final URI vocabularyUri) {
-        final Collection<Workspace> wss = workspaceService
-            .getWorkspacesWithReadWriteVocabulary(vocabularyUri)
-            .stream()
-            .filter(ws -> !ws.getUri().equals(workspaceUri))
-            .collect(Collectors.toSet());
-
-        if (!wss.isEmpty()) {
-            throw VocabularyRegisteredinReadWriteException.create(vocabularyUri.toString(),
-                wss.stream()
-                    .map(Asset::getUri).collect(Collectors.toList())
-            );
-        }
-    }
 
     /**
      * Adds a vocabulary to a workspace.
@@ -236,8 +222,6 @@ public class WorkspaceController extends BaseController {
     ) {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-
-        checkNotLoaded(workspaceUri, vocabularyUri);
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
@@ -276,8 +260,6 @@ public class WorkspaceController extends BaseController {
     ) {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-
-        checkNotLoaded(workspaceUri, vocabularyContext.getBasedOnVersion());
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
