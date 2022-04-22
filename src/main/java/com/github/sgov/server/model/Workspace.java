@@ -93,12 +93,7 @@ public class Workspace extends Asset implements Context {
             .findFirst();
 
         if (duplicateContext.isPresent()) {
-            throw new ValidationException(String.format(
-                "Unable to add %s to workspace %s. "
-                    + "It is already present in the workspace within context %s.",
-                duplicateContext.get().getBasedOnVersion(),
-                this.getUri(),
-                duplicateContext.get().getUri()));
+            return;
         }
 
         collection.add(context);
