@@ -88,14 +88,14 @@ public class WorkspaceService {
     }
 
     /**
-     * Ensures that a vocabulary with the given IRI is registered in the workspace. - If the
-     * vocabulary does not exist, an error is thrown. - if the vocabulary exists and is part of the
-     * workspace, nothing happens, and the content is left intact. - if the vocabulary exists, is
-     * NOT part of the workspace, and should be added as R/W it is only added to the workspace if no
-     * other workspace is registering the vocabulary in R/W. - if the vocabulary exists and is NOT
-     * part of the workspace, it is added to the workspace and its content is loaded.
+     * Ensures that a vocabulary with the given IRI is registered in the given workspace.
+     * The vocabulary is registered by first of the following actions that matches:
+     * 1) if vocabulary is already in workspace return it intact
+     * 2) if vocabulary exists, add it to workspace and load its content
+     * 3) create new vocabulary in the workspace (unless there is same vocabulary in other
+     * workspace or label of the vocabulary is not provided)
      *
-     * @param workspaceUri  URI of the workspace to connect the vocabulary context to.
+     * @param workspaceUri         URI of the workspace to connect the vocabulary context to.
      * @param vocabularyContextDto vocabulary metadata
      * @return URI of the vocabulary context to create
      */
@@ -117,6 +117,7 @@ public class WorkspaceService {
             if (vocabularyContextDto.getLabel() == null) {
                 throw NotFoundException.create("Vocabulary", vocabularyUri);
             }
+            vocabularyService.verifyVocabularyNotInAnyWorkspace(vocabularyUri);
             return createVocabularyContext(workspace, vocabularyContextDto);
         } else {
             return loadVocabularyContextFromCache(workspace, vocabularyUri);

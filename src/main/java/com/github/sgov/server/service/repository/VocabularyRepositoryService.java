@@ -10,7 +10,6 @@ import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.TrackableContext;
 import com.github.sgov.server.model.VocabularyContext;
-import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyCreationHelper;
@@ -40,7 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service to managed workspaces.
+ * Service to managed vocabularies.
  */
 @Service
 public class VocabularyRepositoryService extends BaseRepositoryService<VocabularyContext> {
@@ -147,6 +146,24 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     }
 
     /**
+     * Verifies that given vocabulary is not part of any workspace.
+     *
+     * @param vocabularyUri Uri of the vocabulary.
+     */
+    public void verifyVocabularyNotInAnyWorkspace(URI vocabularyUri) {
+        this.findAll().stream().filter(
+            vc -> vc.getBasedOnVersion().equals(vocabularyUri)
+        ).findAny().ifPresent(
+            vc -> {
+                throw new SGoVException(String.format(
+                    "Vocabulary %s already exists in a workspace within context %s.",
+                    vocabularyUri,
+                    vc.getUri()));
+            }
+        );
+    }
+
+    /**
      * Reloads the given vocabulary context from the source endpoint.
      *
      * @param uri the context to be populated.
@@ -240,7 +257,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
                 + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} FILTER(?g IN (<"
                 + version
                 + ">" + ((context instanceof VocabularyContext)
-                    ? ",:glosář,:model,:mapování,:přílohy" : "")
+                ? ",:glosář,:model,:mapování,:přílohy" : "")
                 + "))}");
         return query.evaluate();
     }

@@ -1,8 +1,6 @@
 package com.github.sgov.server.controller;
 
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
-import com.github.sgov.server.exception.VocabularyRegisteredinReadWriteException;
-import com.github.sgov.server.model.Asset;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.WorkspacePublicationService;
@@ -15,10 +13,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -212,8 +208,8 @@ public class WorkspaceController extends BaseController {
     @Deprecated
     @PostMapping(value = "/{workspaceFragment}/vocabularies")
     @ApiOperation(value =
-        "Create vocabulary context within workspace. If label is provided, a new vocabulary is "
-            + "created if not found.")
+        "Create vocabulary context within workspace. A new vocabulary is created "
+            + "if not found and in this case label is required.")
     public ResponseEntity<String> addVocabularyToWorkspace(
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
@@ -251,8 +247,8 @@ public class WorkspaceController extends BaseController {
      */
     @PostMapping(value = "/{workspaceFragment}/vocabularies-full")
     @ApiOperation(value =
-        "Create vocabulary context within workspace. If label is provided, a new vocabulary is "
-            + "created if not found.")
+        "Create vocabulary context within workspace. A new vocabulary is created "
+            + "if not found and in this case label is required.")
     public ResponseEntity<String> addVocabularyToWorkspace(
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
