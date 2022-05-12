@@ -5,6 +5,7 @@ import static com.github.sgov.server.service.WorkspaceUtils.stub;
 
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.exception.NotFoundException;
+import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
@@ -97,15 +98,32 @@ public class WorkspaceService {
      *
      * @param workspaceUri         URI of the workspace to connect the vocabulary context to.
      * @param vocabularyContextDto vocabulary metadata
+     * @param checkNotInGivenWorkspace If true pre-check that vocabulary is not already present
+     *                                 in the workspace
+     * @param checkNotInOtherWorkspaces If true pre-check that vocabulary is not present in
+     *                                  any other workspace beside the given one
+     * @param checkNotPublished If true pre-check that vocabulary is not published.
      * @return URI of the vocabulary context to create
      */
     public URI ensureVocabularyExistsInWorkspace(
-        final URI workspaceUri, final VocabularyContextDto vocabularyContextDto) {
+        final URI workspaceUri,
+        final VocabularyContextDto vocabularyContextDto,
+        final boolean checkNotInGivenWorkspace,
+        final boolean checkNotInOtherWorkspaces,
+        final boolean checkNotPublished) {
         final URI vocabularyUri = vocabularyContextDto.getBasedOnVersion();
         final Workspace workspace = repositoryService.findRequired(workspaceUri);
         URI vocabularyContextUri =
             repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
         if (vocabularyContextUri != null) {
+            if (checkNotInGivenWorkspace) {
+                throw new ValidationException(String.format(
+                    "Unable to add %s to workspace %s."
+                        + "It is already present in the workspace within context %s.",
+                    vocabularyUri,
+                    workspace.getUri(),
+                    vocabularyContextUri));
+            }
             return vocabularyContextUri;
         }
 
@@ -117,9 +135,18 @@ public class WorkspaceService {
             if (vocabularyContextDto.getLabel() == null) {
                 throw NotFoundException.create("Vocabulary", vocabularyUri);
             }
-            vocabularyService.verifyVocabularyNotInAnyWorkspace(vocabularyUri);
+            if (checkNotInOtherWorkspaces) {
+                vocabularyService.verifyVocabularyNotInAnyWorkspace(vocabularyUri);
+            }
             return createVocabularyContext(workspace, vocabularyContextDto);
         } else {
+            if (checkNotPublished) {
+                throw new ValidationException(String.format(
+                    "Unable to add %s to workspace %s."
+                        + "The vocabulary is already published.",
+                    vocabularyUri,
+                    workspace.getUri()));
+            }
             return loadVocabularyContextFromCache(workspace, vocabularyUri);
         }
     }

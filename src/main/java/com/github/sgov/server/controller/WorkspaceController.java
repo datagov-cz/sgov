@@ -203,7 +203,10 @@ public class WorkspaceController extends BaseController {
      * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
-     * @param vocabularyUri     Uri of a vocabulary for which context should be created.
+     * @param vocabularyUri     Uri of the vocabulary for which context should be created.
+     * @param label             Label of the vocabulary, if specified,
+     *                          the new vocabulary is created.
+     * @param ensureNotEdited   Ensure that vocabulary is not edited in other context.
      */
     @Deprecated
     @PostMapping(value = "/{workspaceFragment}/vocabularies")
@@ -214,17 +217,23 @@ public class WorkspaceController extends BaseController {
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
         @RequestParam(name = "vocabularyUri", required = false) URI vocabularyUri,
-        @RequestParam(name = "label", required = false) String label
+        @RequestParam(name = "label", required = false) String label,
+        @RequestParam(name = "ensureNotEdited", required = false,
+            defaultValue = "false") boolean ensureNotEdited
     ) {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final boolean ensureNotPublished = label != null;
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,
                 new VocabularyContextDto()
                     .setBasedOnVersion(vocabularyUri)
-                    .setLabel(label)
+                    .setLabel(label),
+                true,
+                ensureNotEdited,
+                ensureNotPublished
             );
         log.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
         return ResponseEntity.created(
@@ -244,6 +253,7 @@ public class WorkspaceController extends BaseController {
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @param vocabularyContext vocabularyContext to create/load
+     * @param ensureNotEdited   Ensure that vocabulary is not edited in other context.
      */
     @PostMapping(value = "/{workspaceFragment}/vocabularies-full")
     @ApiOperation(value =
@@ -252,15 +262,21 @@ public class WorkspaceController extends BaseController {
     public ResponseEntity<String> addVocabularyToWorkspace(
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
+        @RequestParam(name = "ensureNotEdited", required = false,
+            defaultValue = "false") boolean ensureNotEdited,
         @RequestBody VocabularyContextDto vocabularyContext
     ) {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final boolean ensureNotPublished = vocabularyContext.getLabel() != null;
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,
-                vocabularyContext
+                vocabularyContext,
+                true,
+                ensureNotEdited,
+                ensureNotPublished
             );
         log.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
         return ResponseEntity.created(
