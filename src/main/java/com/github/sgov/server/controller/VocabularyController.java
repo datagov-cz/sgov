@@ -1,6 +1,7 @@
 package com.github.sgov.server.controller;
 
 import com.github.sgov.server.controller.dto.VocabularyDto;
+import com.github.sgov.server.controller.dto.VocabularyStatusDto;
 import com.github.sgov.server.service.repository.VocabularyRepositoryService;
 import com.github.sgov.server.util.Constants;
 import cz.cvut.kbss.jsonld.JsonLd;
@@ -46,6 +47,29 @@ public class VocabularyController extends BaseController {
         final String lang;
         lang = headers.getOrDefault("Accept-Language", "cs");
         return vocabularyService.getVocabulariesAsContextDtos(lang);
+    }
+
+    /**
+     * Retrieve vocabulary status, i.e. information whether this vocabulary was
+     * published or edited in a workspace.
+     *
+     * @param vocabularyFragment local name of vocabulary id.
+     * @param namespace          Namespace used for resource identifier resolution. Optional, if not
+     *                           specified, the configured namespace is used.
+     * @return Workspace specified by workspaceFragment and optionally namespace.
+     */
+    @GetMapping(value = "/vocabulary-status/{vocabularyFragment}",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            JsonLd.MEDIA_TYPE})
+    @ApiOperation(value = "Get vocabulary status.")
+    public VocabularyStatusDto getVocabularyStatus(
+        @PathVariable String vocabularyFragment,
+        @RequestParam(name = Constants.QueryParams.NAMESPACE) String namespace) {
+
+        final URI identifier = resolveIdentifier(
+            namespace, vocabularyFragment, null);
+        return vocabularyService.getVocabularyStatus(identifier);
     }
 
     /**

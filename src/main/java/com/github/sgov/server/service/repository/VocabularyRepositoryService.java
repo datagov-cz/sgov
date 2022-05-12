@@ -5,12 +5,12 @@ import static com.github.sgov.server.util.Constants.SERIALIZATION_LANGUAGE;
 import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.controller.dto.VocabularyDto;
+import com.github.sgov.server.controller.dto.VocabularyStatusDto;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
 import com.github.sgov.server.model.TrackableContext;
 import com.github.sgov.server.model.VocabularyContext;
-import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyCreationHelper;
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service to managed workspaces.
+ * Service to managed vocabularies.
  */
 @Service
 public class VocabularyRepositoryService extends BaseRepositoryService<VocabularyContext> {
@@ -147,6 +147,75 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     }
 
     /**
+     * Verifies that given vocabulary is not part of any workspace.
+     *
+     * @param vocabularyUri Uri of the vocabulary.
+     */
+    public void verifyVocabularyNotInAnyWorkspace(URI vocabularyUri) {
+        this.findAll().stream().filter(
+            vc -> vc.getBasedOnVersion().equals(vocabularyUri)
+        ).findAny().ifPresent(
+            vc -> {
+                throw new SGoVException(String.format(
+                    "Vocabulary %s already exists in a workspace within context %s.",
+                    vocabularyUri,
+                    vc.getUri()));
+            }
+        );
+    }
+
+    /**
+     * Retrieve vocabulary status, i.e. information whether this vocabulary was
+     * published or edited in a workspace.
+     *
+     * @param vocabularyUri Uri of the vocabulary.
+     * @return vocabulary status
+     */
+    public VocabularyStatusDto getVocabularyStatus(URI vocabularyUri) {
+        return new VocabularyStatusDto(
+            isVocabularyPublished(vocabularyUri),
+            existsInAWorkspace(vocabularyUri)
+        );
+
+    }
+
+    /**
+     * Verifies that given vocabulary is not published.
+     * @param vocabularyUri Uri of the vocabulary.
+     */
+    public void verifyVocabularyNotPublished(URI vocabularyUri) {
+        if (isVocabularyPublished(vocabularyUri)) {
+            throw new SGoVException(String.format(
+                "Vocabulary %s already exists in a workspace.",
+                vocabularyUri));
+        }
+    }
+
+    /**
+     * Tests is given vocabulary exists in a workspace.
+     *
+     * @param vocabularyUri Uri of the vocabulary.
+     * @return True if the vocabulary exists in a workspace.
+     */
+    private boolean existsInAWorkspace(URI vocabularyUri) {
+        return this.findAll().stream().anyMatch(
+            vc -> vc.getBasedOnVersion().equals(vocabularyUri)
+        );
+    }
+
+    /**
+     * Tests is given vocabulary is published.
+     *
+     * @param vocabularyUri Uri of the vocabulary.
+     * @return True if the vocabulary is published.
+     */
+    private boolean isVocabularyPublished(URI vocabularyUri) {
+        return getVocabulariesAsContextDtos(null).stream().anyMatch(
+            v -> v.getBasedOnVersion().equals(vocabularyUri)
+        );
+    }
+
+    /**
      * Reloads the given vocabulary context from the source endpoint.
      *
      * @param uri the context to be populated.
@@ -240,7 +309,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
                 + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} FILTER(?g IN (<"
                 + version
                 + ">" + ((context instanceof VocabularyContext)
-                    ? ",:glosář,:model,:mapování,:přílohy" : "")
+                ? ",:glosář,:model,:mapování,:přílohy" : "")
                 + "))}");
         return query.evaluate();
     }

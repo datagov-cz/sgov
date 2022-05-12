@@ -1,8 +1,6 @@
 package com.github.sgov.server.controller;
 
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
-import com.github.sgov.server.exception.VocabularyRegisteredinReadWriteException;
-import com.github.sgov.server.model.Asset;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.WorkspacePublicationService;
@@ -15,10 +13,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -207,28 +203,37 @@ public class WorkspaceController extends BaseController {
      * @param workspaceFragment local name of workspace id.
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
-     * @param vocabularyUri     Uri of a vocabulary for which context should be created.
+     * @param vocabularyUri     Uri of the vocabulary for which context should be created.
+     * @param label             Label of the vocabulary, if specified,
+     *                          the new vocabulary is created.
+     * @param ensureNotEdited   Ensure that vocabulary is not edited in other context.
      */
     @Deprecated
     @PostMapping(value = "/{workspaceFragment}/vocabularies")
     @ApiOperation(value =
-        "Create vocabulary context within workspace. If label is provided, a new vocabulary is "
-            + "created if not found.")
+        "Create vocabulary context within workspace. A new vocabulary is created "
+            + "if not found and in this case label is required.")
     public ResponseEntity<String> addVocabularyToWorkspace(
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
         @RequestParam(name = "vocabularyUri", required = false) URI vocabularyUri,
-        @RequestParam(name = "label", required = false) String label
+        @RequestParam(name = "label", required = false) String label,
+        @RequestParam(name = "ensureNotEdited", required = false,
+            defaultValue = "false") boolean ensureNotEdited
     ) {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final boolean ensureNotPublished = label != null;
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,
                 new VocabularyContextDto()
                     .setBasedOnVersion(vocabularyUri)
-                    .setLabel(label)
+                    .setLabel(label),
+                true,
+                ensureNotEdited,
+                ensureNotPublished
             );
         log.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
         return ResponseEntity.created(
@@ -248,23 +253,30 @@ public class WorkspaceController extends BaseController {
      * @param namespace         Namespace used for resource identifier resolution. Optional, if not
      *                          specified, the configured namespace is used.
      * @param vocabularyContext vocabularyContext to create/load
+     * @param ensureNotEdited   Ensure that vocabulary is not edited in other context.
      */
     @PostMapping(value = "/{workspaceFragment}/vocabularies-full")
     @ApiOperation(value =
-        "Create vocabulary context within workspace. If label is provided, a new vocabulary is "
-            + "created if not found.")
+        "Create vocabulary context within workspace. A new vocabulary is created "
+            + "if not found and in this case label is required.")
     public ResponseEntity<String> addVocabularyToWorkspace(
         @PathVariable String workspaceFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace,
+        @RequestParam(name = "ensureNotEdited", required = false,
+            defaultValue = "false") boolean ensureNotEdited,
         @RequestBody VocabularyContextDto vocabularyContext
     ) {
         final URI workspaceUri = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
+        final boolean ensureNotPublished = vocabularyContext.getLabel() != null;
 
         final URI vocabularyContextUri =
             workspaceService.ensureVocabularyExistsInWorkspace(
                 workspaceUri,
-                vocabularyContext
+                vocabularyContext,
+                true,
+                ensureNotEdited,
+                ensureNotPublished
             );
         log.debug("Vocabulary context {} added to workspace.", vocabularyContextUri);
         return ResponseEntity.created(
