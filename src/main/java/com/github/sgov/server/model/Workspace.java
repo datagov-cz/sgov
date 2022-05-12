@@ -92,13 +92,15 @@ public class Workspace extends Asset implements Context {
             .filter(vc -> Objects.equals(vc.getBasedOnVersion(), context.getBasedOnVersion()))
             .findFirst();
 
-        if (duplicateContext.isPresent()) {
-            throw new ValidationException(String.format(
-                "Unable to add %s to workspace %s. "
-                    + "It is already present in the workspace within context %s.",
-                duplicateContext.get().getBasedOnVersion(),
-                this.getUri(),
-                duplicateContext.get().getUri()));
+        if (!(context instanceof AttachmentContext)) {
+            if (duplicateContext.isPresent()) {
+                throw new ValidationException(String.format(
+                    "Unable to add %s to workspace %s. "
+                        + "It is already present in the workspace within context %s.",
+                    duplicateContext.get().getBasedOnVersion(),
+                    this.getUri(),
+                    duplicateContext.get().getUri()));
+            }
         }
 
         collection.add(context);
