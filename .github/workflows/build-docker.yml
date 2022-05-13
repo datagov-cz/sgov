@@ -22,6 +22,9 @@ jobs:
       - name: Build JAR
         run: gradle clean bootJar
         
+      - name: Build image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+        
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -29,11 +32,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v2.9.0
-        with:
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
+      - name: Push image
+        run: |
+          IMAGE_TAG=${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
+          echo IMAGE_TAG=$IMAGE_TAG
+          docker tag $IMAGE_NAME $IMAGE_TAG
+          docker push $IMAGE_TAG
 
   
   update-dev-instance:
