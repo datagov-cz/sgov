@@ -36,7 +36,7 @@ public final class Vocabulary {
     public static final String s_p_meni_verzi = WORKSPACE_NAMESPACE + "mění-verzi";
     public static final String s_p_ma_kontext_sledovani_zmen = WORKSPACE_NAMESPACE
         + "má-kontext-sledování-změn";
-    public static final String s_p_ma_prilohu = WORKSPACE_NAMESPACE
+    public static final String s_p_ma_prilohu = DATA_DESCRIPTION_NAMESPACE
         + "má-přílohu";
 
     public static final String s_c_uzivatel = DATA_DESCRIPTION_NAMESPACE
