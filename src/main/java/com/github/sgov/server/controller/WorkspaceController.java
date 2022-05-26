@@ -337,8 +337,8 @@ public class WorkspaceController extends BaseController {
         )
         @PathVariable String workspaceFragment,
         @ApiParam(
-            value = "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/metadatový-kontext/",
-            example = "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/metadatový-kontext/"
+            value = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/",
+            example = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/"
         )
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace
     ) {
@@ -364,8 +364,8 @@ public class WorkspaceController extends BaseController {
         )
         @PathVariable String workspaceFragment,
         @ApiParam(
-            value = "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/metadatový-kontext/",
-            example = "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/metadatový-kontext/"
+            value = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/",
+            example = "https://slovník.gov.cz/datový/pracovní-prostor/pojem/metadatový-kontext/"
         )
         @RequestParam(name = QueryParams.NAMESPACE, required = false) String namespace
     ) {

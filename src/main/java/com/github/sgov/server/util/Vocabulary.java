@@ -13,37 +13,39 @@ public final class Vocabulary {
     public static final String VANN_NAMESPACE = "http://purl.org/vocab/vann/";
 
     public static final String SLOVNIK_GOV_CZ = "https://slovník.gov.cz";
+    public static final String WORKSPACE_NAMESPACE =
+        "https://slovník.gov.cz/datový/pracovní-prostor/pojem/";
     public static final String DATA_DESCRIPTION_NAMESPACE =
         "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/";
 
-    public static final String s_c_metadatovy_kontext = DATA_DESCRIPTION_NAMESPACE + "metadatový-kontext";
-    public static final String s_c_prilohovy_kontext = DATA_DESCRIPTION_NAMESPACE + "přílohový-kontext";
-    public static final String s_c_slovnikovy_kontext = DATA_DESCRIPTION_NAMESPACE + "slovníkový-kontext";
+    public static final String s_c_metadatovy_kontext = WORKSPACE_NAMESPACE + "metadatový-kontext";
+    public static final String s_c_prilohovy_kontext = WORKSPACE_NAMESPACE + "přílohový-kontext";
+    public static final String s_c_slovnikovy_kontext = WORKSPACE_NAMESPACE + "slovníkový-kontext";
     public static final String s_c_slovnikovy_kontext_pouze_pro_cteni =
-        DATA_DESCRIPTION_NAMESPACE + "slovníkový-kontext-pouze-pro-čtení";
-    public static final String s_c_kontext_sledovani_zmen = DATA_DESCRIPTION_NAMESPACE
+        WORKSPACE_NAMESPACE + "slovníkový-kontext-pouze-pro-čtení";
+    public static final String s_c_kontext_sledovani_zmen = WORKSPACE_NAMESPACE
         + "kontext-sledování-změn";
 
-    public static final String s_p_odkazuje_na_kontext = DATA_DESCRIPTION_NAMESPACE
+    public static final String s_p_odkazuje_na_kontext = WORKSPACE_NAMESPACE
         + "odkazuje-na-kontext";
-    public static final String s_p_odkazuje_na_prilohovy_kontext = DATA_DESCRIPTION_NAMESPACE
+    public static final String s_p_odkazuje_na_prilohovy_kontext = WORKSPACE_NAMESPACE
         + "odkazuje-na-přílohový-kontext";
-    public static final String s_p_vychazi_z_verze = DATA_DESCRIPTION_NAMESPACE + "vychází-z-verze";
+    public static final String s_p_vychazi_z_verze = WORKSPACE_NAMESPACE + "vychází-z-verze";
     public static final String s_p_ma_pracovni_metadatovy_kontext =
-        DATA_DESCRIPTION_NAMESPACE + "má-pracovní-metadatový-kontext";
-    public static final String s_p_meni_verzi = DATA_DESCRIPTION_NAMESPACE + "mění-verzi";
-    public static final String s_p_ma_kontext_sledovani_zmen = DATA_DESCRIPTION_NAMESPACE
+        WORKSPACE_NAMESPACE + "má-pracovní-metadatový-kontext";
+    public static final String s_p_meni_verzi = WORKSPACE_NAMESPACE + "mění-verzi";
+    public static final String s_p_ma_kontext_sledovani_zmen = WORKSPACE_NAMESPACE
         + "má-kontext-sledování-změn";
-    public static final String s_p_ma_prilohu = DATA_DESCRIPTION_NAMESPACE
+    public static final String s_p_ma_prilohu = WORKSPACE_NAMESPACE
         + "má-přílohu";
 
     public static final String s_c_uzivatel = DATA_DESCRIPTION_NAMESPACE
         + "uživatel";
-    public static final String s_c_administrator = DATA_DESCRIPTION_NAMESPACE
+    public static final String s_c_administrator = WORKSPACE_NAMESPACE
         + "administrátor";
-    public static final String s_c_uzamceny_uzivatel = DATA_DESCRIPTION_NAMESPACE
+    public static final String s_c_uzamceny_uzivatel = WORKSPACE_NAMESPACE
         + "uzamčený-uživatel";
-    public static final String s_c_zablokovany_uzivatel = DATA_DESCRIPTION_NAMESPACE
+    public static final String s_c_zablokovany_uzivatel = WORKSPACE_NAMESPACE
         + "zablokovaný-uživatel";
     public static final String s_p_pouziva_pojmy_ze_slovniku = TERMIT_NAMESPACE
         + "pojem/používá-pojmy-ze-slovníku";
