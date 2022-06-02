@@ -115,24 +115,6 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         }
     }
 
-    private ValidationReport validateVocabulary(final String v,
-                                                final String endpoint,
-                                                final Validator validator,
-                                                final Set<URL> rules)
-        throws IOException {
-        final String bindings = "<" + v + ">";
-        final ParameterizedSparqlString query = new ParameterizedSparqlString(
-            "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
-        log.debug("- getting all statements for the vocabularies using query {}", query);
-        final QueryExecution e = QueryExecutionFactory
-            .sparqlService(endpoint, query.asQuery());
-        final Model dataModel =
-            ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF);
-        e.execConstruct(dataModel);
-        log.debug("- done, now validating");
-        return validator.validate(dataModel, rules);
-    }
-
     /**
      * Validates workspace.
      *
@@ -141,9 +123,21 @@ public class WorkspaceDao extends BaseDao<Workspace> {
      */
     public ValidationReport validateWorkspace(final Workspace workspace) throws IOException {
         log.info("Validating workspace {}", workspace.getUri());
-        final Set<URL> rules = new HashSet<>();
+        ValidationReport validationReport = validateVocabularies(workspace.getVocabularyContexts());
+        log.info("- done.");
+        return validationReport;
+    }
+
+    /**
+     * Validates set of vocabulary contexts.
+     *
+     * @param vocabularyContexts set of vocabulary contexts to be validated
+     * @return ValidationReport
+     */
+    public ValidationReport validateVocabularies(
+        Set<VocabularyContext> vocabularyContexts) throws IOException {
         final Validator validator = new Validator();
-        boolean conforms = true;
+        final Set<URL> rules = new HashSet<>();
         rules.addAll(validator.getGlossaryRules());
         rules.addAll(validator.getModelRules().stream()
             .filter(r -> !r.getPath().contains("m2.ttl"))
@@ -155,13 +149,16 @@ public class WorkspaceDao extends BaseDao<Workspace> {
             .collect(Collectors.toSet())
         );
         rules.addAll(validator.getVocabularyRules());
+
+        boolean conforms = true;
+
         OntDocumentManager.getInstance().setProcessImports(false);
 
         final String endpoint = properties.getUrl();
 
+
         final List<ValidationResult> validationResults = new ArrayList<>();
-        for (VocabularyContext c : workspace
-            .getVocabularyContexts()) {
+        for (VocabularyContext c : vocabularyContexts) {
             final ValidationReport report = validateVocabulary(c.getUri().toString(),
                 endpoint, validator, rules);
             conforms = conforms && report.conforms();
@@ -169,7 +166,7 @@ public class WorkspaceDao extends BaseDao<Workspace> {
         }
         validationResults.sort(new ValidationResultSeverityComparator());
         boolean finalConforms = conforms;
-        log.info("- done.");
+
         return new ValidationReport() {
             @Override
             public boolean conforms() {
@@ -275,5 +272,24 @@ public class WorkspaceDao extends BaseDao<Workspace> {
 
     public void flush() {
         em.getEntityManagerFactory().getCache().evictAll();
+    }
+
+
+    private ValidationReport validateVocabulary(final String v,
+                                                final String endpoint,
+                                                final Validator validator,
+                                                final Set<URL> rules)
+        throws IOException {
+        final String bindings = "<" + v + ">";
+        final ParameterizedSparqlString query = new ParameterizedSparqlString(
+            "CONSTRUCT {?s ?p ?o} WHERE  {GRAPH ?g {?s ?p ?o}} VALUES ?g {" + bindings + "}");
+        log.debug("- getting all statements for the vocabularies using query {}", query);
+        final QueryExecution e = QueryExecutionFactory
+            .sparqlService(endpoint, query.asQuery());
+        final Model dataModel =
+            ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM_RDFS_INF);
+        e.execConstruct(dataModel);
+        log.debug("- done, now validating");
+        return validator.validate(dataModel, rules);
     }
 }
