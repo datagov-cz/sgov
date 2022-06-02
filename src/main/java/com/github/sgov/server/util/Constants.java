@@ -47,6 +47,13 @@ public class Constants {
          */
         public static final String VOCABULARY_IRI = "vocabularyIri";
 
+        /**
+         * HTTP request query parameter denoting vocabulary context IRI
+         *
+         * <p>URI of the vocabulary context.
+         */
+        public static final String VOCABULARY_CONTEXT_IRI = "vocabularyContextIri";
+
         private QueryParams() {
             throw new AssertionError();
         }

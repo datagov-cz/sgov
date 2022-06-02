@@ -89,7 +89,7 @@ class WorkspaceControllerTest extends BaseControllerTestRunner {
 
     @Test
     void validateWithIriSucceeds() throws Exception {
-        BDDMockito.given(workspaceService.validate(any()))
+        BDDMockito.given(workspaceService.validate((URI) any()))
             .willReturn(report);
 
         mockMvc.perform(get("/workspaces/test/validate")
