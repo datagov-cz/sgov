@@ -104,7 +104,7 @@ public class WorkspacePublicationService {
         repositoryService.flush();
         workspace.getAttachmentContexts().forEach(ac -> {
             if (ac.getBasedOnVersion() == null) {
-                ac.setBasedOnVersion(URI.create(Vocabulary.s_c_priloha + "/" + UUID.randomUUID()));
+                ac.setBasedOnVersion(URI.create(Vocabulary.s_c_priloha + "/instance-" + UUID.randomUUID()));
             }
         });
         final Set<URI> attachments = workspace.getAttachmentContexts().stream()
