@@ -58,6 +58,19 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         }
     }
 
+    /**
+     * Validates set of vocabulary contexts.
+     *
+     * @param vocabularyContexts set of vocabulary contexts
+     * @return report of validation
+     */
+    public ValidationReport validateVocabularies(Set<VocabularyContext> vocabularyContexts) {
+        try {
+            return workspaceDao.validateVocabularies(vocabularyContexts);
+        } catch (IOException e) {
+            throw new SGoVException(e);
+        }
+    }
 
     /**
      * Finds workspace with the specified id and returns it with all its inferred properties.

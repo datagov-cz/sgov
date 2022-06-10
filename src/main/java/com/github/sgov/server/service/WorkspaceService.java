@@ -15,6 +15,7 @@ import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,19 @@ public class WorkspaceService {
     public ValidationReport validate(URI workspaceUri) {
         final Workspace workspace = getWorkspace(workspaceUri);
         return repositoryService.validateWorkspace(workspace);
+    }
+
+    /**
+     * Validates set of vocabularies identified by their context IRIs.
+     *
+     * @param vocabularyContextUris Set of vocabulary context IRIs.
+     */
+    public ValidationReport validate(Set<URI> vocabularyContextUris) {
+        return repositoryService.validateVocabularies(
+            vocabularyContextUris.stream().map(
+                vocabularyService::findRequired
+            ).collect(Collectors.toSet())
+        );
     }
 
     private Workspace getWorkspace(URI workspaceUri) {
