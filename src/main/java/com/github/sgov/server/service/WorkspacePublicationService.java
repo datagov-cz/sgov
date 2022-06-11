@@ -104,7 +104,8 @@ public class WorkspacePublicationService {
         repositoryService.flush();
         workspace.getAttachmentContexts().forEach(ac -> {
             if (ac.getBasedOnVersion() == null) {
-                String uuid = ac.getUri().getPath().substring(ac.getUri().getPath().lastIndexOf("/") + 1);
+                String uriPath = ac.getUri().getPath();
+                String uuid = uriPath.substring(uriPath.lastIndexOf("/") + 1);
                 ac.setBasedOnVersion(URI.create(Vocabulary.s_c_priloha + "/" + uuid));
             }
         });
