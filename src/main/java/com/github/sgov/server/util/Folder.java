@@ -12,7 +12,7 @@ public abstract class Folder {
 
     private String getId() {
         final String p = folder.getAbsolutePath();
-        return p.substring(p.lastIndexOf("/") + 1);
+        return p.substring(p.lastIndexOf(File.separator) + 1);
     }
 
     protected File getFile(String type, String suffix) {
