@@ -302,9 +302,7 @@ public class WorkspaceController extends BaseController {
             String namespace) {
         final URI workspaceId = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        final URI vocabularyId = resolveIdentifier(
-            namespace, vocabularyFragment, Vocabulary.s_c_slovnikovy_kontext);
-        VocabularyContext toRemove = workspaceService.removeVocabulary(workspaceId, vocabularyId);
+        VocabularyContext toRemove = workspaceService.removeVocabulary(workspaceId, vocabularyFragment);
         log.debug("Vocabulary context {} deleted from workspace {}.", toRemove, workspaceId);
     }
 

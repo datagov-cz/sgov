@@ -219,20 +219,20 @@ public class WorkspaceService {
      * Removes vocabulary context from given workspace.
      *
      * @param workspaceId         Uri of a workspace.
-     * @param vocabularyContextId Uri of a vocabulary context.
+     * @param vocabularyFragment  String of a vocabulary context UUID.
      */
-    public VocabularyContext removeVocabulary(URI workspaceId, URI vocabularyContextId) {
+    public VocabularyContext removeVocabulary(URI workspaceId, String vocabularyFragment) {
         Workspace workspace = repositoryService.findRequired(workspaceId);
         VocabularyContext vocabularyContext = workspace.getVocabularyContexts().stream()
-            .filter(vc -> vc.getUri().equals(vocabularyContextId))
+            .filter(vc -> vc.getUri().toString().endsWith(vocabularyFragment))
             .findFirst().orElseThrow(
                 () -> NotFoundException.create(
-                    VocabularyContext.class.getSimpleName(), vocabularyContextId
+                    VocabularyContext.class.getSimpleName(), vocabularyFragment
                 )
             );
         ChangeTrackingContext changeTrackingContext = vocabularyContext.getChangeTrackingContext();
         repositoryService.clearVocabularyContext(changeTrackingContext.getUri());
-        repositoryService.clearVocabularyContext(vocabularyContextId);
+        repositoryService.clearVocabularyContext(vocabularyContext.getUri());
 
         vocabularyService.remove(vocabularyContext);
 
