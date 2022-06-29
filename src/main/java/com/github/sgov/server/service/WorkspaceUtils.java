@@ -77,6 +77,8 @@ public class WorkspaceUtils {
     public static AttachmentContext attachmentStub(final URI uri) {
         final AttachmentContext context = new AttachmentContext();
         context.setBasedOnVersion(uri);
+        URI contextUri = URI.create(uri.toString() + "/verze/" + UUID.randomUUID());
+        context.setUri(contextUri);
         return context;
     }
 }
