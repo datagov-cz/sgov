@@ -8,6 +8,7 @@ import com.github.sgov.server.model.Workspace;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +60,8 @@ public class WorkspaceUtils {
     public static VocabularyContext stub(final URI uri) {
         final VocabularyContext context = new VocabularyContext();
         context.setBasedOnVersion(uri);
+        URI contextUri = URI.create(uri.toString() + "/verze/" + UUID.randomUUID());
+        context.setUri(contextUri);
         final ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
         changeTrackingContext.setChangesVocabularyVersion(uri);
         context.setChangeTrackingContext(changeTrackingContext);
