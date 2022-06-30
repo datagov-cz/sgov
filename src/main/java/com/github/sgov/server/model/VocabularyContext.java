@@ -30,4 +30,31 @@ public class VocabularyContext extends TrackableContext {
         cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)
     private Set<URI> attachments = new HashSet<>();
+
+    @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_prilohovy_kontext,
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+        fetch = FetchType.EAGER)
+    private Set<AttachmentContext> attachmentContexts;
+
+    /**
+     * Returns all vocabulary contexts of this vocabulary.
+     */
+    public Set<AttachmentContext> getAttachmentContexts() {
+        if (attachmentContexts == null) {
+            this.attachmentContexts = new HashSet<>();
+        }
+        return attachmentContexts;
+    }
+
+    /**
+     * Add a new attachment context to this vocabulary.
+     *
+     * @param context attachment context to add.
+     */
+    public void addAttachmentContext(AttachmentContext context) {
+        if (attachmentContexts == null) {
+            this.attachmentContexts = new HashSet<>();
+        }
+        attachmentContexts.add(context);
+    }
 }

@@ -191,8 +191,8 @@ public class WorkspaceService {
         vocabularyContext.getAttachments().forEach(attachmentUri -> {
             log.info("Adding attachment {}", attachmentUri);
             final AttachmentContext attachmentContext = attachmentStub(attachmentUri);
-            workspace.addAttachmentContext(attachmentContext);
-            repositoryService.update(workspace);
+            vocabularyContext.addAttachmentContext(attachmentContext);
+            vocabularyService.update(vocabularyContext);
             vocabularyService.loadContext(attachmentContext);
         });
         return vocabularyContextUri;

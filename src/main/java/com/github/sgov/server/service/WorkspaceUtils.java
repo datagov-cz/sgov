@@ -26,10 +26,10 @@ public class WorkspaceUtils {
         String prBody = MessageFormat.format("Changed vocabularies: \n - {0}",
             render(workspace.getVocabularyContexts()));
 
-        if (!workspace.getAttachmentContexts().isEmpty()) {
+        if (!workspace.getAllAttachmentContexts().isEmpty()) {
             prBody += "\n\n";
             prBody += MessageFormat.format("Changed attachments: \n - {0}",
-                render(workspace.getAttachmentContexts()));
+                render(workspace.getAllAttachmentContexts()));
         }
         return prBody;
     }
