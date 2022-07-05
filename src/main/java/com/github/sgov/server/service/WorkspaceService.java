@@ -170,12 +170,11 @@ public class WorkspaceService {
         URI vocabularyUri = vocabularyContextDto.getBasedOnVersion();
         URI vocabularyContextUri;
         VocabularyContext vocabularyContext = stub(vocabularyUri);
+        vocabularyService.createContext(vocabularyContext, vocabularyContextDto);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
         repositoryService.update(workspace);
         vocabularyContextUri =
             repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
-        vocabularyContext = vocabularyService.findRequired(vocabularyContextUri);
-        vocabularyService.createContext(vocabularyContext, vocabularyContextDto);
         return vocabularyContextUri;
     }
 

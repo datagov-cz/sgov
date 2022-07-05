@@ -34,7 +34,6 @@ public class Workspace extends Asset implements Context {
     private String label;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_kontext,
-        cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)
     private Set<VocabularyContext> vocabularyContexts;
 
