@@ -84,7 +84,7 @@ public final class DescriptorFactory {
         Objects.requireNonNull(workspaceUri);
         EntityDescriptor descriptor = assetDescriptor(workspaceUri);
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "vocabularyContexts"),
-            vocabularyDescriptor(workspaceUri));
+            new EntityDescriptor((URI) null));
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "author"),
             new EntityDescriptor((URI) null));
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "lastEditor"),

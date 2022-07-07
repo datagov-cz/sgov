@@ -73,6 +73,7 @@ public final class Vocabulary {
     public static final String s_c_model = DATA_DESCRIPTION_NAMESPACE + "model";
     public static final String s_c_priloha = SLOVNIK_GOV_CZ + "/příloha";
 
+    public static final String version_separator = "/verze/";
     private Vocabulary() {
     }
 }

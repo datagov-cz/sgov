@@ -5,6 +5,7 @@ import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.TrackableContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import com.github.sgov.server.util.Vocabulary;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -60,7 +61,8 @@ public class WorkspaceUtils {
     public static VocabularyContext stub(final URI uri) {
         final VocabularyContext context = new VocabularyContext();
         context.setBasedOnVersion(uri);
-        URI contextUri = URI.create(uri.toString() + "/verze/" + UUID.randomUUID());
+        URI contextUri =
+            URI.create(uri.toString() + Vocabulary.version_separator + UUID.randomUUID());
         context.setUri(contextUri);
         final ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
         changeTrackingContext.setChangesVocabularyVersion(uri);
@@ -77,7 +79,8 @@ public class WorkspaceUtils {
     public static AttachmentContext attachmentStub(final URI uri) {
         final AttachmentContext context = new AttachmentContext();
         context.setBasedOnVersion(uri);
-        URI contextUri = URI.create(uri.toString() + "/verze/" + UUID.randomUUID());
+        URI contextUri =
+            URI.create(uri.toString() + Vocabulary.version_separator + UUID.randomUUID());
         context.setUri(contextUri);
         return context;
     }
