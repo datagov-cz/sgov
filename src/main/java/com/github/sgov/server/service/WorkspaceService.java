@@ -171,7 +171,6 @@ public class WorkspaceService {
         URI vocabularyContextUri;
         VocabularyContext vocabularyContext = stub(vocabularyUri);
         vocabularyService.createContext(vocabularyContext, vocabularyContextDto);
-        vocabularyService.persist(vocabularyContext);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
         repositoryService.update(workspace);
         vocabularyContextUri =

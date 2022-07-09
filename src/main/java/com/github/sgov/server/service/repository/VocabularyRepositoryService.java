@@ -244,6 +244,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     @Transactional
     public void createContext(final VocabularyContext vocabularyContext,
                               final VocabularyContextDto vocabularyContextDto) {
+        vocabularyDao.persist(vocabularyContext);
         final Set<Statement> statements = new HashSet<>();
         final HTTPRepository workspaceRepository = new HTTPRepository(
             repositoryConf.getUrl());
