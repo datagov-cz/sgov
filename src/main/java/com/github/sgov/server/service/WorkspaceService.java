@@ -182,10 +182,11 @@ public class WorkspaceService {
         log.info("Loading vocabulary context {} from cache in workspace {}",
             vocabularyUri, workspace.getUri());
         final VocabularyContext vocabularyContext = stub(vocabularyUri);
+        vocabularyService.persist(vocabularyContext);
+        vocabularyService.loadContext(vocabularyContext);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
         repositoryService.update(workspace);
         final URI vocabularyContextUri = vocabularyContext.getUri();
-        vocabularyService.loadContext(vocabularyContext);
         log.info("Found attachments {}", vocabularyContext.getAttachments());
         vocabularyContext.getAttachments().forEach(attachmentUri -> {
             log.info("Adding attachment {}", attachmentUri);
