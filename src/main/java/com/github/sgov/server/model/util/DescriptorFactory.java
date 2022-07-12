@@ -1,5 +1,6 @@
 package com.github.sgov.server.model.util;
 
+import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.persistence.PersistenceUtils;
@@ -110,5 +111,33 @@ public final class DescriptorFactory {
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "lastEditor"),
                 new EntityDescriptor((URI) null));
         return descriptor;
+    }
+
+    /**
+     * Creates a JOPA descriptor for a specific attachment context.
+     *
+     * <p>The descriptor specifies that the instance context will correspond to the given model.
+     * It also initializes other required attribute descriptors.
+     *
+     * @param attachmentContext Attachment context for which the descriptor should be created
+     * @return Attachment context descriptor
+     */
+    public Descriptor attachmentDescriptor(AttachmentContext attachmentContext) {
+        Objects.requireNonNull(attachmentContext);
+        return attachmentDescriptor(attachmentContext.getUri());
+    }
+
+    /**
+     * Creates a JOPA descriptor for an attachment context with the specified identifier.
+     *
+     * <p>The descriptor specifies that the instance context will correspond to the given IRI.
+     * It also initializes other required attribute descriptors.
+     *
+     * @param attachmentContextUri Attachment context identifier for which the descriptor should be created
+     * @return Attachment context descriptor
+     */
+    public Descriptor attachmentDescriptor(URI attachmentContextUri) {
+        Objects.requireNonNull(attachmentContextUri);
+        return new EntityDescriptor(attachmentContextUri);
     }
 }

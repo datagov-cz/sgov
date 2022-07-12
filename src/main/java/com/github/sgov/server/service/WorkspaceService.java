@@ -10,6 +10,7 @@ import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import com.github.sgov.server.service.repository.AttachmentRepositoryService;
 import com.github.sgov.server.service.repository.VocabularyRepositoryService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import java.net.URI;
@@ -33,14 +34,18 @@ public class WorkspaceService {
 
     private final VocabularyRepositoryService vocabularyService;
 
+    private final AttachmentRepositoryService attachmentService;
+
     /**
      * Constructor.
      */
     @Autowired
     public WorkspaceService(WorkspaceRepositoryService repositoryService,
-                            VocabularyRepositoryService vocabularyService) {
+                            VocabularyRepositoryService vocabularyService,
+                            AttachmentRepositoryService attachmentService) {
         this.repositoryService = repositoryService;
         this.vocabularyService = vocabularyService;
+        this.attachmentService = attachmentService;
     }
 
     /**
@@ -191,6 +196,8 @@ public class WorkspaceService {
         vocabularyContext.getAttachments().forEach(attachmentUri -> {
             log.info("Adding attachment {}", attachmentUri);
             final AttachmentContext attachmentContext = attachmentStub(attachmentUri);
+            attachmentService.persist(attachmentContext);
+
             vocabularyContext.addAttachmentContext(attachmentContext);
             vocabularyService.update(vocabularyContext);
             vocabularyService.loadContext(attachmentContext);

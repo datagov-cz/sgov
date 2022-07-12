@@ -1,6 +1,7 @@
 package com.github.sgov.server.dao;
 
 import com.github.sgov.server.exception.PersistenceException;
+import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.util.DescriptorFactory;
 import cz.cvut.kbss.jopa.model.EntityManager;
@@ -11,38 +12,38 @@ import org.springframework.stereotype.Repository;
 import java.util.Objects;
 
 /**
- * DAO for accessing Vocabulary contexts.
+ * DAO for accessing Attachment contexts.
  */
 @Slf4j
 @Repository
-public class VocabularyDao extends BaseDao<VocabularyContext> {
+public class AttachmentDao extends BaseDao<AttachmentContext> {
 
     private final DescriptorFactory descriptorFactory;
 
     @Autowired
-    public VocabularyDao(EntityManager em, DescriptorFactory descriptorFactory) {
-        super(VocabularyContext.class, em);
+    public AttachmentDao(EntityManager em, DescriptorFactory descriptorFactory) {
+        super(AttachmentContext.class, em);
         this.descriptorFactory = descriptorFactory;
     }
 
     @Override
-    public VocabularyContext update(VocabularyContext entity) {
+    public AttachmentContext update(AttachmentContext entity) {
         Objects.requireNonNull(entity);
         try {
             // Evict possibly cached instance loaded from default context
             em.getEntityManagerFactory()
-                    .getCache().evict(VocabularyContext.class, entity.getUri(), null);
-            return em.merge(entity, descriptorFactory.vocabularyDescriptor(entity));
+                    .getCache().evict(AttachmentContext.class, entity.getUri(), null);
+            return em.merge(entity, descriptorFactory.attachmentDescriptor(entity));
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
     }
 
     @Override
-    public void persist(VocabularyContext entity) {
+    public void persist(AttachmentContext entity) {
         Objects.requireNonNull(entity);
         try {
-            em.persist(entity, descriptorFactory.vocabularyDescriptor(entity));
+            em.persist(entity, descriptorFactory.attachmentDescriptor(entity));
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
