@@ -7,10 +7,8 @@ import com.github.sgov.server.persistence.PersistenceUtils;
 import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
 import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
 import cz.cvut.kbss.jopa.model.metamodel.FieldSpecification;
-
 import java.net.URI;
 import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,14 +52,15 @@ public final class DescriptorFactory {
      * <p>The descriptor specifies that the instance context will correspond to the given IRI.
      * It also initializes other required attribute descriptors.
      *
-     * @param vocabularyContextUri Vocabulary context identifier for which the descriptor should be created
+     * @param vocabularyContextUri Vocabulary context identifier for which the descriptor should be
+     *                             created
      * @return Vocabulary context descriptor
      */
     public Descriptor vocabularyDescriptor(URI vocabularyContextUri) {
         Objects.requireNonNull(vocabularyContextUri);
         EntityDescriptor descriptor = assetDescriptor(vocabularyContextUri);
         descriptor.addAttributeDescriptor(fieldSpec(VocabularyContext.class, "attachmentContexts"),
-                new EntityDescriptor((URI) null));
+            new EntityDescriptor((URI) null));
         return descriptor;
     }
 
@@ -105,11 +104,11 @@ public final class DescriptorFactory {
         Objects.requireNonNull(workspaceUri);
         EntityDescriptor descriptor = assetDescriptor(workspaceUri);
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "vocabularyContexts"),
-                new EntityDescriptor((URI) null));
+            new EntityDescriptor((URI) null));
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "author"),
-                new EntityDescriptor((URI) null));
+            new EntityDescriptor((URI) null));
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "lastEditor"),
-                new EntityDescriptor((URI) null));
+            new EntityDescriptor((URI) null));
         return descriptor;
     }
 
@@ -133,7 +132,8 @@ public final class DescriptorFactory {
      * <p>The descriptor specifies that the instance context will correspond to the given IRI.
      * It also initializes other required attribute descriptors.
      *
-     * @param attachmentContextUri Attachment context identifier for which the descriptor should be created
+     * @param attachmentContextUri Attachment context identifier for which the descriptor should be
+     *                             created
      * @return Attachment context descriptor
      */
     public Descriptor attachmentDescriptor(URI attachmentContextUri) {

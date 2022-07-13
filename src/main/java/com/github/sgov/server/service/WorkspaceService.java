@@ -115,13 +115,13 @@ public class WorkspaceService {
      * 3) create new vocabulary in the workspace (unless there is same vocabulary in other
      * workspace or label of the vocabulary is not provided)
      *
-     * @param workspaceUri         URI of the workspace to connect the vocabulary context to.
-     * @param vocabularyContextDto vocabulary metadata
-     * @param checkNotInGivenWorkspace If true pre-check that vocabulary is not already present
-     *                                 in the workspace
+     * @param workspaceUri              URI of the workspace to connect the vocabulary context to.
+     * @param vocabularyContextDto      vocabulary metadata
+     * @param checkNotInGivenWorkspace  If true pre-check that vocabulary is not already present
+     *                                  in the workspace
      * @param checkNotInOtherWorkspaces If true pre-check that vocabulary is not present in
      *                                  any other workspace beside the given one
-     * @param checkNotPublished If true pre-check that vocabulary is not published.
+     * @param checkNotPublished         If true pre-check that vocabulary is not published.
      * @return URI of the vocabulary context to create
      */
     public URI ensureVocabularyExistsInWorkspace(
@@ -173,14 +173,11 @@ public class WorkspaceService {
     private URI createVocabularyContext(Workspace workspace,
                                         VocabularyContextDto vocabularyContextDto) {
         URI vocabularyUri = vocabularyContextDto.getBasedOnVersion();
-        URI vocabularyContextUri;
         VocabularyContext vocabularyContext = stub(vocabularyUri);
         vocabularyService.createContext(vocabularyContext, vocabularyContextDto);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
         repositoryService.update(workspace);
-        vocabularyContextUri =
-            repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
-        return vocabularyContextUri;
+        return vocabularyContext.getUri();
     }
 
     private URI loadVocabularyContextFromCache(final Workspace workspace, final URI vocabularyUri) {
@@ -225,8 +222,8 @@ public class WorkspaceService {
     /**
      * Removes vocabulary context from given workspace.
      *
-     * @param workspaceId         Uri of a workspace.
-     * @param vocabularyFragment  String of a vocabulary context UUID.
+     * @param workspaceId        Uri of a workspace.
+     * @param vocabularyFragment String of a vocabulary context UUID.
      */
     public VocabularyContext removeVocabulary(URI workspaceId, String vocabularyFragment) {
         Workspace workspace = repositoryService.findRequired(workspaceId);

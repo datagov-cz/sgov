@@ -76,6 +76,11 @@ public class Workspace extends Asset implements Context {
         collection.add(context);
     }
 
+    /**
+     * Collects all attachment contexts of a workspace.
+     *
+     * @return Set of attachment contexts
+     */
     public Set<AttachmentContext> getAllAttachmentContexts() {
         Set<AttachmentContext> attachmentContexts = new HashSet<>();
         if (vocabularyContexts != null) {

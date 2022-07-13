@@ -2,14 +2,12 @@ package com.github.sgov.server.dao;
 
 import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.AttachmentContext;
-import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.util.DescriptorFactory;
 import cz.cvut.kbss.jopa.model.EntityManager;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.Objects;
 
 /**
  * DAO for accessing Attachment contexts.
@@ -32,7 +30,7 @@ public class AttachmentDao extends BaseDao<AttachmentContext> {
         try {
             // Evict possibly cached instance loaded from default context
             em.getEntityManagerFactory()
-                    .getCache().evict(AttachmentContext.class, entity.getUri(), null);
+                .getCache().evict(AttachmentContext.class, entity.getUri(), null);
             return em.merge(entity, descriptorFactory.attachmentDescriptor(entity));
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
