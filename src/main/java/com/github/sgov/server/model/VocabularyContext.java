@@ -32,7 +32,6 @@ public class VocabularyContext extends TrackableContext {
     private Set<URI> attachments = new HashSet<>();
 
     @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_prilohovy_kontext,
-        cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)
     private Set<AttachmentContext> attachmentContexts;
 

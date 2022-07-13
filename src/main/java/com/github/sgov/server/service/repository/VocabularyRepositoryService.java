@@ -6,6 +6,7 @@ import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.controller.dto.VocabularyStatusDto;
+import com.github.sgov.server.dao.AttachmentDao;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
@@ -51,6 +52,8 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
 
     private final WorkspaceDao workspaceDao;
 
+    private final AttachmentDao attachmentDao;
+
     /**
      * Creates a new repository service.
      */
@@ -58,11 +61,12 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     public VocabularyRepositoryService(@Qualifier("validatorFactoryBean") Validator validator,
                                        RepositoryConf repositoryConf,
                                        VocabularyDao vocabularyDao,
-                                       WorkspaceDao workspaceDao) {
+                                       WorkspaceDao workspaceDao, AttachmentDao attachmentDao) {
         super(validator);
         this.repositoryConf = repositoryConf;
         this.vocabularyDao = vocabularyDao;
         this.workspaceDao = workspaceDao;
+        this.attachmentDao = attachmentDao;
     }
 
     /**
@@ -328,5 +332,11 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     @Override
     protected VocabularyDao getPrimaryDao() {
         return vocabularyDao;
+    }
+
+    @Override
+    public void remove(VocabularyContext instance) {
+        instance.getAttachmentContexts().forEach(attachmentDao::remove);
+        super.remove(instance);
     }
 }
