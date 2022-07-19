@@ -64,9 +64,14 @@ public class WorkspaceUtils {
         URI contextUri =
             URI.create(uri.toString() + Vocabulary.version_separator + UUID.randomUUID());
         context.setUri(contextUri);
+
+        URI changeTrackingContextUri =
+            URI.create(contextUri.toString() + Vocabulary.postfix_kontextu_sledovani_zmen);
         final ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
+        changeTrackingContext.setUri(changeTrackingContextUri);
         changeTrackingContext.setChangesVocabularyVersion(uri);
         context.setChangeTrackingContext(changeTrackingContext);
+
         return context;
     }
 
