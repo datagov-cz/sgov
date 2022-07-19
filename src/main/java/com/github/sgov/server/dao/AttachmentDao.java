@@ -4,6 +4,7 @@ import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.AttachmentContext;
 import com.github.sgov.server.model.util.DescriptorFactory;
 import cz.cvut.kbss.jopa.model.EntityManager;
+import java.net.URI;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,31 @@ public class AttachmentDao extends BaseDao<AttachmentContext> {
         Objects.requireNonNull(entity);
         try {
             em.persist(entity, descriptorFactory.attachmentDescriptor(entity));
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
+    @Override
+    public void remove(AttachmentContext entity) {
+        super.remove(entity);
+        clearAttachmentContext(entity.getUri());
+    }
+
+    @Override
+    public void remove(URI id) {
+        super.remove(id);
+        clearAttachmentContext(id);
+    }
+
+    private void clearAttachmentContext(final URI attachmentContext) {
+        try {
+            em
+                .createNativeQuery(
+                    "DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } . }",
+                    type)
+                .setParameter("g", attachmentContext)
+                .executeUpdate();
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
