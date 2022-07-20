@@ -4,6 +4,7 @@ import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.util.DescriptorFactory;
 import cz.cvut.kbss.jopa.model.EntityManager;
+import java.net.URI;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,24 @@ public class VocabularyDao extends BaseDao<VocabularyContext> {
         Objects.requireNonNull(entity);
         try {
             em.persist(entity, descriptorFactory.vocabularyDescriptor(entity));
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
+    /**
+     * Clears the given vocabulary context.
+     *
+     * @param vocabularyContext vocabularyContext
+     */
+    public void clearVocabularyContext(final URI vocabularyContext) {
+        try {
+            em
+                .createNativeQuery(
+                    "DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } . }",
+                    type)
+                .setParameter("g", vocabularyContext)
+                .executeUpdate();
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }

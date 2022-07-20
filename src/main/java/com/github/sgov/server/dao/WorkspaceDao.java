@@ -235,24 +235,6 @@ public class WorkspaceDao extends BaseDao<Workspace> {
     /**
      * Clears the given vocabulary context.
      *
-     * @param vocabularyContext vocabularyContext
-     */
-    public void clearVocabularyContext(final URI vocabularyContext) {
-        try {
-            em
-                .createNativeQuery(
-                    "DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } . }",
-                    type)
-                .setParameter("g", vocabularyContext)
-                .executeUpdate();
-        } catch (RuntimeException e) {
-            throw new PersistenceException(e);
-        }
-    }
-
-    /**
-     * Clears the given vocabulary context.
-     *
      * @param workspace workspace
      */
     public List<URI> getDependentsForVocabularyInWorkspace(final Workspace workspace,

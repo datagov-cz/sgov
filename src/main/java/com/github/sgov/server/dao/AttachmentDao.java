@@ -48,19 +48,12 @@ public class AttachmentDao extends BaseDao<AttachmentContext> {
         }
     }
 
-    @Override
-    public void remove(AttachmentContext entity) {
-        super.remove(entity);
-        clearAttachmentContext(entity.getUri());
-    }
-
-    @Override
-    public void remove(URI id) {
-        super.remove(id);
-        clearAttachmentContext(id);
-    }
-
-    private void clearAttachmentContext(final URI attachmentContext) {
+    /**
+     * Clears the given attachment context.
+     *
+     * @param attachmentContext attachmentContext
+     */
+    public void clearAttachmentContext(final URI attachmentContext) {
         try {
             em
                 .createNativeQuery(

@@ -6,7 +6,6 @@ import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.controller.dto.VocabularyStatusDto;
-import com.github.sgov.server.dao.AttachmentDao;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
@@ -20,6 +19,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
@@ -52,7 +52,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
 
     private final WorkspaceDao workspaceDao;
 
-    private final AttachmentDao attachmentDao;
+    private final AttachmentRepositoryService attachmentRepositoryService;
 
     /**
      * Creates a new repository service.
@@ -61,12 +61,13 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     public VocabularyRepositoryService(@Qualifier("validatorFactoryBean") Validator validator,
                                        RepositoryConf repositoryConf,
                                        VocabularyDao vocabularyDao,
-                                       WorkspaceDao workspaceDao, AttachmentDao attachmentDao) {
+                                       WorkspaceDao workspaceDao,
+                                       AttachmentRepositoryService attachmentRepositoryService) {
         super(validator);
         this.repositoryConf = repositoryConf;
         this.vocabularyDao = vocabularyDao;
         this.workspaceDao = workspaceDao;
-        this.attachmentDao = attachmentDao;
+        this.attachmentRepositoryService = attachmentRepositoryService;
     }
 
     /**
@@ -185,6 +186,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
 
     /**
      * Verifies that given vocabulary is not published.
+     *
      * @param vocabularyUri Uri of the vocabulary.
      */
     public void verifyVocabularyNotPublished(URI vocabularyUri) {
@@ -335,8 +337,35 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     }
 
     @Override
+    public void remove(URI id) {
+        Optional<VocabularyContext> vocabularyContext = vocabularyDao.find(id);
+        if (vocabularyContext.isPresent()) {
+            VocabularyContext instance = vocabularyContext.get();
+            removeAllAttachments(instance);
+            clearVocabularyContext(instance.getChangeTrackingContext().getUri());
+            super.remove(id);
+            clearVocabularyContext(id);
+        }
+    }
+
+    @Override
     public void remove(VocabularyContext instance) {
-        instance.getAttachmentContexts().forEach(attachmentDao::remove);
+        removeAllAttachments(instance);
+        clearVocabularyContext(instance.getChangeTrackingContext().getUri());
         super.remove(instance);
+        clearVocabularyContext(instance.getUri());
+    }
+
+    /**
+     * Clears the given vocabulary context.
+     *
+     * @param vocabularyContext vocabularyContext
+     */
+    public void clearVocabularyContext(final URI vocabularyContext) {
+        vocabularyDao.clearVocabularyContext(vocabularyContext);
+    }
+
+    private void removeAllAttachments(VocabularyContext instance) {
+        instance.getAttachmentContexts().forEach(attachmentRepositoryService::remove);
     }
 }

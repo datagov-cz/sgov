@@ -7,7 +7,6 @@ import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.AttachmentContext;
-import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.AttachmentRepositoryService;
@@ -100,6 +99,7 @@ public class WorkspaceService {
     }
 
     public void remove(URI id) {
+        removeAllVocabularies(id);
         repositoryService.remove(id);
     }
 
@@ -234,9 +234,6 @@ public class WorkspaceService {
                     VocabularyContext.class.getSimpleName(), vocabularyFragment
                 )
             );
-        ChangeTrackingContext changeTrackingContext = vocabularyContext.getChangeTrackingContext();
-        repositoryService.clearVocabularyContext(changeTrackingContext.getUri());
-        repositoryService.clearVocabularyContext(vocabularyContext.getUri());
 
         vocabularyService.remove(vocabularyContext);
 
@@ -244,6 +241,15 @@ public class WorkspaceService {
         repositoryService.update(workspace);
 
         return vocabularyContext;
+    }
+
+
+
+    private void removeAllVocabularies(URI workspaceId) {
+        Workspace workspace = repositoryService.findRequired(workspaceId);
+        workspace.getVocabularyContexts().forEach(vocabularyService::remove);
+        workspace.getVocabularyContexts().clear();
+        repositoryService.update(workspace);
     }
 
     /**
