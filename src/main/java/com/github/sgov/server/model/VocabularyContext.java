@@ -36,7 +36,7 @@ public class VocabularyContext extends TrackableContext {
     private Set<AttachmentContext> attachmentContexts;
 
     /**
-     * Returns all vocabulary contexts of this vocabulary.
+     * Returns all attachment contexts of this vocabulary.
      */
     public Set<AttachmentContext> getAttachmentContexts() {
         if (attachmentContexts == null) {
