@@ -105,7 +105,9 @@ public class WorkspacePublicationService {
                 String uri = ac.getUri().toString();
                 String basedOnVersionUri =
                     uri.substring(0, uri.lastIndexOf(Vocabulary.version_separator));
-                ac.setBasedOnVersion(URI.create(basedOnVersionUri));
+                String uuid =
+                    basedOnVersionUri.substring(basedOnVersionUri.lastIndexOf("/") + 1);
+                ac.setBasedOnVersion(URI.create(Vocabulary.s_c_priloha + "/" + uuid));
             }
         });
         final Set<URI> attachments = workspace.getAllAttachmentContexts().stream()
