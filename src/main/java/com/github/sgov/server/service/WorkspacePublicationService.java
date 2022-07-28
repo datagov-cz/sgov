@@ -21,13 +21,11 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 /**
@@ -75,7 +73,7 @@ public class WorkspacePublicationService {
         log.info("Publishing workspace {} with vocabularies {} and attachments {}",
             workspace.getUri(),
             workspace.getVocabularyContexts(),
-            workspace.getAttachmentContexts());
+            workspace.getAllAttachmentContexts());
         final String branchName = WorkspaceUtils.createBranchName(workspace);
 
         try {
@@ -102,14 +100,17 @@ public class WorkspacePublicationService {
     private void publishVocabularyContexts(Git git, File dir, Workspace workspace) {
         // changes might come from tools
         repositoryService.flush();
-        workspace.getAttachmentContexts().forEach(ac -> {
+        workspace.getAllAttachmentContexts().forEach(ac -> {
             if (ac.getBasedOnVersion() == null) {
-                String uriPath = ac.getUri().getPath();
-                String uuid = uriPath.substring(uriPath.lastIndexOf("/") + 1);
+                String uri = ac.getUri().toString();
+                String basedOnVersionUri =
+                    uri.substring(0, uri.lastIndexOf(Vocabulary.version_separator));
+                String uuid =
+                    basedOnVersionUri.substring(basedOnVersionUri.lastIndexOf("/") + 1);
                 ac.setBasedOnVersion(URI.create(Vocabulary.s_c_priloha + "/" + uuid));
             }
         });
-        final Set<URI> attachments = workspace.getAttachmentContexts().stream()
+        final Set<URI> attachments = workspace.getAllAttachmentContexts().stream()
             .map(TrackableContext::getBasedOnVersion)
             .collect(Collectors.toSet());
         workspace.getVocabularyContexts().forEach(c -> {
@@ -130,7 +131,7 @@ public class WorkspacePublicationService {
     }
 
     private void publishAttachmentContexts(Git git, File dir, Workspace workspace) {
-        for (final AttachmentContext c : workspace.getAttachmentContexts()) {
+        for (final AttachmentContext c : workspace.getAllAttachmentContexts()) {
             log.info("Publishing attachment context {}", c);
             final URI iri = c.getBasedOnVersion();
             try {

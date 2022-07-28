@@ -34,14 +34,8 @@ public class Workspace extends Asset implements Context {
     private String label;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_kontext,
-        cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)
     private Set<VocabularyContext> vocabularyContexts;
-
-    @OWLObjectProperty(iri = Vocabulary.s_p_odkazuje_na_prilohovy_kontext,
-        cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
-        fetch = FetchType.EAGER)
-    private Set<AttachmentContext> attachmentContexts;
 
     /**
      * Returns all vocabulary contexts of this workspace.
@@ -51,16 +45,6 @@ public class Workspace extends Asset implements Context {
             this.vocabularyContexts = new HashSet<>();
         }
         return vocabularyContexts;
-    }
-
-    /**
-     * Returns all vocabulary contexts of this workspace.
-     */
-    public Set<AttachmentContext> getAttachmentContexts() {
-        if (attachmentContexts == null) {
-            this.attachmentContexts = new HashSet<>();
-        }
-        return attachmentContexts;
     }
 
     /**
@@ -75,34 +59,35 @@ public class Workspace extends Asset implements Context {
         addContext(context, vocabularyContexts);
     }
 
-    /**
-     * Add a new attachment context to this workspace.
-     *
-     * @param context attachment context to add.
-     */
-    public void addAttachmentContext(AttachmentContext context) {
-        if (attachmentContexts == null) {
-            this.attachmentContexts = new HashSet<>();
-        }
-        addContext(context, attachmentContexts);
-    }
-
-    private <T extends TrackableContext> void addContext(T context, Collection<T> collection) {
-        final Optional<T> duplicateContext = collection.stream()
+    private void addContext(VocabularyContext context, Collection<VocabularyContext> collection) {
+        final Optional<VocabularyContext> duplicateContext = collection.stream()
             .filter(vc -> Objects.equals(vc.getBasedOnVersion(), context.getBasedOnVersion()))
             .findFirst();
 
-        if (!(context instanceof AttachmentContext)) {
-            if (duplicateContext.isPresent()) {
-                throw new ValidationException(String.format(
-                    "Unable to add %s to workspace %s. "
-                        + "It is already present in the workspace within context %s.",
-                    duplicateContext.get().getBasedOnVersion(),
-                    this.getUri(),
-                    duplicateContext.get().getUri()));
-            }
+        if (duplicateContext.isPresent()) {
+            throw new ValidationException(String.format(
+                "Unable to add %s to workspace %s. "
+                    + "It is already present in the workspace within context %s.",
+                duplicateContext.get().getBasedOnVersion(),
+                this.getUri(),
+                duplicateContext.get().getUri()));
         }
 
         collection.add(context);
+    }
+
+    /**
+     * Collects all attachment contexts of a workspace.
+     *
+     * @return Set of attachment contexts
+     */
+    public Set<AttachmentContext> getAllAttachmentContexts() {
+        Set<AttachmentContext> attachmentContexts = new HashSet<>();
+        if (vocabularyContexts != null) {
+            for (VocabularyContext vc : vocabularyContexts) {
+                attachmentContexts.addAll(vc.getAttachmentContexts());
+            }
+        }
+        return attachmentContexts;
     }
 }

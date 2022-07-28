@@ -1,8 +1,10 @@
 package com.github.sgov.server.util;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.UUID;
 import java.util.regex.Matcher;
 
 public class Utils {
@@ -84,5 +86,15 @@ public class Utils {
                  MessageFormat.format("Unknown vocabulary type: {0}", type)
               );
         }
+    }
+
+    /**
+     *  Creates a version (context) URI from given URI.
+     *
+     * @param uri base URI
+     * @return version (context) URI
+     */
+    public static URI createVersion(URI uri) {
+        return URI.create(uri.toString() + Vocabulary.version_separator + UUID.randomUUID());
     }
 }

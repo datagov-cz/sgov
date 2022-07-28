@@ -5,9 +5,12 @@ import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.TrackableContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import com.github.sgov.server.util.Utils;
+import com.github.sgov.server.util.Vocabulary;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -25,10 +28,10 @@ public class WorkspaceUtils {
         String prBody = MessageFormat.format("Changed vocabularies: \n - {0}",
             render(workspace.getVocabularyContexts()));
 
-        if (!workspace.getAttachmentContexts().isEmpty()) {
+        if (!workspace.getAllAttachmentContexts().isEmpty()) {
             prBody += "\n\n";
             prBody += MessageFormat.format("Changed attachments: \n - {0}",
-                render(workspace.getAttachmentContexts()));
+                render(workspace.getAllAttachmentContexts()));
         }
         return prBody;
     }
@@ -59,9 +62,16 @@ public class WorkspaceUtils {
     public static VocabularyContext stub(final URI uri) {
         final VocabularyContext context = new VocabularyContext();
         context.setBasedOnVersion(uri);
+        URI contextUri = Utils.createVersion(uri);
+        context.setUri(contextUri);
+
+        URI changeTrackingContextUri =
+            URI.create(contextUri.toString() + Vocabulary.postfix_kontextu_sledovani_zmen);
         final ChangeTrackingContext changeTrackingContext = new ChangeTrackingContext();
+        changeTrackingContext.setUri(changeTrackingContextUri);
         changeTrackingContext.setChangesVocabularyVersion(uri);
         context.setChangeTrackingContext(changeTrackingContext);
+
         return context;
     }
 
@@ -74,6 +84,8 @@ public class WorkspaceUtils {
     public static AttachmentContext attachmentStub(final URI uri) {
         final AttachmentContext context = new AttachmentContext();
         context.setBasedOnVersion(uri);
+        URI contextUri = Utils.createVersion(uri);
+        context.setUri(contextUri);
         return context;
     }
 }

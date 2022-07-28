@@ -121,6 +121,7 @@ public class GitPublicationService {
 
             final String versionUrl =
                 context.getBasedOnVersion().toString();
+            final String changeTrackingUrl = context.getChangeTrackingContext().getUri().toString();
 
             final IRI ctxWorkspaceEntity =
                 cWorkspaceRepo.getValueFactory().createIRI(context.getUri().toString());
@@ -129,6 +130,8 @@ public class GitPublicationService {
 
             final ValueFactory fsspRepo = conGitSsp.getValueFactory();
             final IRI ctxVocabulary = fsspRepo.createIRI(versionUrl);
+            final IRI ctxIri = fsspRepo.createIRI(context.getUri().toString());
+            final IRI ctxChangeTracking = fsspRepo.createIRI(changeTrackingUrl);
 
             final String vocabularyId = Utils.getVocabularyId(versionUrl);
             conGitSsp.setNamespace(vocabularyId + "-pojem",
@@ -144,18 +147,22 @@ public class GitPublicationService {
             cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)
                 .stream()
                 .forEach(s -> {
-                    if (s.getSubject().equals(ctxVocabulary)) {
-                        if (s.getPredicate().equals(hasAttachment)) {
-                            // do not add old ones. They should reflect the current change.
+                    // do not publish information about the contexts
+                    if (!s.getSubject().equals(ctxIri)
+                        && !s.getSubject().equals(ctxChangeTracking)) {
+                        if (s.getSubject().equals(ctxVocabulary)) {
+                            if (s.getPredicate().equals(hasAttachment)) {
+                                // do not add old ones. They should reflect the current change.
+                            } else {
+                                conGitSsp.add(s, ctxVocabulary);
+                            }
+                        } else if (s.getSubject().equals(ctxModel)) {
+                            conGitSsp.add(s, ctxModel);
+                        } else if (s.getSubject().equals(ctxGlossary)) {
+                            conGitSsp.add(s, ctxGlossary);
                         } else {
-                            conGitSsp.add(s, ctxVocabulary);
+                            conGitSsp.add(s, isGlossaryTriple(s) ? ctxGlossary : ctxModel);
                         }
-                    } else if (s.getSubject().equals(ctxModel)) {
-                        conGitSsp.add(s, ctxModel);
-                    } else if (s.getSubject().equals(ctxGlossary)) {
-                        conGitSsp.add(s, ctxGlossary);
-                    } else {
-                        conGitSsp.add(s, isGlossaryTriple(s) ? ctxGlossary : ctxModel);
                     }
                 });
 
@@ -207,10 +214,16 @@ public class GitPublicationService {
 
             final ValueFactory fsspRepo = conGitSsp.getValueFactory();
             final IRI ctxAttachment = fsspRepo.createIRI(versionUrl);
+            final IRI ctxIri = fsspRepo.createIRI(context.getUri().toString());
             conGitSsp.setNamespace(Utils.getAttachmentId(versionUrl), ctxAttachment + "/");
 
             cWorkspaceRepo.getStatements(null, null, null, ctxWorkspaceEntity)
-                .forEach(s -> conGitSsp.add(s, ctxAttachment));
+                .forEach(s -> {
+                    // do not publish information about the contexts
+                    if (!s.getSubject().equals(ctxIri)) {
+                        conGitSsp.add(s, ctxAttachment);
+                    }
+                });
 
             folder.getFolder().mkdirs();
 

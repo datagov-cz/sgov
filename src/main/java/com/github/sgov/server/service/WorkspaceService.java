@@ -7,9 +7,9 @@ import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.AttachmentContext;
-import com.github.sgov.server.model.ChangeTrackingContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
+import com.github.sgov.server.service.repository.AttachmentRepositoryService;
 import com.github.sgov.server.service.repository.VocabularyRepositoryService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import java.net.URI;
@@ -33,14 +33,18 @@ public class WorkspaceService {
 
     private final VocabularyRepositoryService vocabularyService;
 
+    private final AttachmentRepositoryService attachmentService;
+
     /**
      * Constructor.
      */
     @Autowired
     public WorkspaceService(WorkspaceRepositoryService repositoryService,
-                            VocabularyRepositoryService vocabularyService) {
+                            VocabularyRepositoryService vocabularyService,
+                            AttachmentRepositoryService attachmentService) {
         this.repositoryService = repositoryService;
         this.vocabularyService = vocabularyService;
+        this.attachmentService = attachmentService;
     }
 
     /**
@@ -95,6 +99,7 @@ public class WorkspaceService {
     }
 
     public void remove(URI id) {
+        removeAllVocabularies(id);
         repositoryService.remove(id);
     }
 
@@ -110,13 +115,13 @@ public class WorkspaceService {
      * 3) create new vocabulary in the workspace (unless there is same vocabulary in other
      * workspace or label of the vocabulary is not provided)
      *
-     * @param workspaceUri         URI of the workspace to connect the vocabulary context to.
-     * @param vocabularyContextDto vocabulary metadata
-     * @param checkNotInGivenWorkspace If true pre-check that vocabulary is not already present
-     *                                 in the workspace
+     * @param workspaceUri              URI of the workspace to connect the vocabulary context to.
+     * @param vocabularyContextDto      vocabulary metadata
+     * @param checkNotInGivenWorkspace  If true pre-check that vocabulary is not already present
+     *                                  in the workspace
      * @param checkNotInOtherWorkspaces If true pre-check that vocabulary is not present in
      *                                  any other workspace beside the given one
-     * @param checkNotPublished If true pre-check that vocabulary is not published.
+     * @param checkNotPublished         If true pre-check that vocabulary is not published.
      * @return URI of the vocabulary context to create
      */
     public URI ensureVocabularyExistsInWorkspace(
@@ -168,31 +173,30 @@ public class WorkspaceService {
     private URI createVocabularyContext(Workspace workspace,
                                         VocabularyContextDto vocabularyContextDto) {
         URI vocabularyUri = vocabularyContextDto.getBasedOnVersion();
-        URI vocabularyContextUri;
         VocabularyContext vocabularyContext = stub(vocabularyUri);
+        vocabularyService.createContext(vocabularyContext, vocabularyContextDto);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
         repositoryService.update(workspace);
-        vocabularyContextUri =
-            repositoryService.getVocabularyContextReference(workspace, vocabularyUri);
-        vocabularyContext = vocabularyService.findRequired(vocabularyContextUri);
-        vocabularyService.createContext(vocabularyContext, vocabularyContextDto);
-        return vocabularyContextUri;
+        return vocabularyContext.getUri();
     }
 
     private URI loadVocabularyContextFromCache(final Workspace workspace, final URI vocabularyUri) {
         log.info("Loading vocabulary context {} from cache in workspace {}",
             vocabularyUri, workspace.getUri());
         final VocabularyContext vocabularyContext = stub(vocabularyUri);
+        vocabularyService.persist(vocabularyContext);
+        vocabularyService.loadContext(vocabularyContext);
         workspace.addRefersToVocabularyContexts(vocabularyContext);
         repositoryService.update(workspace);
         final URI vocabularyContextUri = vocabularyContext.getUri();
-        vocabularyService.loadContext(vocabularyContext);
         log.info("Found attachments {}", vocabularyContext.getAttachments());
         vocabularyContext.getAttachments().forEach(attachmentUri -> {
             log.info("Adding attachment {}", attachmentUri);
             final AttachmentContext attachmentContext = attachmentStub(attachmentUri);
-            workspace.addAttachmentContext(attachmentContext);
-            repositoryService.update(workspace);
+            attachmentService.persist(attachmentContext);
+
+            vocabularyContext.addAttachmentContext(attachmentContext);
+            vocabularyService.update(vocabularyContext);
             vocabularyService.loadContext(attachmentContext);
         });
         return vocabularyContextUri;
@@ -218,21 +222,18 @@ public class WorkspaceService {
     /**
      * Removes vocabulary context from given workspace.
      *
-     * @param workspaceId         Uri of a workspace.
-     * @param vocabularyContextId Uri of a vocabulary context.
+     * @param workspaceId        Uri of a workspace.
+     * @param vocabularyFragment String of a vocabulary context UUID.
      */
-    public VocabularyContext removeVocabulary(URI workspaceId, URI vocabularyContextId) {
+    public VocabularyContext removeVocabulary(URI workspaceId, String vocabularyFragment) {
         Workspace workspace = repositoryService.findRequired(workspaceId);
         VocabularyContext vocabularyContext = workspace.getVocabularyContexts().stream()
-            .filter(vc -> vc.getUri().equals(vocabularyContextId))
+            .filter(vc -> vc.getUri().toString().endsWith(vocabularyFragment))
             .findFirst().orElseThrow(
                 () -> NotFoundException.create(
-                    VocabularyContext.class.getSimpleName(), vocabularyContextId
+                    VocabularyContext.class.getSimpleName(), vocabularyFragment
                 )
             );
-        ChangeTrackingContext changeTrackingContext = vocabularyContext.getChangeTrackingContext();
-        repositoryService.clearVocabularyContext(changeTrackingContext.getUri());
-        repositoryService.clearVocabularyContext(vocabularyContextId);
 
         vocabularyService.remove(vocabularyContext);
 
@@ -240,6 +241,15 @@ public class WorkspaceService {
         repositoryService.update(workspace);
 
         return vocabularyContext;
+    }
+
+
+
+    private void removeAllVocabularies(URI workspaceId) {
+        Workspace workspace = repositoryService.findRequired(workspaceId);
+        workspace.getVocabularyContexts().forEach(vocabularyService::remove);
+        workspace.getVocabularyContexts().clear();
+        repositoryService.update(workspace);
     }
 
     /**

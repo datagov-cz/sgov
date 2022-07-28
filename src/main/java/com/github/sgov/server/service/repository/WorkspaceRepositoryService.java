@@ -129,15 +129,6 @@ public class WorkspaceRepositoryService extends BaseRepositoryService<Workspace>
         return workspaces;
     }
 
-    /**
-     * Clears the given vocabulary context.
-     *
-     * @param vocabularyContext vocabularyContext
-     */
-    public void clearVocabularyContext(final URI vocabularyContext) {
-        workspaceDao.clearVocabularyContext(vocabularyContext);
-    }
-
     public List<URI> getDependentsForVocabularyInWorkspace(final Workspace workspace,
                                                            final URI vocabularyUri) {
         return workspaceDao.getDependentsForVocabularyInWorkspace(workspace, vocabularyUri);

@@ -114,7 +114,7 @@ public class WorkspaceController extends BaseController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateWorkspace(@PathVariable String workspaceFragment,
                                 @RequestParam(name = QueryParams.NAMESPACE, required = false)
-                                    String namespace,
+                                String namespace,
                                 @RequestBody Workspace workspace) {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
@@ -135,7 +135,7 @@ public class WorkspaceController extends BaseController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWorkspace(@PathVariable String workspaceFragment,
                                 @RequestParam(name = QueryParams.NAMESPACE, required = false)
-                                    String namespace) {
+                                String namespace) {
         final URI identifier = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         final Workspace toRemove = workspaceService.getRequiredReference(identifier);
@@ -299,12 +299,11 @@ public class WorkspaceController extends BaseController {
         @PathVariable String workspaceFragment,
         @PathVariable String vocabularyFragment,
         @RequestParam(name = QueryParams.NAMESPACE, required = false)
-            String namespace) {
+        String namespace) {
         final URI workspaceId = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
-        final URI vocabularyId = resolveIdentifier(
-            namespace, vocabularyFragment, Vocabulary.s_c_slovnikovy_kontext);
-        VocabularyContext toRemove = workspaceService.removeVocabulary(workspaceId, vocabularyId);
+        VocabularyContext toRemove =
+            workspaceService.removeVocabulary(workspaceId, vocabularyFragment);
         log.debug("Vocabulary context {} deleted from workspace {}.", toRemove, workspaceId);
     }
 

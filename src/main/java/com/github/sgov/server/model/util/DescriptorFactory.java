@@ -1,5 +1,7 @@
 package com.github.sgov.server.model.util;
 
+import com.github.sgov.server.model.AttachmentContext;
+import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.persistence.PersistenceUtils;
 import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
@@ -31,17 +33,35 @@ public final class DescriptorFactory {
     }
 
     /**
-     * Creates a JOPA descriptor for a vocabulary with the specified identifier.
+     * Creates a JOPA descriptor for a specific vocabulary context.
+     *
+     * <p>The descriptor specifies that the instance context will correspond to the given model.
+     * It also initializes other required attribute descriptors.
+     *
+     * @param vocabularyContext Vocabulary context for which the descriptor should be created
+     * @return Vocabulary context descriptor
+     */
+    public Descriptor vocabularyDescriptor(VocabularyContext vocabularyContext) {
+        Objects.requireNonNull(vocabularyContext);
+        return vocabularyDescriptor(vocabularyContext.getUri());
+    }
+
+    /**
+     * Creates a JOPA descriptor for a vocabulary context with the specified identifier.
      *
      * <p>The descriptor specifies that the instance context will correspond to the given IRI.
      * It also initializes other required attribute descriptors.
      *
-     * @param vocabularyContextUri Workspace identifier for which the descriptor should be created
-     * @return Vocabulary descriptor
+     * @param vocabularyContextUri Vocabulary context identifier for which the descriptor should be
+     *                             created
+     * @return Vocabulary context descriptor
      */
-    public static Descriptor vocabularyDescriptor(URI vocabularyContextUri) {
+    public Descriptor vocabularyDescriptor(URI vocabularyContextUri) {
         Objects.requireNonNull(vocabularyContextUri);
-        return new EntityDescriptor(vocabularyContextUri);
+        EntityDescriptor descriptor = assetDescriptor(vocabularyContextUri);
+        descriptor.addAttributeDescriptor(fieldSpec(VocabularyContext.class, "attachmentContexts"),
+            new EntityDescriptor((URI) null));
+        return descriptor;
     }
 
     /**
@@ -84,11 +104,40 @@ public final class DescriptorFactory {
         Objects.requireNonNull(workspaceUri);
         EntityDescriptor descriptor = assetDescriptor(workspaceUri);
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "vocabularyContexts"),
-            vocabularyDescriptor(workspaceUri));
+            new EntityDescriptor((URI) null));
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "author"),
             new EntityDescriptor((URI) null));
         descriptor.addAttributeDescriptor(fieldSpec(Workspace.class, "lastEditor"),
             new EntityDescriptor((URI) null));
         return descriptor;
+    }
+
+    /**
+     * Creates a JOPA descriptor for a specific attachment context.
+     *
+     * <p>The descriptor specifies that the instance context will correspond to the given model.
+     * It also initializes other required attribute descriptors.
+     *
+     * @param attachmentContext Attachment context for which the descriptor should be created
+     * @return Attachment context descriptor
+     */
+    public Descriptor attachmentDescriptor(AttachmentContext attachmentContext) {
+        Objects.requireNonNull(attachmentContext);
+        return attachmentDescriptor(attachmentContext.getUri());
+    }
+
+    /**
+     * Creates a JOPA descriptor for an attachment context with the specified identifier.
+     *
+     * <p>The descriptor specifies that the instance context will correspond to the given IRI.
+     * It also initializes other required attribute descriptors.
+     *
+     * @param attachmentContextUri Attachment context identifier for which the descriptor should be
+     *                             created
+     * @return Attachment context descriptor
+     */
+    public Descriptor attachmentDescriptor(URI attachmentContextUri) {
+        Objects.requireNonNull(attachmentContextUri);
+        return new EntityDescriptor(attachmentContextUri);
     }
 }
