@@ -264,7 +264,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         try {
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
-                    repositoryConf.getReleaseSparqlEndpointUrl()));
+                    repositoryConf.getUrl()));
             try (final RepositoryConnection connection = repo.getConnection()) {
                 final String iri = context.getBasedOnVersion().toString();
                 populateContext(context.getUri().toString(),
@@ -307,9 +307,10 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         final String vocabularyVersion,
         final RepositoryConnection connection) {
         final GraphQuery query = connection
-            .prepareGraphQuery("PREFIX : <"
-                + vocabularyVersion
-                + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH :přílohy {?s ?p ?o} }");
+            .prepareGraphQuery(
+                " CONSTRUCT {?s ?p ?o} WHERE { "
+                    + "BIND(<" + Vocabulary.s_p_ma_prilohu + "> as ?p) "
+                    + "GRAPH <" + vocabularyVersion + "> {?s ?p ?o} }");
         return query.evaluate();
     }
 
