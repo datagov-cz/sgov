@@ -173,14 +173,12 @@ public class GitPublicationService {
 
             folder.getFolder().mkdirs();
 
-            conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getVocabularyFile())),
-                ctxVocabulary);
-            conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getGlossaryFile())),
-                ctxGlossary);
-            conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getModelFile())),
-                ctxModel);
-            conGitSsp.export(getDeterministicWriter(new FileWriter(folder.getAttachmentsFile())),
-                ctxAttachments);
+            saveContextToFile(conGitSsp, ctxVocabulary, folder.getVocabularyFile());
+            saveContextToFile(conGitSsp, ctxGlossary, folder.getGlossaryFile());
+            saveContextToFile(conGitSsp, ctxModel, folder.getModelFile());
+            if (! context.getAttachments().isEmpty()) {
+                saveContextToFile(conGitSsp, ctxAttachments, folder.getAttachmentsFile());
+            }
 
             conGitSsp.close();
             cWorkspaceRepo.close();
@@ -245,5 +243,15 @@ public class GitPublicationService {
         addNamespaces(conGitSsp);
 
         return conGitSsp;
+    }
+
+    private void saveContextToFile(
+                                   RepositoryConnection inputRdf4RepositoryConnection,
+                                   IRI inputDataContext,
+                                   File outputFile
+                                   ) throws IOException {
+        inputRdf4RepositoryConnection.export(
+            getDeterministicWriter(new FileWriter(outputFile)),
+            inputDataContext);
     }
 }
