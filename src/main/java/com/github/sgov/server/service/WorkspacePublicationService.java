@@ -123,7 +123,7 @@ public class WorkspacePublicationService {
                 publicationService.storeContext(c, folder);
                 githubService.commit(git, MessageFormat.format(
                     "Publishing vocabulary {0} in workspace {1} ({2})", iri,
-                    workspace.getLabel(), workspace.getUri().toString()));
+                    workspace.getLabel(), workspace.getUri()));
             } catch (IllegalArgumentException e) {
                 throw new PublicationException("Invalid vocabulary IRI " + iri);
             }
@@ -140,7 +140,7 @@ public class WorkspacePublicationService {
                 publicationService.storeContext(c, folder);
                 githubService.commit(git, MessageFormat.format(
                     "Publishing attachment {0} in workspace {1} ({2})", iri,
-                    workspace.getLabel(), workspace.getUri().toString()));
+                    workspace.getLabel(), workspace.getUri()));
             } catch (IllegalArgumentException e) {
                 throw new PublicationException("Invalid vocabulary IRI " + iri);
             }
