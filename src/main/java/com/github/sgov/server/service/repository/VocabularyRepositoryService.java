@@ -96,7 +96,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
             List<VocabularyDto> contexts = new ArrayList<>();
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
-                    repositoryConf.getReleaseSparqlEndpointUrl()));
+                    repositoryConf.getUrl()));
             final RepositoryConnection connection = repo.getConnection();
             TupleQuery query = connection
                 .prepareTupleQuery("SELECT DISTINCT ?g ?label WHERE "
