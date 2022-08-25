@@ -3,9 +3,13 @@ package com.github.sgov.server.dao;
 import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.util.DescriptorFactory;
+import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import java.net.URI;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -64,5 +68,19 @@ public class VocabularyDao extends BaseDao<VocabularyContext> {
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
+    }
+
+    /**
+     * Returns a set of URIs of vocabularies imported by the vocabulary URI of which is provided.
+     *
+     * @param uri URI of the vocabulary to get transitive imports for.
+     * @return a set of transitive imports.
+     */
+    public Set<URI> getTransitiveImports(URI uri) {
+        return new HashSet<>(
+            em.createNativeQuery("SELECT DISTINCT ?v WHERE {?uri ?imports+ ?v}")
+                .setParameter("uri", uri)
+                .setParameter("imports", URI.create(Vocabulary.s_c_import))
+                .getResultList());
     }
 }
