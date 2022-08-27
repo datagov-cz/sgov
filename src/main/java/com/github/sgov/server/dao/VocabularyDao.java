@@ -78,7 +78,12 @@ public class VocabularyDao extends BaseDao<VocabularyContext> {
      */
     public Set<URI> getTransitiveImports(URI uri) {
         return new HashSet<>(
-            em.createNativeQuery("SELECT DISTINCT ?v WHERE {?uri ?imports+ ?v}")
+            em.createNativeQuery("SELECT DISTINCT ?v WHERE {"
+                    + " GRAPH ?sgov {?s ?contextLink ?g}"
+                    + " GRAPH ?g {?uri ?imports+ ?v} "
+                    + "}")
+                .setParameter("sgov", URI.create(Vocabulary.SLOVNIK_GOV_CZ))
+                .setParameter("contextLink", URI.create(Vocabulary.s_p_odkazuje_na_kontext))
                 .setParameter("uri", uri)
                 .setParameter("imports", URI.create(Vocabulary.s_c_import))
                 .getResultList());
