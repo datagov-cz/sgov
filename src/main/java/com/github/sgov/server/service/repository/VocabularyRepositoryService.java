@@ -71,13 +71,31 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     }
 
     /**
-     * Returns a set of URIs of vocabularies imported by the vocabulary URI of which is provided.
+     * Returns a set of vocabulary URIs imported by the provided vocabulary URI.
      *
      * @param uri URI of the vocabulary to get transitive imports for.
      * @return a set of transitive imports.
      */
     public Set<URI> getTransitiveImports(final URI uri) {
-        return vocabularyDao.getTransitiveImports(uri);
+        try {
+            Set<URI> contexts = new HashSet<>();
+            final SPARQLRepository repo =
+                new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
+                    repositoryConf.getUrl()));
+            final RepositoryConnection connection = repo.getConnection();
+            final TupleQuery query = connection
+                .prepareTupleQuery("SELECT DISTINCT ?v WHERE {GRAPH ?uri {?uri ?imports+ ?v}}");
+            query.setBinding("uri", connection.getValueFactory().createIRI(uri.toString()));
+            query.setBinding("imports", connection.getValueFactory()
+                .createIRI(Vocabulary.DATA_DESCRIPTION_NAMESPACE + "importuje-slovník"));
+
+            query.evaluate().forEach(b ->
+                contexts.add(URI.create(b.getValue("v").stringValue())));
+            connection.close();
+            return contexts;
+        } catch (URISyntaxException e) {
+            throw new SGoVException(e);
+        }
     }
 
 
