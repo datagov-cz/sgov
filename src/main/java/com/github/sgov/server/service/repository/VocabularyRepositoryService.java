@@ -71,7 +71,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     }
 
     /**
-     * Returns a set of URIs of vocabularies imported by the vocabulary URI of which is provided.
+     * Returns a set of vocabulary URIs imported by the provided vocabulary URI.
      *
      * @param uri URI of the vocabulary to get transitive imports for.
      * @return a set of transitive imports.
@@ -81,10 +81,10 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
             Set<URI> contexts = new HashSet<>();
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
-                    repositoryConf.getReleaseSparqlEndpointUrl()));
+                    repositoryConf.getUrl()));
             final RepositoryConnection connection = repo.getConnection();
             final TupleQuery query = connection
-                .prepareTupleQuery("SELECT DISTINCT ?v WHERE {?uri ?imports+ ?v}");
+                .prepareTupleQuery("SELECT DISTINCT ?v WHERE {GRAPH ?uri {?uri ?imports+ ?v}}");
             query.setBinding("uri", connection.getValueFactory().createIRI(uri.toString()));
             query.setBinding("imports", connection.getValueFactory()
                 .createIRI(Vocabulary.DATA_DESCRIPTION_NAMESPACE + "importuje-slovník"));
@@ -114,7 +114,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
             List<VocabularyDto> contexts = new ArrayList<>();
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
-                    repositoryConf.getReleaseSparqlEndpointUrl()));
+                    repositoryConf.getUrl()));
             final RepositoryConnection connection = repo.getConnection();
             TupleQuery query = connection
                 .prepareTupleQuery("SELECT DISTINCT ?g ?label WHERE "
@@ -282,7 +282,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         try {
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
-                    repositoryConf.getReleaseSparqlEndpointUrl()));
+                    repositoryConf.getUrl()));
             try (final RepositoryConnection connection = repo.getConnection()) {
                 final String iri = context.getBasedOnVersion().toString();
                 populateContext(context.getUri().toString(),
@@ -325,9 +325,10 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         final String vocabularyVersion,
         final RepositoryConnection connection) {
         final GraphQuery query = connection
-            .prepareGraphQuery("PREFIX : <"
-                + vocabularyVersion
-                + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH :přílohy {?s ?p ?o} }");
+            .prepareGraphQuery(
+                " CONSTRUCT {?s ?p ?o} WHERE { "
+                    + "BIND(<" + Vocabulary.s_p_ma_prilohu + "> as ?p) "
+                    + "GRAPH <" + vocabularyVersion + "> {?s ?p ?o} }");
         return query.evaluate();
     }
 

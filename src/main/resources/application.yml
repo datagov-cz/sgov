@@ -33,7 +33,6 @@ components:
 repository:
   # overrides components['al-db-server'].url
   #  url: # http://localhost/modelujeme/sluzby/db-server/repositories/assembly-line
-  releaseSparqlEndpointUrl: https://slovník.gov.cz/sparql
   githubRepo: ssp
   githubOrganization: opendata-mvcr
   ## required

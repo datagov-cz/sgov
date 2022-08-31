@@ -57,7 +57,7 @@ class VocabularyRepositoryServiceWithFusekiTest extends BaseServiceTestRunner {
             .add("", ds)
             .build();
         server.start();
-        repositoryConf.setReleaseSparqlEndpointUrl("http://localhost:1234/");
+        repositoryConf.setUrl("http://localhost:1234/");
 
         final List<VocabularyDto> contexts = sut.getVocabulariesAsContextDtos();
         Assertions.assertEquals(2, contexts.size());

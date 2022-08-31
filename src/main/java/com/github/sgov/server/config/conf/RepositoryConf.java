@@ -21,11 +21,6 @@ public class RepositoryConf {
     private ComponentsConf componentsConf;
 
     /**
-     * URL of the release SPARQL endpoint.
-     */
-    private String releaseSparqlEndpointUrl;
-
-    /**
      * URL of the workspace repository.
      */
     private String url;
