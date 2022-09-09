@@ -222,18 +222,17 @@ public class WorkspaceService {
     /**
      * Removes vocabulary context from given workspace.
      *
-     * @param workspaceId        Uri of a workspace.
-     * @param vocabularyFragment String of a vocabulary context UUID.
+     * @param workspaceId  Uri of a workspace.
+     * @param vocabularyId Uri of a vocabulary context.
      */
-    public VocabularyContext removeVocabulary(URI workspaceId, String vocabularyFragment) {
+    public VocabularyContext removeVocabulary(URI workspaceId, URI vocabularyId) {
         Workspace workspace = repositoryService.findRequired(workspaceId);
-        VocabularyContext vocabularyContext = workspace.getVocabularyContexts().stream()
-            .filter(vc -> vc.getUri().toString().endsWith(vocabularyFragment))
-            .findFirst().orElseThrow(
-                () -> NotFoundException.create(
-                    VocabularyContext.class.getSimpleName(), vocabularyFragment
-                )
-            );
+        VocabularyContext vocabularyContext = vocabularyService.findRequired(vocabularyId);
+        if (!workspace.getVocabularyContexts().contains(vocabularyContext)) {
+            throw new NotFoundException(
+                String.format("Vocabulary context {} not found in workspace {}", vocabularyId,
+                    workspaceId));
+        }
 
         vocabularyService.remove(vocabularyContext);
 
@@ -242,7 +241,6 @@ public class WorkspaceService {
 
         return vocabularyContext;
     }
-
 
 
     private void removeAllVocabularies(URI workspaceId) {
