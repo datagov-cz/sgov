@@ -288,22 +288,22 @@ public class WorkspaceController extends BaseController {
      * Delete vocabulary from a workspace.
      *
      * @param workspaceFragment  local name of workspace id.
-     * @param vocabularyFragment local name of vocabulary context id.
+     * @param vocabularyId       vocabulary context URI.
      * @param namespace          Namespace used for resource identifier resolution. Optional, if not
      *                           specified, the configured namespace is used.
      */
-    @DeleteMapping(value = "/{workspaceFragment}/vocabularies/{vocabularyFragment}")
+    @DeleteMapping(value = "/{workspaceFragment}/vocabularies")
     @ApiOperation(value = "Delete vocabulary form a workspace.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWorkspaceVocabulary(
         @PathVariable String workspaceFragment,
-        @PathVariable String vocabularyFragment,
+        @RequestBody URI vocabularyId,
         @RequestParam(name = QueryParams.NAMESPACE, required = false)
         String namespace) {
         final URI workspaceId = resolveIdentifier(
             namespace, workspaceFragment, Vocabulary.s_c_metadatovy_kontext);
         VocabularyContext toRemove =
-            workspaceService.removeVocabulary(workspaceId, vocabularyFragment);
+            workspaceService.removeVocabulary(workspaceId, vocabularyId);
         log.debug("Vocabulary context {} deleted from workspace {}.", toRemove, workspaceId);
     }
 
