@@ -121,7 +121,7 @@ public class WorkspacePublicationService {
                 deleteFilesFromGit(git, folder.toPruneAllExceptCompact());
                 c.setAttachments(attachments);
                 publicationService.storeContext(c, folder);
-                githubService.commit(git, MessageFormat.format(
+                githubService.commit(git, folder, MessageFormat.format(
                     "Publishing vocabulary {0} in workspace {1} ({2})", iri,
                     workspace.getLabel(), workspace.getUri()));
             } catch (IllegalArgumentException e) {
@@ -138,7 +138,7 @@ public class WorkspacePublicationService {
                 final AttachmentFolder folder = Utils.getAttachmentFolder(dir, iri.toString());
                 deleteFilesFromGit(git, folder.getAttachmentFile().listFiles());
                 publicationService.storeContext(c, folder);
-                githubService.commit(git, MessageFormat.format(
+                githubService.commit(git, folder, MessageFormat.format(
                     "Publishing attachment {0} in workspace {1} ({2})", iri,
                     workspace.getLabel(), workspace.getUri()));
             } catch (IllegalArgumentException e) {
