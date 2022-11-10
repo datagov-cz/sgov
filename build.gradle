@@ -76,7 +76,7 @@ dependencies {
     runtimeOnly 'org.mitre.dsmiley.httpproxy:smiley-http-proxy-servlet:1.12'
     implementation 'org.keycloak:keycloak-spring-boot-starter:15.0.2'
 
-    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.3.0.202209071007-r'
 
     aspect 'cz.cvut.kbss.jopa:jopa-impl:0.17.2'
 

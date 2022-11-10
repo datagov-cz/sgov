@@ -4,6 +4,7 @@ import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.exception.PublicationException;
 import com.github.sgov.server.service.security.SecurityUtils;
 import com.github.sgov.server.util.Constants;
+import com.github.sgov.server.util.Folder;
 import java.io.File;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
@@ -44,7 +45,7 @@ public class GithubRepositoryService {
      *
      * @param branchName name of the branch to be checked out
      * @param dir        directory to check out the repo into
-     * @return           a JGit object to work with
+     * @return a JGit object to work with
      * @throws PublicationException if an error during cloning/checking out occurs
      */
     public Git checkout(String branchName, File dir) {
@@ -95,14 +96,15 @@ public class GithubRepositoryService {
     /**
      * Creates a new commit for the given GIT repository with custom message.
      *
-     * @param git     GIT repository to commit into
-     * @param message commit message
+     * @param git           GIT repository to commit into
+     * @param changedFolder Folder with changes
+     * @param message       commit message
      * @throws PublicationException if an error during commit occurs
      */
-    public void commit(Git git, String message) {
+    public void commit(Git git, Folder changedFolder, String message) {
         try {
             git.add()
-                .addFilepattern(".")
+                .addFilepattern(changedFolder.getFolder().getAbsolutePath())
                 .call();
 
             git.commit()
