@@ -6,6 +6,7 @@ import com.github.sgov.server.service.security.SecurityUtils;
 import com.github.sgov.server.util.Constants;
 import com.github.sgov.server.util.Folder;
 import java.io.File;
+import java.nio.file.Path;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
@@ -96,15 +97,16 @@ public class GithubRepositoryService {
     /**
      * Creates a new commit for the given GIT repository with custom message.
      *
-     * @param git           GIT repository to commit into
-     * @param changedFolder Folder with changes
-     * @param message       commit message
+     * @param git                   GIT repository to commit into
+     * @param relativePathToFolder  Folder with changes
+     * @param message               commit message
      * @throws PublicationException if an error during commit occurs
      */
-    public void commit(Git git, Folder changedFolder, String message) {
+    public void commit(Git git, Path relativePathToFolder, String message) {
+        String filePattern = relativePathToFolder.toString() + "/";
         try {
             git.add()
-                .addFilepattern(changedFolder.getFolder().getAbsolutePath())
+                .addFilepattern(filePattern)
                 .call();
 
             git.commit()
