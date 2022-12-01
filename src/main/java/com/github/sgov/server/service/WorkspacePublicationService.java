@@ -18,6 +18,7 @@ import com.github.sgov.server.util.VocabularyFolder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Set;
@@ -118,10 +119,11 @@ public class WorkspacePublicationService {
             final URI iri = c.getBasedOnVersion();
             try {
                 final VocabularyFolder folder = Utils.getVocabularyFolder(dir, iri.toString());
+                final Path folderGitPath = Utils.getRelativePathToFolder(dir, folder);
                 deleteFilesFromGit(git, folder.toPruneAllExceptCompact());
                 c.setAttachments(attachments);
                 publicationService.storeContext(c, folder);
-                githubService.commit(git, folder, MessageFormat.format(
+                githubService.commit(git, folderGitPath, MessageFormat.format(
                     "Publishing vocabulary {0} in workspace {1} ({2})", iri,
                     workspace.getLabel(), workspace.getUri()));
             } catch (IllegalArgumentException e) {
@@ -136,9 +138,10 @@ public class WorkspacePublicationService {
             final URI iri = c.getBasedOnVersion();
             try {
                 final AttachmentFolder folder = Utils.getAttachmentFolder(dir, iri.toString());
+                final Path folderGitPath = Utils.getRelativePathToFolder(dir, folder);
                 deleteFilesFromGit(git, folder.getAttachmentFile().listFiles());
                 publicationService.storeContext(c, folder);
-                githubService.commit(git, folder, MessageFormat.format(
+                githubService.commit(git, folderGitPath, MessageFormat.format(
                     "Publishing attachment {0} in workspace {1} ({2})", iri,
                     workspace.getLabel(), workspace.getUri()));
             } catch (IllegalArgumentException e) {

@@ -2,6 +2,7 @@ package com.github.sgov.server.util;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.UUID;
@@ -14,8 +15,8 @@ public class Utils {
     /**
      * Creates a new vocabulary folder for the given vocabulary.
      *
-     * @param root          Root folder for vocabularies
-     * @param iri IRI of the vocabulary
+     * @param root Root folder for vocabularies
+     * @param iri  IRI of the vocabulary
      * @return folder for the given vocabulary
      */
     public static VocabularyFolder getVocabularyFolder(final File root,
@@ -29,16 +30,30 @@ public class Utils {
     /**
      * Creates a new attachment folder for the given attachment.
      *
-     * @param root          Root folder for attachments
-     * @param iri IRI of the attachment
+     * @param root Root folder for attachments
+     * @param iri  IRI of the attachment
      * @return folder for the given attachment
      */
     public static AttachmentFolder getAttachmentFolder(final File root,
                                                        final String iri) {
         return new AttachmentFolder(
             Paths.get(root.getAbsolutePath() + "/"
-                   + (CONTENT_ROOT + "/attachments/" + getAttachmentId(iri)))
+                    + (CONTENT_ROOT + "/attachments/" + getAttachmentId(iri)))
                 .toFile());
+    }
+
+    /**
+     * Returns a relative path to folder from a given root folder.
+     *
+     * @param folder given folder
+     * @param root   root folder
+     * @return relative path to the given vocabulary
+     */
+    public static Path getRelativePathToFolder(final File root,
+                                               final Folder folder) {
+        Path folderPath = Paths.get(folder.getFolder().getAbsolutePath());
+        Path rootPath = Paths.get(root.getAbsolutePath());
+        return rootPath.relativize(folderPath);
     }
 
     /**
@@ -89,7 +104,7 @@ public class Utils {
     }
 
     /**
-     *  Creates a version (context) URI from given URI.
+     * Creates a version (context) URI from given URI.
      *
      * @param uri base URI
      * @return version (context) URI
