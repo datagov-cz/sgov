@@ -43,7 +43,7 @@ public class Utils {
     }
 
     /**
-     * Creates a relative path to folder from a given root folder.
+     * Returns a relative path to folder from a given root folder.
      *
      * @param folder given folder
      * @param root   root folder
