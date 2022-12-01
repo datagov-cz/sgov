@@ -51,9 +51,9 @@ public class Utils {
      */
     public static Path getRelativePathToFolder(final File root,
                                                final Folder folder) {
-        String folderPath = folder.getFolder().getAbsolutePath();
-        String relativePath = folderPath.replace(root.getAbsolutePath() + "/", "");
-        return Paths.get(relativePath);
+        Path folderPath = Paths.get(folder.getFolder().getAbsolutePath());
+        Path rootPath = Paths.get(root.getAbsolutePath());
+        return rootPath.relativize(folderPath);
     }
 
     /**
