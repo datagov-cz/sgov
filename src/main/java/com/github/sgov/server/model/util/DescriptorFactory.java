@@ -53,8 +53,8 @@ public final class DescriptorFactory {
      * <p>The descriptor specifies that the instance context will correspond to the given IRI.
      * It also initializes other required attribute descriptors.
      *
-     * @param vocabularyContextUri     Vocabulary context identifier for which the descriptor should be
-     *                                 created
+     * @param vocabularyContextUri     Vocabulary context identifier for which the descriptor should
+     *                                 be created
      * @param changeTrackingContextUri Change tracking context of given vocabulary
      * @return Vocabulary context descriptor
      */
