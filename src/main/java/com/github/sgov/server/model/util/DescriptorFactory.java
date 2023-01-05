@@ -43,7 +43,8 @@ public final class DescriptorFactory {
      */
     public Descriptor vocabularyDescriptor(VocabularyContext vocabularyContext) {
         Objects.requireNonNull(vocabularyContext);
-        return vocabularyDescriptor(vocabularyContext.getUri());
+        return vocabularyDescriptor(vocabularyContext.getUri(),
+            vocabularyContext.getChangeTrackingContext().getUri());
     }
 
     /**
@@ -52,15 +53,19 @@ public final class DescriptorFactory {
      * <p>The descriptor specifies that the instance context will correspond to the given IRI.
      * It also initializes other required attribute descriptors.
      *
-     * @param vocabularyContextUri Vocabulary context identifier for which the descriptor should be
-     *                             created
+     * @param vocabularyContextUri     Vocabulary context identifier for which the descriptor should
+     *                                 be created
+     * @param changeTrackingContextUri Change tracking context of given vocabulary
      * @return Vocabulary context descriptor
      */
-    public Descriptor vocabularyDescriptor(URI vocabularyContextUri) {
+    public Descriptor vocabularyDescriptor(URI vocabularyContextUri, URI changeTrackingContextUri) {
         Objects.requireNonNull(vocabularyContextUri);
         EntityDescriptor descriptor = assetDescriptor(vocabularyContextUri);
         descriptor.addAttributeDescriptor(fieldSpec(VocabularyContext.class, "attachmentContexts"),
             new EntityDescriptor((URI) null));
+        descriptor.addAttributeDescriptor(
+            fieldSpec(VocabularyContext.class, "changeTrackingContext"),
+            new EntityDescriptor(changeTrackingContextUri));
         return descriptor;
     }
 
