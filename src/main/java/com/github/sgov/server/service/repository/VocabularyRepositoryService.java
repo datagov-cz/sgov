@@ -350,8 +350,8 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     public void remove(VocabularyContext instance) {
         removeAllAttachments(instance);
         clearContext(instance.getChangeTrackingContext().getUri());
-        super.remove(instance);
         clearApplicationContexts(instance);
+        super.remove(instance);
         clearContext(instance.getUri());
     }
 
