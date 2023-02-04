@@ -355,13 +355,8 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         clearContext(instance.getUri());
     }
 
-    /**
-     * Clears the given vocabulary context.
-     *
-     * @param vocabularyContextUri vocabulary context URI
-     */
-    public void clearContext(final URI vocabularyContextUri) {
-        vocabularyDao.clearVocabularyContext(vocabularyContextUri);
+    public void clearContext(final URI contextUri) {
+        vocabularyDao.clearContext(contextUri);
     }
 
     private void removeAllAttachments(VocabularyContext vocabularyContext) {

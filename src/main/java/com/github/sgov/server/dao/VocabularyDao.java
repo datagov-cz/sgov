@@ -51,15 +51,15 @@ public class VocabularyDao extends BaseDao<VocabularyContext> {
     /**
      * Clears the given vocabulary context.
      *
-     * @param vocabularyContext vocabularyContext
+     * @param contextUri context (graph) URI
      */
-    public void clearVocabularyContext(final URI vocabularyContext) {
+    public void clearContext(final URI contextUri) {
         try {
             em
                 .createNativeQuery(
                     "DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } . }",
                     type)
-                .setParameter("g", vocabularyContext)
+                .setParameter("g", contextUri)
                 .executeUpdate();
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
