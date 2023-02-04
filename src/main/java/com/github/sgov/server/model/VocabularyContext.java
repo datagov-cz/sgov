@@ -26,12 +26,6 @@ public class VocabularyContext extends TrackableContext {
     private ChangeTrackingContext changeTrackingContext;
 
     @ParticipationConstraints
-    @OWLObjectProperty(iri = Vocabulary.s_p_ma_aplikacni_kontext,
-        cascade = {CascadeType.REMOVE},
-        fetch = FetchType.EAGER)
-    private Set<URI> applicationContexts = new HashSet<>();
-
-    @ParticipationConstraints
     @OWLObjectProperty(iri = Vocabulary.s_p_ma_prilohu,
         cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         fetch = FetchType.EAGER)

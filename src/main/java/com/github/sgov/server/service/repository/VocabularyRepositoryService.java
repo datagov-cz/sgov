@@ -364,6 +364,6 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     }
 
     private void clearApplicationContexts(VocabularyContext vocabularyContext) {
-        vocabularyContext.getApplicationContexts().forEach(this::clearContext);
+        vocabularyDao.clearApplicationContexts(vocabularyContext.getUri());
     }
 }
