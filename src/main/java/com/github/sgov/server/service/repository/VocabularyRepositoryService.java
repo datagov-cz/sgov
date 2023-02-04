@@ -342,31 +342,28 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         Optional<VocabularyContext> vocabularyContext = vocabularyDao.find(id);
         if (vocabularyContext.isPresent()) {
             VocabularyContext instance = vocabularyContext.get();
-            removeAllAttachments(instance);
-            clearVocabularyContext(instance.getChangeTrackingContext().getUri());
-            super.remove(id);
-            clearVocabularyContext(id);
+            remove(instance);
         }
     }
 
     @Override
     public void remove(VocabularyContext instance) {
         removeAllAttachments(instance);
-        clearVocabularyContext(instance.getChangeTrackingContext().getUri());
+        clearContext(instance.getChangeTrackingContext().getUri());
         super.remove(instance);
-        clearVocabularyContext(instance.getUri());
+        clearApplicationContexts(instance);
+        clearContext(instance.getUri());
     }
 
-    /**
-     * Clears the given vocabulary context.
-     *
-     * @param vocabularyContext vocabularyContext
-     */
-    public void clearVocabularyContext(final URI vocabularyContext) {
-        vocabularyDao.clearVocabularyContext(vocabularyContext);
+    public void clearContext(final URI contextUri) {
+        vocabularyDao.clearContext(contextUri);
     }
 
-    private void removeAllAttachments(VocabularyContext instance) {
-        instance.getAttachmentContexts().forEach(attachmentRepositoryService::remove);
+    private void removeAllAttachments(VocabularyContext vocabularyContext) {
+        vocabularyContext.getAttachmentContexts().forEach(attachmentRepositoryService::remove);
+    }
+
+    private void clearApplicationContexts(VocabularyContext vocabularyContext) {
+        vocabularyContext.getApplicationContexts().forEach(this::clearContext);
     }
 }

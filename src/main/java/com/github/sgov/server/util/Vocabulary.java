@@ -69,6 +69,8 @@ public final class Vocabulary {
     public static final String s_c_slovnik = DATA_DESCRIPTION_NAMESPACE + "slovník";
     public static final String s_p_ma_glosar = DATA_DESCRIPTION_NAMESPACE + "má-glosář";
     public static final String s_p_ma_model = DATA_DESCRIPTION_NAMESPACE + "má-model";
+    public static final String s_p_ma_aplikacni_kontext =
+        DATA_DESCRIPTION_NAMESPACE + "má-aplikační-kontext";
     public static final String s_c_glosar = DATA_DESCRIPTION_NAMESPACE + "glosář";
     public static final String s_c_model = DATA_DESCRIPTION_NAMESPACE + "model";
     public static final String s_c_import = DATA_DESCRIPTION_NAMESPACE + "importuje-slovník";
