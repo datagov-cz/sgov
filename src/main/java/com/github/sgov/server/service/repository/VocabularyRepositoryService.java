@@ -350,8 +350,8 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     public void remove(VocabularyContext instance) {
         removeAllAttachments(instance);
         clearContext(instance.getChangeTrackingContext().getUri());
+        vocabularyDao.clearApplicationContexts(instance.getUri());
         super.remove(instance);
-        clearApplicationContexts(instance);
         clearContext(instance.getUri());
     }
 
@@ -361,9 +361,5 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
 
     private void removeAllAttachments(VocabularyContext vocabularyContext) {
         vocabularyContext.getAttachmentContexts().forEach(attachmentRepositoryService::remove);
-    }
-
-    private void clearApplicationContexts(VocabularyContext vocabularyContext) {
-        vocabularyContext.getApplicationContexts().forEach(this::clearContext);
     }
 }

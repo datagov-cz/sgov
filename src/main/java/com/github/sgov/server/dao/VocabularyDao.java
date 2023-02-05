@@ -3,6 +3,7 @@ package com.github.sgov.server.dao;
 import com.github.sgov.server.exception.PersistenceException;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.util.DescriptorFactory;
+import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import java.net.URI;
 import java.util.Objects;
@@ -64,5 +65,18 @@ public class VocabularyDao extends BaseDao<VocabularyContext> {
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
+    }
+
+    /**
+     * Clears all application contexts for the given vocabulary context.
+     *
+     * @param vocabularyContextUri vocabulary context URI
+     */
+    public void clearApplicationContexts(URI vocabularyContextUri) {
+        em.createNativeQuery("SELECT ?o WHERE { GRAPH ?g { ?s ?p ?o } . }", URI.class)
+            .setParameter("g", vocabularyContextUri)
+            .setParameter("s", vocabularyContextUri)
+            .setParameter("p", URI.create(Vocabulary.s_p_ma_aplikacni_kontext))
+            .getResultList().forEach(this::clearContext);
     }
 }
