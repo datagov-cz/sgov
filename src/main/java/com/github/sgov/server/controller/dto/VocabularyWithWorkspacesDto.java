@@ -6,8 +6,8 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-@JsonLdAttributeOrder({"uri", "label", "basedOnVersion", "changeTrackingContext", "workspaces"})
-public class VocabularyWorkspacesDto extends VocabularyDto {
+@JsonLdAttributeOrder({"uri", "label", "basedOnVersion", "changeTrackingContext", "inWorkspaces"})
+public class VocabularyWithWorkspacesDto extends VocabularyDto {
 
     List<WorkspaceDto> inWorkspaces;
 
@@ -29,7 +29,7 @@ public class VocabularyWorkspacesDto extends VocabularyDto {
      *
      * @param vocabularyDto reference DTO
      */
-    public VocabularyWorkspacesDto(VocabularyDto vocabularyDto) {
+    public VocabularyWithWorkspacesDto(VocabularyDto vocabularyDto) {
         this.setUri(vocabularyDto.getUri());
         this.setTypes(vocabularyDto.getTypes());
         this.setLabel(vocabularyDto.getLabel());

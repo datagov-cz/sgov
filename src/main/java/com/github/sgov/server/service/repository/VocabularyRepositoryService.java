@@ -6,7 +6,7 @@ import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.controller.dto.VocabularyStatusDto;
-import com.github.sgov.server.controller.dto.VocabularyWorkspacesDto;
+import com.github.sgov.server.controller.dto.VocabularyWithWorkspacesDto;
 import com.github.sgov.server.controller.dto.WorkspaceDto;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
@@ -150,15 +150,15 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
      * @param lang language to fetch the label in
      * @return vocabularies in the form of vocabulary context
      */
-    public List<VocabularyWorkspacesDto> getVocabulariesWithWorkspacesAsDtos(String lang) {
-        List<VocabularyWorkspacesDto> contexts = new ArrayList<>();
+    public List<VocabularyWithWorkspacesDto> getVocabulariesWithWorkspacesAsDtos(String lang) {
+        List<VocabularyWithWorkspacesDto> contexts = new ArrayList<>();
         try {
             final SPARQLRepository repo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
                     repositoryConf.getUrl()));
             final RepositoryConnection connection = repo.getConnection();
             getVocabulariesAsContextDtos(lang).forEach(vocabularyDto -> {
-                final VocabularyWorkspacesDto vWDto = new VocabularyWorkspacesDto(vocabularyDto);
+                final VocabularyWithWorkspacesDto vWDto = new VocabularyWithWorkspacesDto(vocabularyDto);
                 connection.prepareTupleQuery("SELECT DISTINCT ?uri ?label WHERE {"
                     + "?uri a <" + Vocabulary.s_c_metadatovy_kontext + "> ;"
                     + " <" + DCTERMS.TITLE + "> ?label ;"
