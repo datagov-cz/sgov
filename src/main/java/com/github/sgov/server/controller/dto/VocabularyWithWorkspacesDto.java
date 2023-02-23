@@ -4,8 +4,10 @@ import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @JsonLdAttributeOrder({"uri", "label", "basedOnVersion", "changeTrackingContext", "inWorkspaces"})
 public class VocabularyWithWorkspacesDto extends VocabularyDto {
 
@@ -13,7 +15,7 @@ public class VocabularyWithWorkspacesDto extends VocabularyDto {
 
 
     /**
-     *  Adds workspace in which vocabulary is.
+     * Adds workspace in which vocabulary is.
      *
      * @param workspaceDto workspace DTO
      */
