@@ -158,7 +158,8 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
                     repositoryConf.getUrl()));
             final RepositoryConnection connection = repo.getConnection();
             getVocabulariesAsContextDtos(lang).forEach(vocabularyDto -> {
-                final VocabularyWithWorkspacesDto vWDto = new VocabularyWithWorkspacesDto(vocabularyDto);
+                final VocabularyWithWorkspacesDto vWDto =
+                        new VocabularyWithWorkspacesDto(vocabularyDto);
                 connection.prepareTupleQuery("SELECT DISTINCT ?uri ?label WHERE {"
                     + "?uri a <" + Vocabulary.s_c_metadatovy_kontext + "> ;"
                     + " <" + DCTERMS.TITLE + "> ?label ;"
