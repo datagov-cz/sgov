@@ -19,6 +19,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Setup Gradle 7.1.1
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.1.1
+
       - name: Build JAR
         run: gradle clean bootJar
         
