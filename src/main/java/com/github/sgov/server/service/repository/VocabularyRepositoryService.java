@@ -159,7 +159,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
             final RepositoryConnection connection = repo.getConnection();
             getVocabulariesAsContextDtos(lang).forEach(vocabularyDto -> {
                 final VocabularyWithWorkspacesDto vWDto =
-                        new VocabularyWithWorkspacesDto(vocabularyDto);
+                    new VocabularyWithWorkspacesDto(vocabularyDto);
                 connection.prepareTupleQuery("SELECT DISTINCT ?uri ?label WHERE {"
                     + "?uri a <" + Vocabulary.s_c_metadatovy_kontext + "> ;"
                     + " <" + DCTERMS.TITLE + "> ?label ;"
@@ -357,7 +357,8 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
                 + version
                 + ">" + ((context instanceof VocabularyContext)
                 ? ",:glosář,:model,:mapování,:přílohy" : "")
-                + "))}");
+                + "))"
+                + "FILTER(?p != <" + Vocabulary.s_p_ma_gestora + ">)}");
         return query.evaluate();
     }
 

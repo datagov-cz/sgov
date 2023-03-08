@@ -17,6 +17,8 @@ public final class Vocabulary {
         "https://slovník.gov.cz/datový/pracovní-prostor/pojem/";
     public static final String DATA_DESCRIPTION_NAMESPACE =
         "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/pojem/";
+    public static final String CHANGE_DESCRIPTION_NAMESPACE =
+        "https://slovník.gov.cz/datový/popis-zmen/pojem/";
 
     public static final String s_c_metadatovy_kontext = WORKSPACE_NAMESPACE + "metadatový-kontext";
     public static final String s_c_prilohovy_kontext = WORKSPACE_NAMESPACE + "přílohový-kontext";
@@ -78,6 +80,8 @@ public final class Vocabulary {
 
     public static final String version_separator = "/verze/";
     public static final String postfix_kontextu_sledovani_zmen = "/změny";
+    public static final String s_p_ma_gestora = CHANGE_DESCRIPTION_NAMESPACE
+        + "má-gestora";
 
     private Vocabulary() {
     }
