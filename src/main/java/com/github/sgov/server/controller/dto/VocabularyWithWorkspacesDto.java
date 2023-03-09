@@ -35,6 +35,7 @@ public class VocabularyWithWorkspacesDto extends VocabularyDto {
         this.setUri(vocabularyDto.getUri());
         this.setTypes(vocabularyDto.getTypes());
         this.setLabel(vocabularyDto.getLabel());
+        this.setBasedOnVersion(vocabularyDto.getBasedOnVersion());
         this.setChangeTrackingContext(vocabularyDto.getChangeTrackingContext());
     }
 }
