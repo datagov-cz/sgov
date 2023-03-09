@@ -6,6 +6,8 @@ import com.github.sgov.server.config.conf.RepositoryConf;
 import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.controller.dto.VocabularyDto;
 import com.github.sgov.server.controller.dto.VocabularyStatusDto;
+import com.github.sgov.server.controller.dto.VocabularyWithWorkspacesDto;
+import com.github.sgov.server.controller.dto.WorkspaceDto;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
@@ -123,21 +125,59 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
                     + ((lang != null) ? "FILTER (lang(?label)='" + lang + "')" : "")
                     + " }} ORDER BY ?label");
             final Set<URI> uris = getWriteLockedVocabularies();
-            query.evaluate().forEach(b -> {
-                final VocabularyDto c = new VocabularyDto();
-                final URI uri = URI.create(b.getValue("g").stringValue());
-                c.setBasedOnVersion(uri);
-                c.setReadonly(uris.contains(uri));
-                if (b.hasBinding("label")) {
-                    c.setLabel(b.getValue("label").stringValue());
+            query.evaluate().forEach(res -> {
+                final VocabularyDto vDto = new VocabularyDto();
+                final URI uri = URI.create(res.getValue("g").stringValue());
+                vDto.setUri(uri);
+                vDto.setBasedOnVersion(uri);
+                vDto.setReadonly(uris.contains(uri));
+                if (res.hasBinding("label")) {
+                    vDto.setLabel(res.getValue("label").stringValue());
                 }
-                contexts.add(c);
+                contexts.add(vDto);
             });
             connection.close();
             return contexts;
         } catch (URISyntaxException e) {
             throw new SGoVException(e);
         }
+    }
+
+    /**
+     * Finds all vocabularies which are published with optional label in the given language.
+     * Each vocabulary is enriched with list of workspaces the vocabulary is in.
+     *
+     * @param lang language to fetch the label in
+     * @return vocabularies in the form of vocabulary context
+     */
+    public List<VocabularyWithWorkspacesDto> getVocabulariesWithWorkspacesAsDtos(String lang) {
+        List<VocabularyWithWorkspacesDto> contexts = new ArrayList<>();
+        try {
+            final SPARQLRepository repo =
+                new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
+                    repositoryConf.getUrl()));
+            final RepositoryConnection connection = repo.getConnection();
+            getVocabulariesAsContextDtos(lang).forEach(vocabularyDto -> {
+                final VocabularyWithWorkspacesDto vWDto =
+                        new VocabularyWithWorkspacesDto(vocabularyDto);
+                connection.prepareTupleQuery("SELECT DISTINCT ?uri ?label WHERE {"
+                    + "?uri a <" + Vocabulary.s_c_metadatovy_kontext + "> ;"
+                    + " <" + DCTERMS.TITLE + "> ?label ;"
+                    + " <" + Vocabulary.s_p_odkazuje_na_kontext + "> ["
+                    + "  <" + Vocabulary.s_p_vychazi_z_verze + "> <" + vocabularyDto.getUri() + ">"
+                    + " ] . }").evaluate().forEach(res -> {
+                        URI wsUri = URI.create(res.getValue("uri").stringValue());
+                        String label = res.getValue("label").stringValue();
+                        vWDto.addInWorkspace(new WorkspaceDto(wsUri, label));
+                    }
+                );
+                contexts.add(vWDto);
+            });
+            connection.close();
+        } catch (URISyntaxException e) {
+            throw new SGoVException(e);
+        }
+        return contexts;
     }
 
     /**
