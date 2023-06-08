@@ -1,4 +1,4 @@
-name: Build docker
+name: Publish Docker Image
 on:
   push:
     branches: [ main ]
@@ -6,6 +6,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: al-sgov-server
+  AL_DEV_URL: ${{ vars.AL_DEV_URL }} # e.g. https://xn--slovnk-test-scb.dia.gov.cz/modelujeme
   USERNAME: ${{ github.actor }}
   TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
@@ -54,4 +55,4 @@ jobs:
         uses: wei/curl@v1.1.1
         with:
           args: |
-            -H \"X-Secret: ${{ secrets.AL_DEV_SECRET }}\" -X POST https://xn--slovnk-test-scb.mvcr.gov.cz/modelujeme/update/${{ env.IMAGE_NAME }}.php
+            -H \"X-Secret: ${{ secrets.AL_DEV_SECRET }}\" -X POST ${{ env.AL_DEV_URL }}/update/${{ env.IMAGE_NAME }}.php
