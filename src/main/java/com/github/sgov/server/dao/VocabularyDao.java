@@ -58,7 +58,7 @@ public class VocabularyDao extends BaseDao<VocabularyContext> {
         try {
             em
                 .createNativeQuery(
-                    "DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } . }",
+                    "DROP GRAPH ?g",
                     type)
                 .setParameter("g", contextUri)
                 .executeUpdate();

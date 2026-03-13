@@ -57,7 +57,7 @@ public class AttachmentDao extends BaseDao<AttachmentContext> {
         try {
             em
                 .createNativeQuery(
-                    "DELETE { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } . }",
+                    "DROP GRAPH ?g",
                     type)
                 .setParameter("g", attachmentContext)
                 .executeUpdate();

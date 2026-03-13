@@ -353,12 +353,14 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         final GraphQuery query = connection
             .prepareGraphQuery("PREFIX : <"
                 + version
-                + "/> CONSTRUCT {?s ?p ?o} WHERE { GRAPH ?g {?s ?p ?o} FILTER(?g IN (<"
-                + version
-                + ">" + ((context instanceof VocabularyContext)
-                ? ",:glosář,:model,:mapování,:přílohy" : "")
-                + "))"
-                + "FILTER(?p != <" + Vocabulary.s_p_ma_gestora + ">)}");
+                + "/>" +
+                    " CONSTRUCT {?s ?p ?o} WHERE { " +
+                    "GRAPH ?g {?s ?p ?o} VALUES ?g { " +
+                            "<" + version + ">" + ((context instanceof VocabularyContext)
+                            ? " :glosář :model :mapování :přílohy" : "")
+                        + "}"
+                    + "MINUS { VALUES ?p {<" + Vocabulary.s_p_ma_gestora + ">}}" +
+                    "}");
         return query.evaluate();
     }
 
@@ -381,10 +383,7 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     @Override
     public void remove(URI id) {
         Optional<VocabularyContext> vocabularyContext = vocabularyDao.find(id);
-        if (vocabularyContext.isPresent()) {
-            VocabularyContext instance = vocabularyContext.get();
-            remove(instance);
-        }
+        vocabularyContext.ifPresent(this::remove);
     }
 
     @Override
