@@ -6,6 +6,7 @@ import com.github.sgov.server.model.util.DescriptorFactory;
 import com.github.sgov.server.util.Vocabulary;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,16 +68,32 @@ public class VocabularyDao extends BaseDao<VocabularyContext> {
         }
     }
 
+    public void clearContexts(final Collection<URI> contextUris) {
+        StringBuilder query = new StringBuilder();
+        contextUris.forEach(contextUri -> query.append("DROP GRAPH <").append(contextUri).append(">;"));
+        try {
+            em
+                    .createNativeQuery(
+                            query.toString(),
+                            type)
+                    .setParameter("g", contextUris)
+                    .executeUpdate();
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
     /**
      * Clears all application contexts for the given vocabulary context.
      *
      * @param vocabularyContextUri vocabulary context URI
      */
     public void clearApplicationContexts(URI vocabularyContextUri) {
-        em.createNativeQuery("SELECT ?o WHERE { GRAPH ?g { ?s ?p ?o } . }", URI.class)
+        Collection<URI> resultList = em.createNativeQuery("SELECT ?o WHERE { GRAPH ?g { ?s ?p ?o } . }", URI.class)
             .setParameter("g", vocabularyContextUri)
             .setParameter("s", vocabularyContextUri)
             .setParameter("p", URI.create(Vocabulary.s_p_ma_aplikacni_kontext))
-            .getResultList().forEach(this::clearContext);
+            .getResultList();
+        clearContexts(resultList);
     }
 }
