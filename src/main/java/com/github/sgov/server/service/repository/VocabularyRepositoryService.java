@@ -1,13 +1,7 @@
 package com.github.sgov.server.service.repository;
 
-import static com.github.sgov.server.util.Constants.SERIALIZATION_LANGUAGE;
-
 import com.github.sgov.server.config.conf.RepositoryConf;
-import com.github.sgov.server.controller.dto.VocabularyContextDto;
-import com.github.sgov.server.controller.dto.VocabularyDto;
-import com.github.sgov.server.controller.dto.VocabularyStatusDto;
-import com.github.sgov.server.controller.dto.VocabularyWithWorkspacesDto;
-import com.github.sgov.server.controller.dto.WorkspaceDto;
+import com.github.sgov.server.controller.dto.*;
 import com.github.sgov.server.dao.VocabularyDao;
 import com.github.sgov.server.dao.WorkspaceDao;
 import com.github.sgov.server.exception.SGoVException;
@@ -16,22 +10,12 @@ import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.util.IdnUtils;
 import com.github.sgov.server.util.Vocabulary;
 import com.github.sgov.server.util.VocabularyCreationHelper;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.validation.Validator;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
-import org.eclipse.rdf4j.query.GraphQuery;
-import org.eclipse.rdf4j.query.GraphQueryResult;
-import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.*;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
@@ -42,9 +26,18 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Validator;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.github.sgov.server.util.Constants.SERIALIZATION_LANGUAGE;
+
 /**
  * Service to managed vocabularies.
  */
+@Slf4j
 @Service
 public class VocabularyRepositoryService extends BaseRepositoryService<VocabularyContext> {
 
@@ -312,6 +305,92 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
         connection2.close();
     }
 
+    private String getLoadContextString(final TrackableContext context) {
+        StringBuilder query = new StringBuilder();
+        final URI version = context.getBasedOnVersion();
+        query.append("INSERT { GRAPH <").append(context.getUri().toString()).append("> {?s ?p ?o} }  WHERE { ");
+        query.append("GRAPH ?g {?s ?p ?o} VALUES ?g { ");
+        query.append("<").append(version).append("> ");
+        if (context instanceof VocabularyContext) {
+            final String prefix = version + "/";
+            query.append("<").append(prefix).append("glosář").append("> ");
+            query.append("<").append(prefix).append("model").append("> ");
+            query.append("<").append(prefix).append("mapování").append("> ");
+            query.append("<").append(prefix).append("přílohy").append("> ");
+        }
+        query.append("}};\n");
+        return query.toString();
+    }
+
+    public void loadAttachmentContexts(final Collection<TrackableContext> contexts) {
+        StringBuilder updateQuery = new StringBuilder();
+        for (final TrackableContext context : contexts) {
+            final URI version = context.getBasedOnVersion();
+            updateQuery.append("COPY <");
+            updateQuery.append(version);
+            updateQuery.append("> TO <");
+            updateQuery.append(context.getUri().toString());
+            updateQuery.append(">;\n");
+        }
+        try {
+            final SPARQLRepository updateRepo =
+                    new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
+                            repositoryConf.getUrl() + "/statements"));
+            try (final RepositoryConnection connection = updateRepo.getConnection()) {
+                log.info("Loading contexts from " + repositoryConf.getUrl());
+                connection.begin();
+                Update update = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery.toString());
+                update.execute();
+                connection.commit();
+                connection.close();
+                updateRepo.shutDown();
+            }
+        } catch (URISyntaxException e) {
+            throw new SGoVException(e);
+        }
+    }
+
+    public void loadContexts(final Collection<TrackableContext> contexts) {
+        StringBuilder updateQuery = new StringBuilder();
+        for (final TrackableContext context : contexts) {
+            updateQuery.append(getLoadContextString(context));
+        }
+        try {
+            final SPARQLRepository updateRepo =
+                    new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
+                            repositoryConf.getUrl() + "/statements"));
+            final SPARQLRepository repo =
+                    new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
+                            repositoryConf.getUrl()));
+            try (final RepositoryConnection connection = updateRepo.getConnection()) {
+                log.info("Loading contexts from " + repositoryConf.getUrl());
+                connection.begin();
+                Update update = connection.prepareUpdate(QueryLanguage.SPARQL, updateQuery.toString());
+                update.execute();
+                connection.commit();
+            }
+            try (final RepositoryConnection connection = repo.getConnection()) {
+                for (final TrackableContext context : contexts) {
+                    final String iri = context.getBasedOnVersion().toString();
+                    if (context instanceof VocabularyContext) {
+                        final VocabularyContext vocabularyContext = (VocabularyContext) context;
+                        final GraphQueryResult r = loadAttachments(iri, connection);
+                        final Set<Statement> set = r.stream().collect(Collectors.toSet());
+                        final IRI hasAttachment =
+                                repo.getValueFactory().createIRI(Vocabulary.s_p_ma_prilohu);
+                        final Set<URI> attachments = set.stream()
+                                .filter(s -> s.getPredicate().equals(hasAttachment))
+                                .map(s -> URI.create(s.getObject().stringValue()))
+                                .collect(Collectors.toSet());
+                        vocabularyContext.setAttachments(attachments);
+                    }
+                }
+            }
+        } catch (URISyntaxException e) {
+            throw new SGoVException(e);
+        }
+    }
+
     /**
      * Reloads the given vocabulary context from the source endpoint.
      *
@@ -320,48 +399,37 @@ public class VocabularyRepositoryService extends BaseRepositoryService<Vocabular
     @Transactional
     public void loadContext(final TrackableContext context) {
         try {
-            final SPARQLRepository repo =
+            final SPARQLRepository updateRepo =
                 new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
-                    repositoryConf.getUrl()));
+                    repositoryConf.getUrl() + "/statements"));
+            final SPARQLRepository repo =
+                    new SPARQLRepository(IdnUtils.convertUnicodeUrlToAscii(
+                            repositoryConf.getUrl()));
+            try (final RepositoryConnection connection = updateRepo.getConnection()) {
+                String query = getLoadContextString(context);
+                connection.begin();
+                Update update = connection.prepareUpdate(QueryLanguage.SPARQL, query);
+                update.execute();
+                connection.commit();
+            }
             try (final RepositoryConnection connection = repo.getConnection()) {
                 final String iri = context.getBasedOnVersion().toString();
-                populateContext(context.getUri().toString(),
-                    loadContext(context, connection));
-
                 if (context instanceof VocabularyContext) {
                     final VocabularyContext vocabularyContext = (VocabularyContext) context;
                     final GraphQueryResult r = loadAttachments(iri, connection);
                     final Set<Statement> set = r.stream().collect(Collectors.toSet());
                     final IRI hasAttachment =
-                        repo.getValueFactory().createIRI(Vocabulary.s_p_ma_prilohu);
+                            repo.getValueFactory().createIRI(Vocabulary.s_p_ma_prilohu);
                     final Set<URI> attachments = set.stream()
-                        .filter(s -> s.getPredicate().equals(hasAttachment))
-                        .map(s -> URI.create(s.getObject().stringValue()))
-                        .collect(Collectors.toSet());
+                            .filter(s -> s.getPredicate().equals(hasAttachment))
+                            .map(s -> URI.create(s.getObject().stringValue()))
+                            .collect(Collectors.toSet());
                     vocabularyContext.setAttachments(attachments);
                 }
             }
         } catch (URISyntaxException e) {
             throw new SGoVException(e);
         }
-    }
-
-    GraphQueryResult loadContext(
-        final TrackableContext context,
-        final RepositoryConnection connection) {
-        final URI version = context.getBasedOnVersion();
-        final GraphQuery query = connection
-            .prepareGraphQuery("PREFIX : <"
-                + version
-                + "/>" +
-                    " CONSTRUCT {?s ?p ?o} WHERE { " +
-                    "GRAPH ?g {?s ?p ?o} VALUES ?g { " +
-                            "<" + version + ">" + ((context instanceof VocabularyContext)
-                            ? " :glosář :model :mapování :přílohy" : "")
-                        + "}"
-                    + "MINUS { VALUES ?p {<" + Vocabulary.s_p_ma_gestora + ">}}" +
-                    "}");
-        return query.evaluate();
     }
 
     GraphQueryResult loadAttachments(

@@ -1,17 +1,14 @@
 package com.github.sgov.server.model;
 
 import com.github.sgov.server.util.Vocabulary;
-import cz.cvut.kbss.jopa.model.annotations.CascadeType;
-import cz.cvut.kbss.jopa.model.annotations.FetchType;
-import cz.cvut.kbss.jopa.model.annotations.OWLClass;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
-import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
+import cz.cvut.kbss.jopa.model.annotations.*;
 import cz.cvut.kbss.jsonld.annotation.JsonLdAttributeOrder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

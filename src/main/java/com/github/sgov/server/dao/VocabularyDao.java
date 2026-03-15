@@ -69,14 +69,14 @@ public class VocabularyDao extends BaseDao<VocabularyContext> {
     }
 
     public void clearContexts(final Collection<URI> contextUris) {
+        if (contextUris == null || contextUris.isEmpty()) return;
         StringBuilder query = new StringBuilder();
-        contextUris.forEach(contextUri -> query.append("DROP GRAPH <").append(contextUri).append(">;"));
+        contextUris.forEach(contextUri -> query.append("DROP GRAPH <").append(contextUri).append(">;\n"));
         try {
             em
                     .createNativeQuery(
                             query.toString(),
                             type)
-                    .setParameter("g", contextUris)
                     .executeUpdate();
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
