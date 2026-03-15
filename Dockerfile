@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jdk-focal
+FROM openjdk:11
 
 WORKDIR /sgov-server-build
 

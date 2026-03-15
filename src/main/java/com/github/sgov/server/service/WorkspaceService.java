@@ -7,7 +7,6 @@ import com.github.sgov.server.controller.dto.VocabularyContextDto;
 import com.github.sgov.server.exception.NotFoundException;
 import com.github.sgov.server.exception.ValidationException;
 import com.github.sgov.server.model.AttachmentContext;
-import com.github.sgov.server.model.TrackableContext;
 import com.github.sgov.server.model.VocabularyContext;
 import com.github.sgov.server.model.Workspace;
 import com.github.sgov.server.service.repository.AttachmentRepositoryService;
@@ -15,7 +14,6 @@ import com.github.sgov.server.service.repository.VocabularyRepositoryService;
 import com.github.sgov.server.service.repository.WorkspaceRepositoryService;
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -192,16 +190,15 @@ public class WorkspaceService {
         repositoryService.update(workspace);
         final URI vocabularyContextUri = vocabularyContext.getUri();
         log.info("Found attachments {}", vocabularyContext.getAttachments());
-        Collection<TrackableContext> attachmentContexts = new HashSet<>();
         vocabularyContext.getAttachments().forEach(attachmentUri -> {
             log.info("Adding attachment {}", attachmentUri);
             final AttachmentContext attachmentContext = attachmentStub(attachmentUri);
             attachmentService.persist(attachmentContext);
+
             vocabularyContext.addAttachmentContext(attachmentContext);
             vocabularyService.update(vocabularyContext);
-            attachmentContexts.add(attachmentContext);
+            vocabularyService.loadContext(attachmentContext);
         });
-        vocabularyService.loadAttachmentContexts(attachmentContexts);
         return vocabularyContextUri;
     }
 
